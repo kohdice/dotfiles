@@ -1,0 +1,30 @@
+name: Continuous Integration of dotfiles installation
+
+run-name: ${{ github.actor }} is testing out dotfiles installation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  dotfiles-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os}}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Install Packages
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+          ninja-build \
+          gettext \
+          libtool-bin \
+          cmake
+      - name: Test to install dotfiles
+        run: ./install.sh

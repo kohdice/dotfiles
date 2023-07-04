@@ -1,0 +1,36 @@
+[user]
+    name = kohdice
+    email = kohdice@gmail.com
+[core]
+    editor = nvim
+    excludesfile = /Users/kodai/.gitignore_global
+    ignorecase = false
+[alias]
+    a = add
+    au = add -u
+    ap = apply
+    br = branch
+    ba = branch -a
+    bd = branch -d
+    bdd = branch -D
+    brm = branch -m
+    bm = branch --merged
+    bn = branch --no-merged
+    cm = commit
+    cma = commit -a
+    co = checkout
+    cob = checkout -b
+    cp = cherry-pick
+    d = diff
+    fe = fetch
+    pl = "!git pull origin $(git rev-parse --abbrev-ref HEAD)"
+    ps = "!git push origin $(git rev-parse --abbrev-ref HEAD)"
+    pst = push origin --tags
+    rhh = reset --hard HEAD^
+    rsh = reset --soft HEAD^
+    ru = remote update -p
+    st = status
+    sw = switch
+    swc = switch -c
+    hist = log --pretty=format:\"%Cgreen%h %Creset%cd %Cblue[%cn] %Creset%s%C(yellow)%d%C(reset)\" --graph --date=relative --decorate --all
+    llog = log --graph --name-status --pretty=format:\"%C(red)%h %C(reset)(%cd) %C(green)%an %Creset%s %C(yellow)%d%Creset\" --date=relative

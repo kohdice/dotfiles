@@ -1,7 +1,7 @@
 return {
   'iamcco/markdown-preview.nvim',
   event = 'BufRead',
-  run = function()
+  config = function()
     vim.fn['mkdp#util#install']()
   end,
   keys = {

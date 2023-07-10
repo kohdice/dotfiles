@@ -1,11 +1,12 @@
 return {
   'akinsho/toggleterm.nvim',
   version = "*",
-  opts = {
-    size = 35,
-    hide_numbers = true,
-  },
   config = function()
+    require('toggleterm').setup{
+      size = 35,
+      hide_numbers = true,
+      open_mapping = [[<c-\>]],
+    }
     function _G.set_terminal_keymaps()
       local opts = { noremap = true }
       vim.api.nvim_set_keymap('t', '<esc>', [[<C-\><C-n>]], opts)

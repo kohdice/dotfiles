@@ -12,13 +12,17 @@ alias ..4='cd ../../../../'
 
 # ls
 export LS_OPTIONS='--color=auto'
-alias ls='ls $LS_OPTIONS'
-alias ll='ls $LS_OPTIONS -hlrt'
-alias la='ls $LS_OPTIONS -hlrta'
+alias ls='ls $LS_OPTIONS -p'
+alias ll='ls $LS_OPTIONS -hlp'
+alias la='ls $LS_OPTIONS -pA'
+alias lla='ls -hlpA'
 export CLICOLOR=1
 
 # git
 alias g='git'
+
+# lazygit
+alias lg='lazygit'
 
 # Start neovim with the following command
 alias v='nvim'

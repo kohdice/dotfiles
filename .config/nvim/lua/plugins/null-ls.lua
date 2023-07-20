@@ -65,7 +65,7 @@ return {
     }
     require("mason-null-ls").setup({
         ensure_installed = nil,
-        automatic_installation = true,
+        automatic_installation = false,
     })
 
     vim.api.nvim_create_user_command(

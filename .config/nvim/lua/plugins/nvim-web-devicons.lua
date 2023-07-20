@@ -3,8 +3,8 @@ return {
   lazy = false,
   config = function()
     require('nvim-web-devicons').setup({
+      override = {},
       default = true,
-      strict = true,
     })
   end
 }

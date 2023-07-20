@@ -1,7 +1,7 @@
 return {
   'akinsho/nvim-bufferline.lua',
   config = function()
-    require('bufferline').setup{
+    require('bufferline').setup({
       options = {
         mode = "tabs",
         separator_style = 'slant',
@@ -30,7 +30,7 @@ return {
           bg = '#073642'
         }
       },
-    }
+    })
     vim.keymap.set('n', '<Tab>', '<Cmd>BufferLineCycleNext<CR>', {})
     vim.keymap.set('n', '<S-Tab>', '<Cmd>BufferLineCyclePrev<CR>', {})
   end

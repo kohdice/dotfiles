@@ -1,13 +1,13 @@
 return {
-  "glepnir/lspsaga.nvim",
+  'glepnir/lspsaga.nvim',
   dependencies = {
-    {"nvim-tree/nvim-web-devicons"},
+    { 'nvim-tree/nvim-web-devicons' },
     --Please make sure you install markdown and markdown_inline parser
-    {"nvim-treesitter/nvim-treesitter"}
+    { 'nvim-treesitter/nvim-treesitter' }
   },
-  event = "LspAttach",
+  event = 'LspAttach',
   config = function()
-    require("lspsaga").setup({
+    require('lspsaga').setup({
       ui = {
         winblend = 10,
         border = 'rounded',
@@ -17,7 +17,7 @@ return {
       }
     })
 
-    local diagnostic = require("lspsaga.diagnostic")
+    local diagnostic = require('lspsaga.diagnostic')
     local opts = { noremap = true, silent = true }
     vim.keymap.set('n', '<C-j>', '<Cmd>Lspsaga diagnostic_jump_next<CR>', opts)
     vim.keymap.set('n', 'gl', '<Cmd>Lspsaga show_line_diagnostics<CR>', opts)
@@ -29,6 +29,6 @@ return {
     vim.keymap.set('n', '<leader>rn', '<Cmd>Lspsaga rename<CR>', opts)
 
     -- code action
-    vim.keymap.set({ "n", "v" }, "<leader>ca", "<cmd>Lspsaga code_action<CR>")
+    vim.keymap.set({ 'n', 'v' }, '<leader>ca', '<cmd>Lspsaga code_action<CR>')
   end,
 }

@@ -21,7 +21,7 @@ return {
       lualine_x = {
         {
           'diagnostics',
-          sources = { "nvim_diagnostic" },
+          sources = { 'nvim_diagnostic' },
           symbols = {
             error = ' ',
             warn = ' ',

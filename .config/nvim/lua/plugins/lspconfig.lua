@@ -69,7 +69,7 @@ return {
     local python_path = 'python'
     -- Check if there is a corresponding virtualenv for the current directory.
     if #vim.split(virtual_env_dirctory, '\n') == 1 then
-      python_path = string.format("%s/%s/bin/python", virtual_env_path, virtual_env_dirctory)
+      python_path = string.format('%s/%s/bin/python', virtual_env_path, virtual_env_dirctory)
     end
 
     local servers = {
@@ -102,8 +102,8 @@ return {
       tailwindcss = {},
 
       tsserver = {
-        filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
-        cmd = { "typescript-language-server", "--stdio" },
+        filetypes = { 'typescript', 'typescriptreact', 'typescript.tsx' },
+        cmd = { 'typescript-language-server', '--stdio' },
       },
 
       lua_ls = {

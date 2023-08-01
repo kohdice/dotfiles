@@ -1,6 +1,6 @@
 return {
   'akinsho/toggleterm.nvim',
-  version = "*",
+  version = '*',
   config = function()
     require('toggleterm').setup{
       size = 35,
@@ -11,10 +11,10 @@ return {
       local opts = { noremap = true }
       vim.api.nvim_set_keymap('t', '<esc>', [[<C-\><C-n>]], opts)
     end
-    local Terminal = require("toggleterm.terminal").Terminal
+    local Terminal = require('toggleterm.terminal').Terminal
     local lazygit = Terminal:new({
-      cmd = "lazygit",
-      direction = "float",
+      cmd = 'lazygit',
+      direction = 'float',
       hidden = true
     })
 
@@ -22,6 +22,6 @@ return {
       lazygit:toggle()
     end
 
-    vim.api.nvim_set_keymap("n", "<Leader>lg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_set_keymap('n', '<Leader>lg', '<cmd>lua _lazygit_toggle()<CR>', { noremap = true, silent = true })
   end
 }

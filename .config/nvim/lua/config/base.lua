@@ -100,9 +100,9 @@ vim.opt.path:append { '**' }
 vim.opt.inccommand = 'split'
 
 -- Turn off paste mode when leaving insert
-vim.api.nvim_create_autocmd("InsertLeave", {
+vim.api.nvim_create_autocmd('InsertLeave', {
     pattern = '*',
-    command = "set nopaste"
+    command = 'set nopaste'
 })
 
 -- Add asterisks in block comments

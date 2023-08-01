@@ -107,7 +107,7 @@ return {
     vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
     vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
-    local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-    parser_config.tsx.filetype_to_parsername = { "javascript", "typescript.tsx" }
+    local parser_config = require 'nvim-treesitter.parsers'.get_parser_configs()
+    parser_config.tsx.filetype_to_parsername = { 'javascript', 'typescript.tsx' }
   end
 }

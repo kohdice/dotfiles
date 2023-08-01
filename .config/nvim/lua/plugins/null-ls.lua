@@ -6,34 +6,34 @@ return {
     'jay-babu/mason-null-ls.nvim',
   },
   config = function()
-    local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+    local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
 
     local lsp_formatting = function(bufnr)
       vim.lsp.buf.format({
         filter = function(client)
-          return client.name == "null-ls"
+          return client.name == 'null-ls'
         end,
         bufnr = bufnr,
       })
     end
 
-    require("mason").setup()
+    require('mason').setup()
     local null_ls = require('null-ls')
     null_ls.setup {
       sources = {
         -- Python
         null_ls.builtins.formatting.black.with {
-          extra_args = { "--fast" },
-          prefer_local = ".venv/bin"
+          extra_args = { '--fast' },
+          prefer_local = '.venv/bin'
         },
         null_ls.builtins.formatting.isort.with {
-          prefer_local = ".venv/bin"
+          prefer_local = '.venv/bin'
         },
         null_ls.builtins.diagnostics.flake8.with {
-          prefer_local = ".venv/bin"
+          prefer_local = '.venv/bin'
         },
         null_ls.builtins.diagnostics.mypy.with {
-          prefer_local = ".venv/bin"
+          prefer_local = '.venv/bin'
         },
         -- Go
         null_ls.builtins.formatting.gofmt,
@@ -47,13 +47,13 @@ return {
         null_ls.builtins.diagnostics.fish,
         -- sql
         null_ls.builtins.formatting.sqlfmt.with {
-          prefer_local = ".venv/bin"
+          prefer_local = '.venv/bin'
         }
       },
       on_attach = function(client, bufnr)
-        if client.supports_method("textDocument/formatting") then
+        if client.supports_method('textDocument/formatting') then
           vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-          vim.api.nvim_create_autocmd("BufWritePre", {
+          vim.api.nvim_create_autocmd('BufWritePre', {
             group = augroup,
             buffer = bufnr,
             callback = function()
@@ -63,7 +63,7 @@ return {
         end
       end
     }
-    require("mason-null-ls").setup({
+    require('mason-null-ls').setup({
         ensure_installed = nil,
         automatic_installation = false,
     })

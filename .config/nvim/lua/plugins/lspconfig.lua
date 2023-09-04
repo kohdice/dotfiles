@@ -87,6 +87,8 @@ return {
         },
       },
 
+      graphql = {},
+
       html = {},
 
        pyright = {
@@ -101,10 +103,7 @@ return {
 
       tailwindcss = {},
 
-      tsserver = {
-        filetypes = { 'typescript', 'typescriptreact', 'typescript.tsx' },
-        cmd = { 'typescript-language-server', '--stdio' },
-      },
+      tsserver = {},
 
       lua_ls = {
         Lua = {

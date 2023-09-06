@@ -103,6 +103,8 @@ return {
 
       tailwindcss = {},
 
+      terraformls = {},
+
       tsserver = {},
 
       lua_ls = {

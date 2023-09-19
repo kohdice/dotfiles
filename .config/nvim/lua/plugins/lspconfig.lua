@@ -103,7 +103,13 @@ return {
 
       tailwindcss = {},
 
-      terraformls = {},
+      terraformls = {
+        filetypes = {
+          "terraform",
+          "terraform-vars",
+          "tf"
+        }
+      },
 
       tsserver = {},
 

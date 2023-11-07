@@ -20,9 +20,9 @@ alias la "ls -A"
 alias ll "ls -l"
 alias lla "ll -A"
 
-# exa
-if type -q exa
-  alias ll "exa -l -g --icons"
+# eza
+if type -q eza
+  alias ll "eza -l -g --icons"
   alias lla "ll -a"
 end
 

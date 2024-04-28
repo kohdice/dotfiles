@@ -1,4 +1,4 @@
-##aliases
+### aliases ###
 
 alias rm='rm -i'
 alias cp='cp -i'
@@ -33,14 +33,13 @@ alias bashconfig='nvim ~/.bashrc'
 # Reload .bashrc
 alias bashreload='source ~/.bashrc'
 
-
-## settings
+### settings ###
 
 if [ -f ~/.git-completion.sh ]; then
-    source ~/.git-completion.sh
+  source ~/.git-completion.sh
 fi
 if [ -f ~/.git-prompt.sh ]; then
-    source ~/.git-prompt.sh
+  source ~/.git-prompt.sh
 fi
 
 GIT_PS1_SHOWDIRTYSTATE=true

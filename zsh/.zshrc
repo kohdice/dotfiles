@@ -1,36 +1,39 @@
-### aliases ###
+### Aliases ###
 
+# General
 alias cl="clear"
 
+# Directory Navigation
 alias ..2="cd ../.."
 alias ..3="cd ../../.."
 alias ..4="cd ../../../../"
 
-alias ls="ls -p -G"
-alias la="ls -A"
-alias ll="ls -l"
-alias lla="ll -A"
-
-# eza
+# Enhanced ls or eza
 if command -v eza >/dev/null 2>&1; then
   alias ls="eza --icons --git"
   alias la="eza -A --icons --git"
   alias ll="eza -l -g --icons"
-  alias lla="ll -a"
+  alias lla="eza -l -a --icons"
+else
+  alias ls="ls -p -G"
+  alias la="ls -A"
+  alias ll="ls -l"
+  alias lla="ll -A"
 fi
 
-# .zshrc
+# Zsh configuration
 alias zshreload="source ~/.zshrc"
-alias zshconfig="nvim ~/.zshrc"
+alias zshcfg="nvim ~/.zshrc"
 
 # Neovim
 alias v="nvim"
 alias view="nvim -R"
 
-# git
+# Git
 alias g="git"
+alias gitcfg="nvim ~/.gitconfig"
 
-# docker
+# Docker
 alias d="docker"
 alias dc="docker compose"
 alias dce="docker compose exec"
@@ -42,24 +45,21 @@ alias dcudb="docker compose up -d --build"
 # Terraform
 alias tf="terraform"
 
-# lazygit
+# Ghostty
+alias gstcfg="nvim ~/.config/ghostty/config"
+
+# Lazygit
 alias lg="lazygit"
 
+### Settings ###
 
-### settings ###
-
-# No beep sound
-setopt no_beep
-# Automatic pushd when moving directories
-setopt auto_pushd
-# Ignore duplicates
-setopt pushd_ignore_dups
-# Same command as the previous one is not saved in the history
-setopt hist_ignore_dups
-# Share history with other zsh
-setopt share_history
-# Instantly save history
-setopt inc_append_history
+# Zsh Options
+setopt no_beep               # Disable beep sound
+setopt auto_pushd            # Automatically push directories onto the stack
+setopt pushd_ignore_dups     # Ignore duplicate directories in stack
+setopt hist_ignore_dups      # Ignore duplicate commands in history
+setopt share_history         # Share history between sessions
+setopt inc_append_history    # Save history immediately
 
 # History File Settings
 export HISTFILE=~/.zsh_history
@@ -68,21 +68,13 @@ export SAVEHIST=10000
 
 ### Path ###
 
-# Go
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
+# Mise
+eval "$(~/.local/bin/mise activate zsh)"
 
-# pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+# Starship
+eval "$(starship init zsh)"
 
-# poetry
-export PATH="$HOME/.local/bin:$PATH"
-
-# volta
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
+### Plugins ###
 
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
@@ -91,15 +83,10 @@ if type brew &>/dev/null; then
   autoload -Uz compinit && compinit
 fi
 
-
-### Starship ###
-eval "$(starship init zsh)"
-
-
 ### fzf ###
 
 # fzf history
-function fzf-select-history() {
+fzf-select-history() {
   BUFFER=$(history -n -r 1 | fzf --query "$LBUFFER" --reverse)
   CURSOR=$#BUFFER
   zle reset-prompt
@@ -107,7 +94,7 @@ function fzf-select-history() {
 zle -N fzf-select-history
 bindkey '^r' fzf-select-history
 
-# cdr
+# cdr setup
 if [[ -n $(echo ${^fpath}/chpwd_recent_dirs(N)) && -n $(echo ${^fpath}/cdr(N)) ]]; then
   autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
   add-zsh-hook chpwd chpwd_recent_dirs
@@ -117,7 +104,7 @@ if [[ -n $(echo ${^fpath}/chpwd_recent_dirs(N)) && -n $(echo ${^fpath}/cdr(N)) ]
 fi
 
 # fzf cdr
-function fzf-cdr() {
+fzf-cdr() {
   local selected_dir=$(cdr -l | awk '{ print $2 }' | fzf --reverse)
   if [ -n "$selected_dir" ]; then
     BUFFER="cd ${selected_dir}"
@@ -126,11 +113,10 @@ function fzf-cdr() {
   zle clear-screen
 }
 zle -N fzf-cdr
-setopt noflowcontrol
 bindkey '^f' fzf-cdr
 
 # fzf ghq
-function ghq-fzf() {
+ghq-fzf() {
   local src=$(ghq list | fzf --preview "bat --color=always --style=grid $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
     BUFFER="cd $(ghq root)/$src"

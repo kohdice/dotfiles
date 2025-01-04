@@ -14,6 +14,10 @@ mouse-hide-while-typing = true
 
 window-title-font-family = Hack Nerd Font Mono Regular
 
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
+
 palette = 0=#073642
 palette = 1=#dc322f
 palette = 2=#859900

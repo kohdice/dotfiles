@@ -51,6 +51,12 @@ alias gstcfg="nvim ~/.config/ghostty/config"
 # Lazygit
 alias lg="lazygit"
 
+# Lazysql
+alias lsq="lazysql"
+
+# Lazydocker
+alias ldk="lazydocker"
+
 ### Settings ###
 
 # Zsh Options

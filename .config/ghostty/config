@@ -8,12 +8,6 @@ font-feature = -dlig
 font-size = 12
 font-thicken = true
 
-background = #001a1d
-foreground = #839496
-
-background-opacity = 0.85
-background-blur-radius = 20
-
 mouse-hide-while-typing = true
 
 window-title-font-family = Hack Nerd Font Mono Regular

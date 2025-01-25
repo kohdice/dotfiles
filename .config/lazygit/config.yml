@@ -1,0 +1,6 @@
+gui:
+  nerdFontsVersion: "3"
+
+git:
+  allBranchesLogCmd: git log --graph --color=always --date=relative --pretty=format:'%Cgreen%h %Creset%cd %Cblue[%cn] %Creset%s%C(yellow)%d%C(reset)' --all --
+  branchLogCmd: git log --graph --color=always --date=relative --pretty=format:'%Cgreen%h %Creset%cd %Cblue[%cn] %Creset%s%C(yellow)%d%C(reset)' {{branchName}} --

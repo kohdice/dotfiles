@@ -13,3 +13,4 @@ shell-integration-features = no-cursor
 theme = solarized-osaka
 
 macos-titlebar-style = tabs
+macos-titlebar-proxy-icon = hidden

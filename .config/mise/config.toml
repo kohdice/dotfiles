@@ -1,0 +1,8 @@
+[tools]
+node = "24"
+python = "3.13"
+# pnpm = "latest"
+
+"npm:pyright" = "latest"
+"npm:typescript" = "latest"
+"npm:typescript-language-server" = "latest"

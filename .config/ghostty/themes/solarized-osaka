@@ -1,8 +1,3 @@
-background = #001a1d
-foreground = #839496
-background-opacity = 0.85
-background-blur-radius = 20
-
 palette = 0=#073642
 palette = 1=#dc322f
 palette = 2=#859900
@@ -19,6 +14,11 @@ palette = 12=#839496
 palette = 13=#6c71c4
 palette = 14=#93a1a1
 palette = 15=#fdf6e3
+
+background = #031219
+foreground = #839496
+background-opacity = 0.9
+background-blur-radius = 20
 
 cursor-color = #839496
 selection-background = #4c4c4c

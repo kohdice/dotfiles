@@ -1,3 +1,9 @@
+theme = solarized-osaka
+
+background-opacity = 0.9
+background-blur-radius = 20
+background = #031219
+
 font-feature = -calt
 font-feature = -liga
 font-feature = -dlig
@@ -10,7 +16,7 @@ cursor-style = block
 cursor-style-blink = false
 shell-integration-features = no-cursor
 
-theme = solarized-osaka
-
-macos-titlebar-proxy-icon = hidden
 macos-option-as-alt = left
+macos-titlebar-proxy-icon = hidden
+
+keybind = shift+enter=text:\n

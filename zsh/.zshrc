@@ -74,10 +74,14 @@ export SAVEHIST=10000
 
 ### Path ###
 
+# Go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
 # Mise
 eval "$(~/.local/bin/mise activate zsh)"
 
-# Starship
+# Starship Prompt
 eval "$(starship init zsh)"
 
 ### Plugins ###

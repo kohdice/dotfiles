@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cchooks pretooluse"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cchooks stop"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "mcp__sequential-thinking",
+      "mcp__context7",
+      "mcp__deepwiki",
+      "mcp__go-mcp",
+      "mcp__readability-mcp",
+      "mcp__textlint-mcp"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "file-system",
+    "sequential-thinking",
+    "context7",
+    "deepwiki",
+    "go-mcp",
+    "readability-mcp",
+    "textlint-mcp"
+  ]
+}

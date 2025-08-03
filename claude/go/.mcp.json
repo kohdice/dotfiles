@@ -1,0 +1,58 @@
+{
+  "mcpServers": {
+    "file-system": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/kodai/developments"
+      ]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
+    },
+    "deepwiki": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.deepwiki.com/sse"
+      ]
+    },
+    "go-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mizchi/lsmcp",
+        "--bin",
+        "gopls"
+      ]
+    },
+    "readability-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mizchi/readability",
+        "--mcp"
+      ]
+    },
+    "textlint-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "textlint",
+        "--mcp"
+      ]
+    }
+  }
+}

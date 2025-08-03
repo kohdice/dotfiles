@@ -1,45 +1,86 @@
--- [[ Basic Keymaps ]]
+local keymap = vim.keymap
 
--- Keymaps for better default experience
--- See `:help vim.keymap.set()`
-vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+local register_safe_mappings = {
+  { "n", "x", '"_x', { desc = "Delete without copying", silent = true } },
+  { "n", "<Leader>p", '"0p', { desc = "Paste from yank register", silent = true } },
+  { "n", "<Leader>P", '"0P', { desc = "Paste before from yank register", silent = true } },
+  { "v", "<Leader>p", '"0p', { desc = "Paste from yank register (visual)", silent = true } },
+  { "n", "<Leader>c", '"_c', { desc = "Change without copying", silent = true } },
+  { "n", "<Leader>C", '"_C', { desc = "Change to end without copying", silent = true } },
+  { "v", "<Leader>c", '"_c', { desc = "Change without copying (visual)", silent = true } },
+  { "v", "<Leader>C", '"_C', { desc = "Change to end without copying (visual)", silent = true } },
+  { "n", "<Leader>d", '"_d', { desc = "Delete without copying", silent = true } },
+  { "n", "<Leader>D", '"_D', { desc = "Delete to end without copying", silent = true } },
+  { "v", "<Leader>d", '"_d', { desc = "Delete without copying (visual)", silent = true } },
+  { "v", "<Leader>D", '"_D', { desc = "Delete to end without copying (visual)", silent = true } },
+}
 
--- Remap for dealing with word wrap
-vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+for _, mapping in ipairs(register_safe_mappings) do
+  keymap.set(mapping[1], mapping[2], mapping[3], mapping[4])
+end
 
--- Do not yank with x
-vim.keymap.set('n', 'x', '"_x')
+keymap.set("n", "<Leader>o", "o<Esc>^Da", { desc = "Insert line below without continuation", silent = true })
+keymap.set("n", "<Leader>O", "O<Esc>^Da", { desc = "Insert line above without continuation", silent = true })
 
--- Increment/decrement
-vim.keymap.set('n', '+', '<C-a>')
-vim.keymap.set('n', '-', '<C-x>')
+local window_management_mappings = {
+  { "n", "te", ":tabedit<CR>", { desc = "Open new tab", silent = true } },
+  { "n", "<tab>", ":tabnext<CR>", { desc = "Next tab", silent = true } },
+  { "n", "<s-tab>", ":tabprev<CR>", { desc = "Previous tab", silent = true } },
+  { "n", "ss", ":split<CR>", { desc = "Split window horizontally", silent = true } },
+  { "n", "sv", ":vsplit<CR>", { desc = "Split window vertically", silent = true } },
+  { "n", "sh", "<C-w>h", { desc = "Move to left window", silent = true } },
+  { "n", "sk", "<C-w>k", { desc = "Move to upper window", silent = true } },
+  { "n", "sj", "<C-w>j", { desc = "Move to lower window", silent = true } },
+  { "n", "sl", "<C-w>l", { desc = "Move to right window", silent = true } },
+  { "n", "<C-w><left>", "<C-w><", { desc = "Decrease window width", silent = true } },
+  { "n", "<C-w><right>", "<C-w>>", { desc = "Increase window width", silent = true } },
+  { "n", "<C-w><up>", "<C-w>+", { desc = "Increase window height", silent = true } },
+  { "n", "<C-w><down>", "<C-w>-", { desc = "Decrease window height", silent = true } },
+}
 
--- Delete a word backwards
-vim.keymap.set('n', 'dw', 'vb"_d')
+for _, mapping in ipairs(window_management_mappings) do
+  keymap.set(mapping[1], mapping[2], mapping[3], mapping[4])
+end
 
--- Select all
-vim.keymap.set('n', '<C-a>', 'gg<S-v>G')
+keymap.set("n", "<C-j>", function()
+  vim.diagnostic.goto_next()
+end, { desc = "Go to next diagnostic", silent = true })
 
--- New tab
-vim.keymap.set('n', 'te', ':tabedit')
+keymap.set(
+  { "n", "x" },
+  "j",
+  "v:count == 0 ? 'gj' : 'j'",
+  { desc = "Move down (wrap-aware)", expr = true, silent = true }
+)
+keymap.set(
+  { "n", "x" },
+  "<Down>",
+  "v:count == 0 ? 'gj' : 'j'",
+  { desc = "Move down (wrap-aware)", expr = true, silent = true }
+)
+keymap.set(
+  { "n", "x" },
+  "k",
+  "v:count == 0 ? 'gk' : 'k'",
+  { desc = "Move up (wrap-aware)", expr = true, silent = true }
+)
+keymap.set(
+  { "n", "x" },
+  "<Up>",
+  "v:count == 0 ? 'gk' : 'k'",
+  { desc = "Move up (wrap-aware)", expr = true, silent = true }
+)
 
--- Split window
-vim.keymap.set('n', 'ss', ':split<Return><C-w>w')
-vim.keymap.set('n', 'sv', ':vsplit<Return><C-w>w')
+keymap.set("n", "<A-j>", ":move .+1<CR>==", { desc = "Move line down", silent = true })
+keymap.set("n", "<A-k>", ":move .-2<CR>==", { desc = "Move line up", silent = true })
 
--- Move window
-vim.keymap.set('n', '<Leader>w', '<C-w>w')
-vim.keymap.set('', '<Leader>h', '<C-w>h')
-vim.keymap.set('', '<Leader>k', '<C-w>k')
-vim.keymap.set('', '<Leader>j', '<C-w>j')
-vim.keymap.set('', '<Leader>l', '<C-w>l')
+keymap.set("i", "<A-j>", "<Esc>:move .+1<CR>==gi", { desc = "Move line down", silent = true })
+keymap.set("i", "<A-k>", "<Esc>:move .-2<CR>==gi", { desc = "Move line up", silent = true })
 
--- Resize window
-vim.keymap.set('n', '<C-w><left>', '<C-w><')
-vim.keymap.set('n', '<C-w><right>', '<C-w>>')
-vim.keymap.set('n', '<C-w><up>', '<C-w>+')
-vim.keymap.set('n', '<C-w><down>', '<C-w>-')
+keymap.set("v", "<A-j>", ":move '>+1<CR>gv=gv", { desc = "Move selection down", silent = true })
+keymap.set("v", "<A-k>", ":move '<-2<CR>gv=gv", { desc = "Move selection up", silent = true })
 
--- Save with root permission
---vim.api.nvim_create_user_command('W', 'w !sudo tee > /dev/null %', {})
+keymap.set({ "i", "n", "s" }, "<Esc>", function()
+  vim.cmd("nohlsearch")
+  return vim.api.nvim_replace_termcodes("<Esc>", true, false, true)
+end, { desc = "Escape and Clear hlsearch", expr = true, silent = true })

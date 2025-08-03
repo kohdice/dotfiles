@@ -1,19 +1,26 @@
 return {
-  -- Add indentation guides even on blank lines
-  'lukas-reineke/indent-blankline.nvim',
-  -- Enable `lukas-reineke/indent-blankline.nvim`
-  main = 'ibl',
-  config = function ()
-    require('ibl').setup {
-      indent = {
-        char = '┊',
+  "lukas-reineke/indent-blankline.nvim",
+  main = "ibl",
+  event = { "BufReadPost", "BufNewFile" },
+  opts = {
+    indent = {
+      char = "│",
+      tab_char = "│",
+    },
+    scope = {
+      show_start = false,
+      show_end = false,
+    },
+    exclude = {
+      filetypes = {
+        "help",
+        "lazy",
+        "neo-tree",
+        "notify",
+        "toggleterm",
+        "trouble",
+        "Trouble",
       },
-      whitespace = {
-        remove_blankline_trail = false,
-      },
-      scope = {
-        enabled = false,
-      },
-    }
-  end,
+    },
+  },
 }

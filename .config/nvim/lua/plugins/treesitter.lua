@@ -1,113 +1,114 @@
 return {
-  -- Highlight, edit, and navigate code
-  'nvim-treesitter/nvim-treesitter',
-  dependencies = {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-  },
-  build = ':TSUpdate',
-  config = function()
-    -- [[ Configure Treesitter ]]
-    -- See `:help nvim-treesitter`
-    require('nvim-treesitter.configs').setup {
-      -- Add languages to be installed here that you want installed for treesitter
-      ensure_installed = {
-        'go',
-        'css',
-        'dockerfile',
-        'fish',
-        'html',
-        'lua',
-        'markdown',
-        'markdown_inline',
-        'python',
-        'toml',
-        'tsx',
-        'typescript',
-        'vimdoc',
-        'vim',
-        'yaml'
-      },
-
-      -- Autoinstall languages that are not installed.
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    lazy = false,
+    branch = "master",
+    keys = {
+      { "<c-space>", desc = "Increment Selection" },
+      { "<bs>", desc = "Decrement Selection", mode = "x" },
+    },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+      "nvim-treesitter/nvim-treesitter-context",
+      "windwp/nvim-ts-autotag",
+    },
+    opts = {
       auto_install = true,
 
-      autotag = {
-        enable = true,
-      },
-      context_commentstring = {
-        enable         = true,
-        enable_autocmd = false,
-      },
       highlight = {
         enable = true,
-        disable = {}
+        disable = function(lang, buf)
+          local max_filesize = 100 * 1024
+          local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
+          if ok and stats and stats.size > max_filesize then
+            return true
+          end
+          if vim.b[buf] and vim.b[buf].large_file then
+            return true
+          end
+        end,
       },
+
       indent = {
         enable = true,
-        disable = {}
       },
+
       incremental_selection = {
         enable = true,
         keymaps = {
-          init_selection = '<c-space>',
-          node_incremental = '<c-space>',
-          scope_incremental = '<c-s>',
-          node_decremental = '<M-space>',
+          init_selection = "<c-space>",
+          node_incremental = "<c-space>",
+          scope_incremental = false,
+          node_decremental = "<bs>",
         },
       },
+
       textobjects = {
-        select = {
-          enable = true,
-          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-          keymaps = {
-            -- You can use the capture groups defined in textobjects.scm
-            ['aa'] = '@parameter.outer',
-            ['ia'] = '@parameter.inner',
-            ['af'] = '@function.outer',
-            ['if'] = '@function.inner',
-            ['ac'] = '@class.outer',
-            ['ic'] = '@class.inner',
-          },
-        },
         move = {
           enable = true,
-          set_jumps = true, -- whether to set jumps in the jumplist
           goto_next_start = {
-            [']m'] = '@function.outer',
-            [']]'] = '@class.outer',
+            ["]f"] = "@function.outer",
+            ["]c"] = "@class.outer",
+            ["]a"] = "@parameter.inner",
           },
           goto_next_end = {
-            [']M'] = '@function.outer',
-            [']['] = '@class.outer',
+            ["]F"] = "@function.outer",
+            ["]C"] = "@class.outer",
+            ["]A"] = "@parameter.inner",
           },
           goto_previous_start = {
-            ['[m'] = '@function.outer',
-            ['[['] = '@class.outer',
+            ["[f"] = "@function.outer",
+            ["[c"] = "@class.outer",
+            ["[a"] = "@parameter.inner",
           },
           goto_previous_end = {
-            ['[M'] = '@function.outer',
-            ['[]'] = '@class.outer',
-          },
-        },
-        swap = {
-          enable = true,
-          swap_next = {
-            ['<leader>a'] = '@parameter.inner',
-          },
-          swap_previous = {
-            ['<leader>A'] = '@parameter.inner',
+            ["[F"] = "@function.outer",
+            ["[C"] = "@class.outer",
+            ["[A"] = "@parameter.inner",
           },
         },
       },
-    }
 
-    -- Diagnostic keymaps
-    vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
-    vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
-    vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
-    vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
-
-    local parser_config = require 'nvim-treesitter.parsers'.get_parser_configs()
-    parser_config.tsx.filetype_to_parsername = { 'javascript', 'typescript.tsx' }
-  end
+      ensure_installed = {
+        "bash",
+        "c",
+        "css",
+        "diff",
+        "go",
+        "gomod",
+        "gosum",
+        "graphql",
+        "hcl",
+        "html",
+        "javascript",
+        "jsdoc",
+        "json",
+        "jsonc",
+        "lua",
+        "luadoc",
+        "luap",
+        "markdown",
+        "markdown_inline",
+        "printf",
+        "python",
+        "query",
+        "regex",
+        "rust",
+        "sql",
+        "terraform",
+        "toml",
+        "tsx",
+        "typescript",
+        "vim",
+        "vimdoc",
+        "xml",
+        "yaml",
+        "zig",
+      },
+    },
+    config = function(_, opts)
+      require("nvim-treesitter.configs").setup(opts)
+    end,
+  },
 }

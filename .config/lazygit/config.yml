@@ -2,5 +2,8 @@ gui:
   nerdFontsVersion: "3"
 
 git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
   allBranchesLogCmd: git log --graph --color=always --date=relative --pretty=format:'%Cgreen%h %Creset%cd %Cblue[%cn] %Creset%s%C(yellow)%d%C(reset)' --all --
   branchLogCmd: git log --graph --color=always --date=relative --pretty=format:'%Cgreen%h %Creset%cd %Cblue[%cn] %Creset%s%C(yellow)%d%C(reset)' {{branchName}} --

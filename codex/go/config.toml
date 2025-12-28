@@ -1,0 +1,19 @@
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+
+[mcp_servers.deepwiki]
+command = "npx"
+args = ["mcp-remote", "https://mcp.deepwiki.com/sse"]
+
+[mcp_servers.file-system]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "/Users/kohdice/developments"]
+
+[mcp_servers.lsmcp]
+command = "npx"
+args = ["-y", "@mizchi/lsmcp", "-p", "gopls"]
+
+[mcp_servers.sequential-thinking]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]

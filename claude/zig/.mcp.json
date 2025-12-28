@@ -22,15 +22,6 @@
         "/Users/kohdice/developments"
       ]
     },
-    "lsmcp": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@mizchi/lsmcp",
-        "-p",
-        "gopls"
-      ]
-    },
     "sequential-thinking": {
       "command": "npx",
       "args": [

@@ -51,12 +51,6 @@ alias gstcfg="nvim ~/.config/ghostty/config"
 # Lazygit
 alias lg="lazygit"
 
-# Lazysql
-alias lsq="lazysql"
-
-# Lazydocker
-alias ldk="lazydocker"
-
 ### Settings ###
 
 # Zsh Options
@@ -67,17 +61,6 @@ setopt hist_ignore_dups      # Ignore duplicate commands in history
 setopt share_history         # Share history between sessions
 setopt inc_append_history    # Save history immediately
 
-# History File Settings
-export HISTFILE=~/.zsh_history
-export HISTSIZE=10000
-export SAVEHIST=10000
-
-### Path ###
-
-# Go
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
-
 # Mise
 eval "$(~/.local/bin/mise activate zsh)"
 
@@ -86,12 +69,18 @@ eval "$(starship init zsh)"
 
 ### Plugins ###
 
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-  source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-  source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-  autoload -Uz compinit && compinit
+# macOS (Nix - nix-darwin)
+if [[ -d "/run/current-system/sw/share" ]]; then
+  FPATH=/run/current-system/sw/share/zsh/site-functions:$FPATH
+  source /run/current-system/sw/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  source /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Linux (Nix - home-manager)
+elif [[ -d "$HOME/.nix-profile/share" ]]; then
+  FPATH=$HOME/.nix-profile/share/zsh/site-functions:$FPATH
+  source $HOME/.nix-profile/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  source $HOME/.nix-profile/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
+autoload -Uz compinit && compinit
 
 ### fzf ###
 

@@ -1,20 +1,5 @@
 {
   "mcpServers": {
-    "file-system": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/kodai/developments"
-      ]
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
-    },
     "context7": {
       "command": "npx",
       "args": [
@@ -29,15 +14,15 @@
         "https://mcp.deepwiki.com/sse"
       ]
     },
-    "readability-mcp": {
+    "file-system": {
       "command": "npx",
       "args": [
         "-y",
-        "@mizchi/readability",
-        "--mcp"
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/kohdice/developments"
       ]
     },
-    "rust-mcp": {
+    "lsmcp": {
       "command": "npx",
       "args": [
         "-y",
@@ -46,12 +31,11 @@
         "rust-analyzer"
       ]
     },
-    "textlint-mcp": {
-      "type": "stdio",
+    "sequential-thinking": {
       "command": "npx",
       "args": [
-        "textlint",
-        "--mcp"
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
       ]
     }
   }

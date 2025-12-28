@@ -22,24 +22,25 @@
       }
     ]
   },
-  "permissions": {
-    "allow": [
-      "mcp__sequential-thinking",
-      "mcp__context7",
-      "mcp__deepwiki",
-      "mcp__go-mcp",
-      "mcp__readability-mcp",
-      "mcp__textlint-mcp"
-    ]
-  },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "file-system",
-    "sequential-thinking",
     "context7",
     "deepwiki",
-    "go-mcp",
-    "readability-mcp",
-    "textlint-mcp"
-  ]
+    "file-system",
+    "lsmcp",
+    "sequential-thinking"
+  ],
+  "permissions": {
+    "allow": [
+      "mcp__context7",
+      "mcp__deepwiki",
+      "mcp__file-system__read_text_file",
+      "mcp__file-system__read_multiple_files",
+      "mcp__file-system__list_directory",
+      "mcp__file-system__list_directory_with_sizes",
+      "mcp__file-system__directory_tree",
+      "mcp__lsmcp",
+      "mcp__sequential-thinking"
+    ]
+  }
 }

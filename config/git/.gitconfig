@@ -1,6 +1,6 @@
 [user]
     name = kohdice
-    email = kohdice@gmail.com
+    email = kohdice.biz@gmail.com
 [core]
     editor = nvim
     excludesfile = ~/.gitignore
@@ -14,8 +14,8 @@
     cp = cherry-pick
     df = "!git hs | peco | awk '{print $2}' | xargs -I {} git diff {}^ {}"
     fe = fetch
-    hs = log --pretty=format:\"%C(red)%h %Creset%cd %C(blue)[%cn] %Creset%s%C(yellow)%d%C(reset)\" --graph --date=relative --decorate --all
-    lg = log --graph --name-status --pretty=format:\"%C(red)%h %C(reset)(%cd) %C(blue)[%cn] %Creset%s %C(yellow)%d%Creset\" --date=relative
+    hs = log --pretty=format:\"%Cgreen%h %Creset%cd %Cblue[%cn] %Creset%s%C(yellow)%d%C(reset)\" --graph --date=relative --decorate --all
+    lg = log --graph --name-status --pretty=format:\"%C(green)%h %C(reset)(%cd) %C(blue)[%an] %Creset%s %C(yellow)%d%Creset\" --date=relative
     pl = "!git pull origin $(git rev-parse --abbrev-ref HEAD)"
     ps = "!git push origin $(git rev-parse --abbrev-ref HEAD)"
     pst = push origin --tags
@@ -29,6 +29,7 @@
     edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; nvim `f`"
     # add conflicted file on merge
     add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+    # pl = "!git pull $(git config --get branch.$(git rev-parse --abbrev-ref HEAD).remote) $(git rev-parse --abbrev-ref HEAD)"
 [diff]
     tool = nvimdiff
 [difftool "nvimdiff"]

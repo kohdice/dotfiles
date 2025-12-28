@@ -172,6 +172,7 @@
                   ''
               )
             );
+            meta.description = "Build kohdice profile";
           };
 
           # Build configuration (work)
@@ -189,6 +190,7 @@
                   ''
               )
             );
+            meta.description = "Build work profile";
           };
 
           # Apply configuration (default: kohdice)
@@ -206,6 +208,7 @@
                   ''
               )
             );
+            meta.description = "Apply kohdice profile";
           };
 
           # Apply configuration (work)
@@ -223,6 +226,7 @@
                   ''
               )
             );
+            meta.description = "Apply work profile";
           };
         }
       );

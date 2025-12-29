@@ -2,10 +2,8 @@
 
 {
   home.packages = with pkgs; [
-    # Runtime
+    # Runtime & Toolchain Manager
     rustup
-
-    # LSP
-    rust-analyzer
+    # rust-analyzer は rustup component add rust-analyzer で管理
   ];
 }

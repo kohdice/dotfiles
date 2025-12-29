@@ -41,24 +41,13 @@
       ...
     }@inputs:
     let
+      # Import helper functions
+      helpers = import ./nix/lib/helpers { lib = nixpkgs.lib; };
+      users = helpers.users;
+      inherit (helpers.mkConfigs) mkDarwinConfig mkHomeConfig;
+
       # Custom overlays
       overlays = [ (import ./nix/overlays) ];
-
-      # User configurations
-      users = {
-        kohdice = {
-          name = "kohdice";
-          fullName = "kohdice";
-          email = "kohdice.biz@gmail.com";
-          home = "/Users/kohdice";
-        };
-        work = {
-          name = "karei";
-          fullName = "kohdice";
-          email = "kohdice.biz@gmail.com";
-          home = "/Users/karei";
-        };
-      };
 
       # Supported systems
       darwinSystem = "aarch64-darwin";
@@ -81,69 +70,40 @@
         }
       );
 
-      # Helper function for Darwin configuration
-      mkDarwinConfig =
-        user:
-        nix-darwin.lib.darwinSystem {
-          system = darwinSystem;
-          specialArgs = { inherit inputs user; };
-          modules = [
-            ./nix/modules/darwin
-            { nixpkgs.overlays = overlays; }
-            home-manager.darwinModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                extraSpecialArgs = {
-                  inherit inputs user;
-                  dotfilesDir = "${user.home}/developments/dotfiles";
-                };
-                users.${user.name} = import ./nix/modules/home;
-              };
-            }
-            nix-homebrew.darwinModules.nix-homebrew
-            {
-              nix-homebrew = {
-                enable = true;
-                user = user.name;
-                autoMigrate = true;
-              };
-            }
-          ];
-        };
+      # Partially applied config builders
+      mkDarwin = mkDarwinConfig {
+        inherit
+          nix-darwin
+          home-manager
+          nix-homebrew
+          inputs
+          overlays
+          darwinSystem
+          ;
+      };
 
-      # Helper function for Home Manager configuration (Linux)
-      mkHomeConfig =
-        user:
-        home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs {
-            system = "x86_64-linux";
-            inherit overlays;
-          };
-          extraSpecialArgs = {
-            inherit inputs user;
-            dotfilesDir = "${user.home}/developments/dotfiles";
-          };
-          modules = [
-            ./nix/modules/home
-            ./nix/modules/linux
-            nix-index-database.hmModules.nix-index
-          ];
-        };
+      mkHome = mkHomeConfig {
+        inherit
+          home-manager
+          nixpkgs
+          nix-index-database
+          inputs
+          overlays
+          ;
+      };
 
     in
     {
       # macOS configurations
       darwinConfigurations = {
-        kohdice = mkDarwinConfig users.kohdice;
-        work = mkDarwinConfig users.work;
+        kohdice = mkDarwin users.kohdice;
+        work = mkDarwin users.work;
       };
 
       # Linux configurations
       homeConfigurations = {
-        kohdice = mkHomeConfig users.kohdice;
-        work = mkHomeConfig users.work;
+        kohdice = mkHome users.kohdice;
+        work = mkHome users.work;
       };
 
       # Formatter (nix fmt)

@@ -57,7 +57,9 @@ dotfiles/
 │   └── zig/
 └── docs/                         # ドキュメント
     ├── ARCHITECTURE.md           # このファイル
-    └── CUSTOMIZATION.md          # カスタマイズガイド
+    ├── CUSTOMIZATION.md          # カスタマイズガイド
+    ├── DEPENDENCIES.md           # 依存関係管理ガイド
+    └── USAGE.md                  # 使い方ガイド
 ```
 
 ## ユーザープロファイル
@@ -99,15 +101,15 @@ nix fmt                  # Nix と Lua ファイルをフォーマット
 
 ### LSP サーバー
 
-| 言語                  | LSP サーバー               |
-| --------------------- | -------------------------- |
-| Go                    | gopls                      |
-| Rust                  | rust-analyzer              |
-| Python                | pyright                    |
-| TypeScript/JavaScript | typescript-language-server |
-| Lua                   | lua-language-server        |
-| Nix                   | nil, nixpkgs-fmt           |
-| Zig                   | zls                        |
+| 言語                  | LSP サーバー               | 管理方法 |
+| --------------------- | -------------------------- | -------- |
+| Go                    | gopls                      | Nix      |
+| Rust                  | rust-analyzer              | rustup   |
+| Python                | pyright                    | Nix      |
+| TypeScript/JavaScript | typescript-language-server | Nix      |
+| Lua                   | lua-language-server        | Nix      |
+| Nix                   | nil                        | Nix      |
+| Zig                   | zls                        | Nix      |
 
 ### CLI ツール
 

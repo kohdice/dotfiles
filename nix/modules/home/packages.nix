@@ -20,7 +20,6 @@ in
 
       # Git tools
       delta
-      gh
       ghq
       lazygit
       peco

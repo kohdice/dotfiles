@@ -4,6 +4,13 @@ return {
   cmd = "FzfLua",
   keys = {
     { ";f", "<cmd>FzfLua files<cr>", desc = "Find files" },
+    {
+      ";.",
+      function()
+        require("fzf-lua").files({ cwd = vim.fn.expand("%:p:h") })
+      end,
+      desc = "Find files in current directory",
+    },
     { ";r", "<cmd>FzfLua live_grep<cr>", desc = "Live grep" },
     { "\\\\", "<cmd>FzfLua buffers<cr>", desc = "Buffers" },
     { ";t", "<cmd>FzfLua help_tags<cr>", desc = "Help tags" },
@@ -28,9 +35,6 @@ return {
     grep = {
       git_icons = true,
       rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
-    },
-    lsp = {
-      prompt_postfix = "❯ ",
     },
     fzf_colors = true,
     fzf_opts = {

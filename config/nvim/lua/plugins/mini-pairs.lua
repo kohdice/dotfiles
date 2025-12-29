@@ -1,4 +1,3 @@
--- mini.pairs: Auto pairs
 return {
   "echasnovski/mini.pairs",
   event = "VeryLazy",

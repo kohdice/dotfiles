@@ -1,4 +1,3 @@
--- Go言語サーバーの設定
 return {
   settings = {
     gopls = {

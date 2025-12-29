@@ -18,8 +18,14 @@ return {
 
       conform.setup({
         formatters_by_ft = {
+          c = { "clang_format" },
+          css = { "prettierd", "prettier", stop_after_first = true },
           go = { "goimports", "gofmt" },
+          html = { "prettierd", "prettier", stop_after_first = true },
+          json = { "prettierd", "prettier", stop_after_first = true },
+          jsonc = { "prettierd", "prettier", stop_after_first = true },
           lua = { "stylua" },
+          markdown = { "prettierd", "prettier", stop_after_first = true },
           python = function(bufnr)
             if require("conform").get_formatter_info("ruff_format", bufnr).available then
               return { "ruff_format" }
@@ -28,19 +34,26 @@ return {
             end
           end,
           rust = { "rustfmt", lsp_format = "fallback" },
+          scss = { "prettierd", "prettier", stop_after_first = true },
+          terraform = { "terraform_fmt" },
+          tf = { "terraform_fmt" },
+          toml = { "taplo" },
+          yaml = { "yamlfmt" },
+          zig = { "zigfmt" },
         },
         format_on_save = {
           lsp_format = "fallback",
           timeout_ms = 500,
-        },
-        format_after_save = {
-          lsp_fallback = true,
         },
         log_level = vim.log.levels.ERROR,
       })
 
       conform.formatters.rustfmt = {
         default_edition = "2024",
+      }
+
+      conform.formatters.taplo = {
+        args = { "format", "--option", "indent_string=    ", "--option", "trailing_newline=false", "-" },
       }
     end,
   },

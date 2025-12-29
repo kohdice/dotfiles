@@ -1,5 +1,4 @@
 return {
-  -- GitHub Copilot
   {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",

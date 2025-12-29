@@ -1,5 +1,4 @@
 return {
-  -- Marp: Markdown Presentation Ecosystem
   {
     "nwiizo/marp.nvim",
     ft = "markdown",

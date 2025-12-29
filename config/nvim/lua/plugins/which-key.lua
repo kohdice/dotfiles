@@ -1,4 +1,3 @@
--- which-key: Display available keybindings
 return {
   "folke/which-key.nvim",
   event = "VeryLazy",

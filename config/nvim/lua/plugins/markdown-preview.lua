@@ -1,4 +1,3 @@
--- markdown-preview.nvim: Markdown live preview with synchronized scrolling
 return {
   "iamcco/markdown-preview.nvim",
   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },

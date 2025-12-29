@@ -44,6 +44,11 @@ return {
             vim.lsp.buf.format({ async = true })
           end, "[F]ormat")
 
+          -- C/C++ specific keymaps
+          if client.name == "clangd" then
+            nmap("<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", "Switch Source/Header (C/C++)")
+          end
+
           vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
             vim.lsp.buf.format()
           end, { desc = "Format current buffer with LSP" })
@@ -62,10 +67,22 @@ return {
       })
 
       local servers = {
+        "clangd",
+        "cssls",
+        "dockerls",
+        "emmet_ls",
         "gopls",
+        "html",
+        "jsonls",
         "lua_ls",
+        "marksman",
+        "neocmake",
         "rust_analyzer",
-        "typescript-language-server",
+        "taplo",
+        "terraformls",
+        "ts_ls",
+        "yamlls",
+        "zls",
       }
       vim.lsp.enable(servers)
     end,

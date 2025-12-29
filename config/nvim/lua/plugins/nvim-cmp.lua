@@ -76,7 +76,7 @@ return {
             behavior = cmp.ConfirmBehavior.Replace,
             select = true,
           }),
-          ["<Tab>"] = vim.schedule_wrap(function(fallback)
+          ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() and has_words_before() then
               cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
             elseif luasnip.expand_or_locally_jumpable() then
@@ -84,7 +84,7 @@ return {
             else
               fallback()
             end
-          end),
+          end, { "i", "s" }),
           ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()

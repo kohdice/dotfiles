@@ -1,4 +1,3 @@
--- TypeScript/JavaScript言語サーバーの設定
 return {
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = {

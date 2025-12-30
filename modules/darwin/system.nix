@@ -31,8 +31,8 @@
       # Keep folders on top when sorting by name
       _FXSortFoldersFirst = true;
 
-      # New Finder windows show home folder ("PfHm" = Home folder)
-      NewWindowTarget = "PfHm";
+      # New Finder windows show home folder
+      NewWindowTarget = "Home";
     };
 
     NSGlobalDomain = {
@@ -69,8 +69,8 @@
     menuExtraClock = {
       # Show 24-hour time
       Show24Hour = true;
-      # Don't show date (only day of week and seconds)
-      ShowDate = false;
+      # Don't show date (only day of week and seconds) (0 = hidden, 1 = show, 2 = show with day)
+      ShowDate = 0;
       # Show day of week
       ShowDayOfWeek = true;
       # Show seconds
@@ -79,7 +79,7 @@
   };
 
   # Touch ID for sudo authentication
-  security.pam.enableSudoTouchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
 
   # Fonts
   fonts.packages = with pkgs; [

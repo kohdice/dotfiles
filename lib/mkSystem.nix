@@ -1,6 +1,7 @@
 # Unified system configuration builder
 # Handles both Darwin (macOS) and Linux (home-manager standalone)
 {
+  self,
   inputs,
   overlays,
 }:
@@ -26,8 +27,8 @@ let
     user = userConfig.user;
   };
 
-  # dotfiles directory path (use user config if available, otherwise default)
-  dotfilesDir = userConfig.user.dotfilesPath or "${userConfig.user.home}/developments/dotfiles";
+  # dotfiles directory (flake root)
+  dotfilesDir = self;
 
 in
 if isDarwin then
@@ -38,8 +39,11 @@ if isDarwin then
       # Platform-specific configuration
       ../modules/${platform}
 
-      # Apply overlays
-      { nixpkgs.overlays = overlays; }
+      # Apply overlays and allow unfree packages
+      {
+        nixpkgs.overlays = overlays;
+        nixpkgs.config.allowUnfree = true;
+      }
 
       # home-manager integration
       inputs.home-manager.darwinModules.home-manager
@@ -70,6 +74,7 @@ else
   inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {
       inherit system overlays;
+      config.allowUnfree = true;
     };
     extraSpecialArgs = specialArgs // {
       inherit dotfilesDir;

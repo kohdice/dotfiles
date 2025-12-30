@@ -42,7 +42,7 @@
 
       # Unified system builder
       mkSystem = import ./lib/mkSystem.nix {
-        inherit inputs overlays;
+        inherit self inputs overlays;
       };
 
       # Supported systems

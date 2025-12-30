@@ -6,6 +6,9 @@
   ...
 }:
 
+let
+  isDarwin = pkgs.stdenv.isDarwin;
+in
 {
   home.file = {
     ".zshenv".source = "${dotfilesDir}/config/zsh/.zshenv";
@@ -21,5 +24,8 @@
     "starship.toml".source = "${dotfilesDir}/config/starship/starship.toml";
     "tmux".source = "${dotfilesDir}/config/tmux";
     "lazygit".source = "${dotfilesDir}/config/lazygit";
+  }
+  // lib.optionalAttrs isDarwin {
+    "karabiner/karabiner.json".source = "${dotfilesDir}/config/karabiner/karabiner.json";
   };
 }

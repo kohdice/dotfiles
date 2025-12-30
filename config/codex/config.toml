@@ -5,3 +5,15 @@ model_reasoning_effort = "xhigh"
 
 [tools]
 web_search_request = true
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+
+[mcp_servers.deepwiki]
+command = "npx"
+args = ["mcp-remote", "https://mcp.deepwiki.com/sse"]
+
+[mcp_servers.sequential-thinking]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]

@@ -3,19 +3,18 @@
 {
   home.packages = with pkgs; [
     # Runtime
-    nodejs
+    nodejs_24 # LTS (current)
     bun
     deno
 
     # Package Managers
-    nodePackages.pnpm
-    nodePackages.npm
+    pnpm
 
     # TypeScript
-    nodePackages.typescript
+    typescript
 
     # LSP
-    nodePackages.typescript-language-server
+    typescript-language-server
 
     # Formatter
     prettierd

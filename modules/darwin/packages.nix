@@ -6,7 +6,6 @@
   environment.systemPackages = with pkgs; [
     # System Utilities (macOS only)
     karabiner-elements
-    raycast
     scroll-reverser
   ];
 }

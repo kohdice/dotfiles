@@ -3,7 +3,7 @@
 {
   home.packages = with pkgs; [
     # LSP
-    dockerfile-language-server-nodejs
+    dockerfile-language-server
 
     # Linter
     hadolint

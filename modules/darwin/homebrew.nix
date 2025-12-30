@@ -23,10 +23,18 @@
     # GUI applications (Cask) - only apps NOT available in nixpkgs
     casks = [
       "coteditor"
+      "discord"
       "docker-desktop"
+      "ghostty"
       "google-japanese-ime"
       "mysqlworkbench"
       "numi"
+      "postman"
+      "raycast"
+      "slack"
+      "spotify"
+      "visual-studio-code"
+      "vlc"
     ];
 
     # Mac App Store apps

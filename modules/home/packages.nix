@@ -42,14 +42,7 @@ in
       zsh-syntax-highlighting
 
       # GUI Apps
-      discord
-      ghostty
       google-chrome
-      postman
-      slack
-      spotify
-      vlc
-      vscode
     ]
     ++ lib.optionals isDarwin [
       tableplus
@@ -57,6 +50,7 @@ in
     ]
     ++ lib.optionals isLinux [
       docker
+      ghostty
       mysql-workbench
       zoom-us
     ];

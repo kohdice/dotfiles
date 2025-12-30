@@ -1,9 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   home.packages = with pkgs; [
     # Compiler
-    gcc
     clang
 
     # LSP & Formatter
@@ -13,6 +12,6 @@
     checkmake
 
     # Debugger
-    gdb
+    lldb # LLVM debugger
   ];
 }

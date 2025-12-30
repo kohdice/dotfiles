@@ -1,4 +1,4 @@
-theme = solarized-osaka
+theme = Solarized Dark Patched
 
 background-opacity = 0.9
 background-blur-radius = 20
@@ -9,6 +9,7 @@ font-feature = -liga
 font-feature = -dlig
 font-size = 12
 font-thicken = true
+font-family = JetBrainsMonoNL Nerd Font Mono
 
 mouse-hide-while-typing = true
 

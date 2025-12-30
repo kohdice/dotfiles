@@ -8,10 +8,15 @@
 {
   programs.git = {
     enable = true;
-    userName = user.fullName;
-    userEmail = user.email;
 
-    extraConfig = {
+    settings = {
+      user = {
+        name = user.fullName;
+        email = user.email;
+      };
+
+      alias = import ./aliases.nix;
+
       core = {
         editor = "nvim";
         excludesfile = "~/.gitignore";
@@ -28,16 +33,15 @@
 
       ghq.root = "~/developments";
     };
+  };
 
-    aliases = import ./aliases.nix;
-
-    delta = {
-      enable = true;
-      options = {
-        navigate = true;
-        line-numbers = true;
-        syntax-theme = "Solarized (dark)";
-      };
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true;
+      line-numbers = true;
+      syntax-theme = "Solarized (dark)";
     };
   };
 }

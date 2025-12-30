@@ -26,6 +26,7 @@ in
 
       # Terminal tools
       fastfetch
+      starship
       yazi
       zoxide
 
@@ -35,11 +36,6 @@ in
 
       # Build tools
       tree-sitter
-
-      # Zsh plugins
-      zsh-autosuggestions
-      zsh-completions
-      zsh-syntax-highlighting
 
       # GUI Apps
       google-chrome

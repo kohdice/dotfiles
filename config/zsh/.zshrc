@@ -61,26 +61,8 @@ setopt hist_ignore_dups      # Ignore duplicate commands in history
 setopt share_history         # Share history between sessions
 setopt inc_append_history    # Save history immediately
 
-# Mise
-eval "$(~/.local/bin/mise activate zsh)"
-
 # Starship Prompt
 eval "$(starship init zsh)"
-
-### Plugins ###
-
-# macOS (Nix - nix-darwin)
-if [[ -d "/run/current-system/sw/share" ]]; then
-  FPATH=/run/current-system/sw/share/zsh/site-functions:$FPATH
-  source /run/current-system/sw/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-  source /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-# Linux (Nix - home-manager)
-elif [[ -d "$HOME/.nix-profile/share" ]]; then
-  FPATH=$HOME/.nix-profile/share/zsh/site-functions:$FPATH
-  source $HOME/.nix-profile/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-  source $HOME/.nix-profile/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-autoload -Uz compinit && compinit
 
 ### fzf ###
 

@@ -51,6 +51,7 @@ if isDarwin then
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
+          backupFileExtension = "backup";
           extraSpecialArgs = specialArgs // {
             inherit dotfilesDir;
           };

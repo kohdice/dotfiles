@@ -13,58 +13,58 @@
 ```
 dotfiles/
 ├── flake.nix                     # エントリーポイント - Nix Flake 定義
-├── nix/
-│   ├── overlays/                 # カスタムパッケージ overlay
-│   │   ├── default.nix           # Overlay エントリーポイント
-│   │   └── ai-tools.nix          # AI ツールバンドル (claude-code, codex)
-│   └── modules/
-│       ├── darwin/               # macOS 固有モジュール
-│       │   ├── default.nix       # Darwin モジュールのインポート
-│       │   ├── system.nix        # システム設定
-│       │   ├── packages.nix      # Nix パッケージ
-│       │   └── homebrew.nix      # Homebrew, Cask, Mac App Store
-│       ├── home/                 # home-manager モジュール（クロスプラットフォーム）
-│       │   ├── default.nix       # モジュールインポートのみ（アルファベット順）
-│       │   ├── dotfiles.nix      # XDG シンボリックリンク、home.file 設定
-│       │   ├── packages.nix      # ユーザーパッケージ
-│       │   ├── dev/              # 言語別開発ツール (go.nix, rust.nix 等)
-│       │   ├── editors/          # エディタ設定 (neovim.nix)
-│       │   ├── git/              # Git 設定 (default.nix, aliases.nix)
-│       │   └── programs/         # アプリ固有設定 (claude-code.nix, codex.nix)
-│       └── linux/
-│           └── default.nix       # Linux 固有設定
+├── lib/
+│   ├── mkSystem.nix              # 統合システムビルダー (darwin/linux)
+│   └── apps.nix                  # App 定義 (`nix run .#<app>`)
+├── overlays/                     # カスタムパッケージ overlay
+│   ├── default.nix               # Overlay エントリーポイント
+│   └── ai-tools.nix              # AI ツールバンドル (claude-code, codex)
+├── modules/
+│   ├── darwin/                   # macOS 固有モジュール
+│   │   ├── default.nix           # Darwin モジュールのインポート
+│   │   ├── system.nix            # システム設定
+│   │   ├── packages.nix          # Nix パッケージ
+│   │   └── homebrew.nix          # Homebrew, Cask, Mac App Store
+│   ├── home/                     # home-manager モジュール（クロスプラットフォーム）
+│   │   ├── default.nix           # モジュールインポートのみ（アルファベット順）
+│   │   ├── dotfiles.nix          # XDG シンボリックリンク、home.file 設定
+│   │   ├── packages.nix          # ユーザーパッケージ
+│   │   ├── dev/                  # 言語別開発ツール (go.nix, rust.nix 等)
+│   │   ├── editors/              # エディタ設定 (neovim.nix)
+│   │   ├── git/                  # Git 設定 (default.nix, aliases.nix)
+│   │   └── programs/             # アプリ固有設定 (claude-code.nix, codex.nix, gh.nix)
+│   └── linux/
+│       └── default.nix           # Linux 固有設定
+├── users/                        # ユーザープロファイル定義
+│   ├── kohdice/default.nix       # 個人用プロファイル
+│   └── work/default.nix          # 業務用プロファイル
 ├── config/                       # アプリケーション設定（~/.config へシンボリックリンク）
 │   ├── nvim/                     # Neovim 設定
 │   ├── tmux/                     # tmux 設定
 │   ├── ghostty/                  # Ghostty ターミナル設定
 │   ├── lazygit/                  # lazygit 設定
 │   ├── starship/                 # Starship プロンプト設定
+│   ├── karabiner/                # Karabiner-Elements 設定
 │   ├── git/                      # Git 設定テンプレート
 │   ├── zsh/                      # Zsh 設定
-│   └── bash/                     # Bash 設定
-├── claude/                       # Claude Code 設定テンプレート
-│   ├── .claude/                  # ベース設定
-│   │   ├── CLAUDE.md
+│   ├── bash/                     # Bash 設定
+│   ├── claude/                   # Claude Code 設定テンプレート
+│   │   ├── CLAUDE.md             # ベース設定
 │   │   ├── settings.json
-│   │   └── commands/             # カスタムスラッシュコマンド
-│   ├── go/                       # Go プロジェクト用設定
-│   ├── rust/                     # Rust プロジェクト用設定
-│   └── zig/                      # Zig プロジェクト用設定
-├── codex/                        # OpenAI Codex 設定テンプレート
-│   ├── .codex/                   # ベース設定
-│   ├── go/
-│   ├── rust/
-│   └── zig/
+│   │   ├── commands/             # カスタムスラッシュコマンド
+│   │   └── go/, rust/, zig/      # 言語別プロジェクト設定
+│   └── codex/                    # OpenAI Codex 設定テンプレート
 └── docs/                         # ドキュメント
     ├── ARCHITECTURE.md           # このファイル
     ├── CUSTOMIZATION.md          # カスタマイズガイド
+    ├── DARWIN-SYSTEM.md          # macOS システム設定ガイド
     ├── DEPENDENCIES.md           # 依存関係管理ガイド
     └── USAGE.md                  # 使い方ガイド
 ```
 
 ## ユーザープロファイル
 
-`flake.nix` で定義された 2 つのプロファイル:
+`users/` ディレクトリで定義された 2 つのプロファイル:
 
 | プロファイル | ユーザー名 | ホームディレクトリ | 用途   |
 | ------------ | ---------- | ------------------ | ------ |
@@ -163,45 +163,45 @@ config/nvim/
     ├── gopls.lua
     ├── lua_ls.lua
     ├── rust_analyzer.lua
-    └── typescript-language-server.lua
+    └── ts_ls.lua
 ```
 
 ## AI コーディングツール連携
 
 ### Claude Code
 
-`claude/` ディレクトリに Claude Code の設定テンプレートがあります:
+`config/claude/` ディレクトリに Claude Code の設定テンプレートがあります:
 
-- **ベース設定** (`claude/.claude/`) - `~/.claude` へシンボリックリンク
-- **カスタムコマンド** (`claude/.claude/commands/`) - 共通のスラッシュコマンド
-- **言語別設定** (`claude/go/`, `claude/rust/`, `claude/zig/`) - プロジェクト固有の設定
+- **ベース設定** (`config/claude/`) - カスタムコマンドやベース CLAUDE.md
+- **カスタムコマンド** (`config/claude/commands/`) - 共通のスラッシュコマンド
+- **言語別設定** (`config/claude/go/`, `config/claude/rust/`, `config/claude/zig/`) - プロジェクト固有の設定
 
 言語別設定をプロジェクトで使用するには:
 
 ```bash
 # Go プロジェクトの場合
-cp -r ~/developments/dotfiles/claude/go/.claude .
-cp ~/developments/dotfiles/claude/go/.mcp.json .
+cp -r ~/developments/dotfiles/config/claude/go/.claude .
+cp ~/developments/dotfiles/config/claude/go/.mcp.json .
 
 # Rust プロジェクトの場合
-cp -r ~/developments/dotfiles/claude/rust/.claude .
-cp ~/developments/dotfiles/claude/rust/.mcp.json .
+cp -r ~/developments/dotfiles/config/claude/rust/.claude .
+cp ~/developments/dotfiles/config/claude/rust/.mcp.json .
 
 # Zig プロジェクトの場合
-cp -r ~/developments/dotfiles/claude/zig/.claude .
-cp ~/developments/dotfiles/claude/zig/.mcp.json .
+cp -r ~/developments/dotfiles/config/claude/zig/.claude .
+cp ~/developments/dotfiles/config/claude/zig/.mcp.json .
 ```
 
 ### OpenAI Codex
 
-`codex/` ディレクトリに OpenAI Codex の設定テンプレートがあります:
+`config/codex/` ディレクトリに OpenAI Codex の設定テンプレートがあります:
 
-- **ベース設定** (`codex/.codex/`) - `~/.codex` へシンボリックリンク
-- **言語別設定** (`codex/go/`, `codex/rust/`, `codex/zig/`)
+- **ベース設定** (`config/codex/`) - AGENTS.md など
+- **言語別設定** (`config/codex/go/`, `config/codex/rust/`, `config/codex/zig/`)
 
 ## Overlays
 
-`nix/overlays/` でカスタムパッケージを定義し、`flake.nix` で適用します:
+`overlays/` でカスタムパッケージを定義し、`flake.nix` で適用します:
 
 - **default.nix**: 全 overlay のエントリーポイント
 - **ai-tools.nix**: AI 開発ツールのバンドル（claude-code, codex）
@@ -210,7 +210,7 @@ Overlay は `flake.nix` の `overlays` 変数で定義され、Darwin/Linux 両�
 
 ## XDG シンボリックリンク
 
-`nix/modules/home/dotfiles.nix` で以下のシンボリックリンクが設定されます:
+`modules/home/dotfiles.nix` で以下のシンボリックリンクが設定されます:
 
 ### ホームディレクトリ直下
 
@@ -220,15 +220,14 @@ Overlay は `flake.nix` の `overlays` 変数で定義され、Darwin/Linux 両�
 | `config/zsh/.zshrc`         | `~/.zshrc`        |
 | `config/bash/.bash_profile` | `~/.bash_profile` |
 | `config/bash/.bashrc`       | `~/.bashrc`       |
-| `claude/.claude`            | `~/.claude`       |
-| `codex/.codex`              | `~/.codex`        |
 
 ### ~/.config 配下
 
-| ソース                          | リンク先                  |
-| ------------------------------- | ------------------------- |
-| `config/ghostty`                | `~/.config/ghostty`       |
-| `config/nvim`                   | `~/.config/nvim`          |
-| `config/starship/starship.toml` | `~/.config/starship.toml` |
-| `config/tmux`                   | `~/.config/tmux`          |
-| `config/lazygit`                | `~/.config/lazygit`       |
+| ソース                            | リンク先                                          |
+| --------------------------------- | ------------------------------------------------- |
+| `config/ghostty`                  | `~/.config/ghostty`                               |
+| `config/nvim`                     | `~/.config/nvim`                                  |
+| `config/starship/starship.toml`   | `~/.config/starship.toml`                         |
+| `config/tmux`                     | `~/.config/tmux`                                  |
+| `config/lazygit`                  | `~/.config/lazygit`                               |
+| `config/karabiner/karabiner.json` | `~/.config/karabiner/karabiner.json` (macOS のみ) |

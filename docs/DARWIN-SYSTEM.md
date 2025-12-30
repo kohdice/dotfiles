@@ -1,6 +1,6 @@
 # Darwin System Settings (system.nix)
 
-このドキュメントでは、`nix/modules/darwin/system.nix` で管理される macOS システム設定について説明します。
+このドキュメントでは、`modules/darwin/system.nix` で管理される macOS システム設定について説明します。
 
 ## 概要
 
@@ -21,7 +21,7 @@ nix-darwin の `system.defaults` は、macOS の `defaults` コマンドでア�
 ```
 flake.nix
   └─ darwinConfigurations
-      └─ nix/modules/darwin/default.nix
+      └─ modules/darwin/default.nix
           ├─ system.nix          ← システムデフォルト設定（このファイル）
           ├─ packages.nix        ← システムレベルパッケージ
           └─ homebrew.nix        ← Homebrew/Cask/MAS
@@ -300,7 +300,7 @@ fonts.packages = with pkgs; [
 
 ### 設定値の変更
 
-`nix/modules/darwin/system.nix` を編集して、既存の設定値を変更します。
+`modules/darwin/system.nix` を編集して、既存の設定値を変更します。
 
 **例: Dock のアイコンサイズを変更**
 

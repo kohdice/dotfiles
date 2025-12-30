@@ -209,7 +209,7 @@ nix-store --optimise
 ### Python 環境
 
 ```nix
-# nix/modules/home/dev/python.nix
+# modules/home/dev/python.nix
 home.packages = with pkgs; [
   uv      # Python version and package management
   ruff    # Linter & Formatter
@@ -224,7 +224,7 @@ home.packages = with pkgs; [
 ### Node.js 環境
 
 ```nix
-# nix/modules/home/dev/javascript.nix
+# modules/home/dev/javascript.nix
 home.packages = with pkgs; [
   nodejs
   bun
@@ -241,7 +241,7 @@ home.packages = with pkgs; [
 ### Rust 環境
 
 ```nix
-# nix/modules/home/dev/rust.nix
+# modules/home/dev/rust.nix
 home.packages = with pkgs; [
   rustup
   # rust-analyzer は rustup component add rust-analyzer で管理

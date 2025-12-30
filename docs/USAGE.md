@@ -39,14 +39,14 @@ home-manager switch --flake .#kohdice
 
 ### 1. システム設定の適用（macOS のみ）
 
-`nix/modules/darwin/` で定義された設定:
+`modules/darwin/` で定義された設定:
 
 - Dock、Finder、キーボードなどの macOS システム設定
 - システム全体の Nix パッケージインストール
 
 ### 2. Homebrew の管理（macOS のみ）
 
-`nix/modules/darwin/homebrew.nix` で定義:
+`modules/darwin/homebrew.nix` で定義:
 
 - CLI ツール（brews）
 - GUI アプリケーション（casks）
@@ -54,7 +54,7 @@ home-manager switch --flake .#kohdice
 
 ### 3. ユーザー環境の構築
 
-`nix/modules/home/` で定義:
+`modules/home/` で定義:
 
 - CLI ツールのインストール（git, ripgrep, fzf など）
 - 開発言語とツールのセットアップ（Go, Rust, Python など）

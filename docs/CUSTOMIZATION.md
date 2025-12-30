@@ -6,7 +6,7 @@
 
 ### Nix パッケージ（クロスプラットフォーム）
 
-ユーザーパッケージは `nix/modules/home/packages.nix` に追加:
+ユーザーパッケージは `modules/home/packages.nix` に追加:
 
 ```nix
 home.packages = with pkgs; [
@@ -20,10 +20,10 @@ home.packages = with pkgs; [
 
 ### 開発言語の追加
 
-`nix/modules/home/dev/` に言語ごとのファイルを作成:
+`modules/home/dev/` に言語ごとのファイルを作成:
 
 ```nix
-# nix/modules/home/dev/your-language.nix
+# modules/home/dev/your-language.nix
 { pkgs, lib, ... }:
 {
   home.packages = with pkgs; [
@@ -34,7 +34,7 @@ home.packages = with pkgs; [
 }
 ```
 
-`nix/modules/home/dev/default.nix` でインポート:
+`modules/home/dev/default.nix` でインポート:
 
 ```nix
 {
@@ -48,7 +48,7 @@ home.packages = with pkgs; [
 
 ### macOS 専用パッケージ
 
-`nix/modules/darwin/packages.nix` に追加:
+`modules/darwin/packages.nix` に追加:
 
 ```nix
 environment.systemPackages = with pkgs; [
@@ -58,7 +58,7 @@ environment.systemPackages = with pkgs; [
 
 ### Homebrew パッケージ（macOS のみ）
 
-`nix/modules/darwin/homebrew.nix` を編集:
+`modules/darwin/homebrew.nix` を編集:
 
 ```nix
 homebrew = {
@@ -81,10 +81,10 @@ homebrew = {
 
 ### カスタム Overlay の追加
 
-`nix/overlays/` にカスタムパッケージを定義できます:
+`overlays/` にカスタムパッケージを定義できます:
 
 ```nix
-# nix/overlays/my-tools.nix
+# overlays/my-tools.nix
 final: prev: {
   my-tool-bundle = final.symlinkJoin {
     name = "my-tool-bundle";
@@ -96,7 +96,7 @@ final: prev: {
 }
 ```
 
-`nix/overlays/default.nix` でインポート:
+`overlays/default.nix` でインポート:
 
 ```nix
 final: prev:
@@ -110,88 +110,86 @@ final: prev:
 
 ### 1. ユーザー定義を追加
 
-`flake.nix` の `users` に追加:
+`users/` ディレクトリに新しいプロファイルを作成:
 
 ```nix
-users = {
-  # 既存のユーザー
-  kohdice = { ... };
-  work = { ... };
-
-  # 新しいユーザー
-  newprofile = {
+# users/newprofile/default.nix
+{
+  user = {
     name = "username";
     fullName = "Your Name";
     email = "your@email.com";
     home = "/Users/username";  # macOS の場合
     # home = "/home/username";  # Linux の場合
   };
-};
+}
 ```
 
-### 2. 設定を追加
+### 2. flake.nix に設定を追加
 
-同じく `flake.nix` で:
+`flake.nix` で新しいプロファイルを追加:
 
 ```nix
 # macOS の場合
 darwinConfigurations = {
-  kohdice = mkDarwinConfig users.kohdice;
-  work = mkDarwinConfig users.work;
-  newprofile = mkDarwinConfig users.newprofile;  # 追加
+  kohdice = mkSystem "darwin" { system = darwinSystem; user = "kohdice"; };
+  work = mkSystem "darwin" { system = darwinSystem; user = "work"; };
+  newprofile = mkSystem "darwin" { system = darwinSystem; user = "newprofile"; };  # 追加
 };
 
 # Linux の場合
 homeConfigurations = {
-  kohdice = mkHomeConfig users.kohdice;
-  work = mkHomeConfig users.work;
-  newprofile = mkHomeConfig users.newprofile;  # 追加
+  kohdice = mkSystem "linux" { system = "x86_64-linux"; user = "kohdice"; };
+  work = mkSystem "linux" { system = "x86_64-linux"; user = "work"; };
+  newprofile = mkSystem "linux" { system = "x86_64-linux"; user = "newprofile"; };  # 追加
 };
 ```
 
 ### 3. 対応するコマンドを追加（オプション）
 
-`flake.nix` の `apps` セクションに追加:
+`lib/apps.nix` に新しいプロファイル用コマンドを追加:
 
 ```nix
-apps = forAllSystems (system:
-  let
-    pkgs = nixpkgs.legacyPackages.${system};
-    isDarwin = pkgs.stdenv.isDarwin;
-  in {
-    # 既存のコマンド
-    build = { ... };
-    switch = { ... };
-
-    # 新しいプロファイル用コマンド
-    build-newprofile = {
-      type = "app";
-      program = toString (pkgs.writeShellScript "build-newprofile" (
-        if isDarwin then ''
+# Build configuration (newprofile)
+build-newprofile = {
+  type = "app";
+  program = toString (
+    pkgs.writeShellScript "build-newprofile" (
+      if isDarwin then
+        ''
           nix build .#darwinConfigurations.newprofile.system
-        '' else ''
+        ''
+      else
+        ''
           nix build .#homeConfigurations.newprofile.activationPackage
         ''
-      ));
-    };
+    )
+  );
+  meta.description = "Build newprofile profile";
+};
 
-    switch-newprofile = {
-      type = "app";
-      program = toString (pkgs.writeShellScript "switch-newprofile" (
-        if isDarwin then ''
+# Apply configuration (newprofile)
+switch-newprofile = {
+  type = "app";
+  program = toString (
+    pkgs.writeShellScript "switch-newprofile" (
+      if isDarwin then
+        ''
           darwin-rebuild switch --flake .#newprofile
-        '' else ''
+        ''
+      else
+        ''
           home-manager switch --flake .#newprofile
         ''
-      ));
-    };
-  }
-);
+    )
+  );
+  meta.description = "Apply newprofile profile";
+};
 ```
 
 ## シンボリックリンクの追加
 
-`nix/modules/home/dotfiles.nix` でシンボリックリンクを管理しています:
+`modules/home/dotfiles.nix` でシンボリックリンクを管理しています:
 
 ```nix
 # ホームディレクトリ直下へのリンク

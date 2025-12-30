@@ -54,22 +54,17 @@ nix run .#switch
 ```
 dotfiles/
 ├── flake.nix              # Entry point
-├── nix/
-│   ├── overlays/          # Custom package overlays
-│   └── modules/
-│       ├── darwin/        # macOS system configuration
-│       ├── home/          # home-manager configuration (cross-platform)
-│       └── linux/         # Linux-specific configuration
-├── config/                # Application configs (nvim, tmux, etc.)
-├── claude/                # Claude Code settings
-└── codex/                 # OpenAI Codex settings
+├── lib/                   # Helper functions (mkSystem.nix, apps.nix)
+├── overlays/              # Custom package overlays
+├── modules/
+│   ├── darwin/            # macOS system configuration
+│   ├── home/              # home-manager configuration (cross-platform)
+│   └── linux/             # Linux-specific configuration
+├── users/                 # User profile definitions
+└── config/                # Application configs (nvim, tmux, claude, codex, etc.)
 ```
 
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) - Project structure and included tools
 - [Customization](docs/CUSTOMIZATION.md) - Adding packages and creating profiles
-
-## License
-
-MIT

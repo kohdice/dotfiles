@@ -64,6 +64,18 @@ setopt inc_append_history    # Save history immediately
 # Starship Prompt
 eval "$(starship init zsh)"
 
+# Plugins
+ZSH_AUTOSUGGESTIONS="$HOME/.local/state/home-manager/gcroots/current-home/home-path/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+ZSH_SYNTAX_HIGHLIGHTING="$HOME/.local/state/home-manager/gcroots/current-home/home-path/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+if [ -f "$ZSH_AUTOSUGGESTIONS" ]; then
+  source "$ZSH_AUTOSUGGESTIONS"
+fi
+
+if [ -f "$ZSH_SYNTAX_HIGHLIGHTING" ]; then
+  source "$ZSH_SYNTAX_HIGHLIGHTING"
+fi
+
 ### fzf ###
 
 # fzf history

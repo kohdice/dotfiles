@@ -1,21 +1,12 @@
 { pkgs, ... }:
 
 {
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
+  # Disable programs.zsh to use dotfiles symlink instead
+  programs.zsh.enable = false;
 
-    plugins = [
-      {
-        name = "zsh-autosuggestions";
-        src = pkgs.zsh-autosuggestions;
-        file = "share/zsh-autosuggestions/zsh-autosuggestions.zsh";
-      }
-      {
-        name = "zsh-syntax-highlighting";
-        src = pkgs.zsh-syntax-highlighting;
-        file = "share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh";
-      }
-    ];
-  };
+  # Install zsh plugins as packages
+  home.packages = with pkgs; [
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+  ];
 }

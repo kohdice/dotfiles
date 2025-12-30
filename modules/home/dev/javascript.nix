@@ -16,5 +16,8 @@
 
     # LSP
     nodePackages.typescript-language-server
+
+    # Formatter
+    prettierd
   ];
 }

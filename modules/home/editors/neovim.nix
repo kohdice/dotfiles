@@ -9,12 +9,7 @@
 
     # Dependencies for Neovim plugins
     extraPackages = with pkgs; [
-      # Build tools
-      tree-sitter
-      gcc
-      cmake
-
-      # Clipboard support
+      # Clipboard support (Linux)
       xclip
     ];
   };

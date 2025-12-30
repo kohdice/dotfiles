@@ -9,6 +9,9 @@
     # LSP & Formatter
     clang-tools # clangd, clang-format
 
+    # Linter (Makefile)
+    checkmake
+
     # Debugger
     gdb
   ];

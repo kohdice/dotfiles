@@ -6,7 +6,7 @@
 }:
 
 let
-  codexDotfilesDir = "${dotfilesDir}/codex";
+  codexDotfilesDir = "${dotfilesDir}/config/codex";
 in
 {
   home.packages = [ pkgs.codex ];

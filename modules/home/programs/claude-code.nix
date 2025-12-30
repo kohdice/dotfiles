@@ -6,7 +6,7 @@
 }:
 
 let
-  claudeDotfilesDir = "${dotfilesDir}/claude";
+  claudeDotfilesDir = "${dotfilesDir}/config/claude";
 in
 {
   home.packages = [ pkgs.claude-code ];

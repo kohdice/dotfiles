@@ -33,21 +33,17 @@
     {
       self,
       nixpkgs,
-      nix-darwin,
-      home-manager,
-      nix-homebrew,
       treefmt-nix,
-      nix-index-database,
       ...
     }@inputs:
     let
-      # Import helper functions
-      helpers = import ./nix/lib/helpers { lib = nixpkgs.lib; };
-      users = helpers.users;
-      inherit (helpers.mkConfigs) mkDarwinConfig mkHomeConfig;
-
       # Custom overlays
-      overlays = [ (import ./nix/overlays) ];
+      overlays = [ (import ./overlays) ];
+
+      # Unified system builder
+      mkSystem = import ./lib/mkSystem.nix {
+        inherit inputs overlays;
+      };
 
       # Supported systems
       darwinSystem = "aarch64-darwin";
@@ -70,125 +66,36 @@
         }
       );
 
-      # Partially applied config builders
-      mkDarwin = mkDarwinConfig {
-        inherit
-          nix-darwin
-          home-manager
-          nix-homebrew
-          inputs
-          overlays
-          darwinSystem
-          ;
-      };
-
-      mkHome = mkHomeConfig {
-        inherit
-          home-manager
-          nixpkgs
-          nix-index-database
-          inputs
-          overlays
-          ;
-      };
-
     in
     {
       # macOS configurations
       darwinConfigurations = {
-        kohdice = mkDarwin users.kohdice;
-        work = mkDarwin users.work;
+        kohdice = mkSystem "darwin" {
+          system = darwinSystem;
+          user = "kohdice";
+        };
+        work = mkSystem "darwin" {
+          system = darwinSystem;
+          user = "work";
+        };
       };
 
-      # Linux configurations
+      # Linux configurations (home-manager standalone)
       homeConfigurations = {
-        kohdice = mkHome users.kohdice;
-        work = mkHome users.work;
+        kohdice = mkSystem "linux" {
+          system = "x86_64-linux";
+          user = "kohdice";
+        };
+        work = mkSystem "linux" {
+          system = "x86_64-linux";
+          user = "work";
+        };
       };
 
       # Formatter (nix fmt)
       formatter = forAllSystems (system: treefmtEval.${system}.config.build.wrapper);
 
       # Apps (nix run .#<app>)
-      apps = forAllSystems (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-          isDarwin = pkgs.stdenv.isDarwin;
-        in
-        {
-          # Build configuration (default: kohdice)
-          build = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "build" (
-                if isDarwin then
-                  ''
-                    nix build .#darwinConfigurations.kohdice.system
-                  ''
-                else
-                  ''
-                    nix build .#homeConfigurations.kohdice.activationPackage
-                  ''
-              )
-            );
-            meta.description = "Build kohdice profile";
-          };
-
-          # Build configuration (work)
-          build-work = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "build-work" (
-                if isDarwin then
-                  ''
-                    nix build .#darwinConfigurations.work.system
-                  ''
-                else
-                  ''
-                    nix build .#homeConfigurations.work.activationPackage
-                  ''
-              )
-            );
-            meta.description = "Build work profile";
-          };
-
-          # Apply configuration (default: kohdice)
-          switch = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "switch" (
-                if isDarwin then
-                  ''
-                    darwin-rebuild switch --flake .#kohdice
-                  ''
-                else
-                  ''
-                    home-manager switch --flake .#kohdice
-                  ''
-              )
-            );
-            meta.description = "Apply kohdice profile";
-          };
-
-          # Apply configuration (work)
-          switch-work = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "switch-work" (
-                if isDarwin then
-                  ''
-                    darwin-rebuild switch --flake .#work
-                  ''
-                else
-                  ''
-                    home-manager switch --flake .#work
-                  ''
-              )
-            );
-            meta.description = "Apply work profile";
-          };
-        }
-      );
+      apps = forAllSystems (system: import ./lib/apps.nix { inherit nixpkgs system; });
     };
 }

@@ -1,4 +1,22 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "alwaysThinkingEnabled": true,
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "300000",
+    "BASH_MAX_TIMEOUT_MS": "1200000",
+    "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
+    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "true",
+    "CLAUDE_CODE_IDE_SKIP_VALID_CHECK": "true",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
+    "DISABLE_ERROR_REPORTING": "true",
+    "DISABLE_TELEMETRY": "true",
+    "DISABLE_AUTOUPDATER": "true",
+    "DISABLE_MICROCOMPACT": "true",
+    "DISABLE_COST_WARNINGS": "0",
+    "MAX_THINKING_TOKENS": "31999"
+  },
+  "includeCoAuthoredBy": true,
   "permissions": {
     "allow": [
       "Bash(ls:*)",
@@ -29,8 +47,7 @@
       "Grep(**)",
       "Glob(**)",
       "LS(**)",
-      "WebFetch(domain:*)",
-      "WebSearch(*)"
+      "WebFetch(domain:*)"
     ],
     "deny": [
       "Bash(rm -rf /)",
@@ -47,18 +64,16 @@
       "Bash(fdisk:*)",
       "Bash(> /dev/*)",
       "Bash(>> /dev/*)",
-      "Bash(sudo:*passwd*)",
-      "Bash(sudo:*shadow*)",
+      "Bash(sudo passwd:*)",
+      "Bash(sudo shadow:*)",
       "Bash(chmod 777 /*)",
       "Bash(chown root:*)",
       "Bash(sudo chmod 777:*)",
       "Bash(sudo chown:*)",
       "Bash(sudo -i:*)",
       "Bash(sudo su:*)",
-      "Bash(curl * | sh)",
-      "Bash(curl * | bash)",
-      "Bash(wget * | sh)",
-      "Bash(wget * | bash)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
       "Bash(rm -rf .git)",
       "Bash(git push --force-with-lease origin main)",
       "Bash(git push -f origin main)",
@@ -109,13 +124,21 @@
       "Write(/etc/sudoers)"
     ]
   },
-  "env": {
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
-    "DISABLE_AUTOUPDATER": "1",
-    "DISABLE_COST_WARNINGS": "0",
-    "BASH_DEFAULT_TIMEOUT_MS": "300000",
-    "BASH_MAX_TIMEOUT_MS": "1200000"
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
   },
-  "cleanupPeriodDays": 30,
-  "includeCoAuthoredBy": true
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "plugin-dev@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true
+  }
 }

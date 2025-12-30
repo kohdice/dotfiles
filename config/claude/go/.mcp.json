@@ -14,14 +14,6 @@
         "https://mcp.deepwiki.com/sse"
       ]
     },
-    "file-system": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/kohdice/developments"
-      ]
-    },
     "lsmcp": {
       "command": "npx",
       "args": [

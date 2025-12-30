@@ -49,11 +49,11 @@ in
       pkgs.writeShellScript "switch" (
         if isDarwin then
           ''
-            darwin-rebuild switch --flake .#kohdice
+            sudo nix run nix-darwin -- switch --flake .#kohdice
           ''
         else
           ''
-            home-manager switch --flake .#kohdice
+            nix run nixpkgs#home-manager -- switch --flake .#kohdice
           ''
       )
     );
@@ -67,11 +67,11 @@ in
       pkgs.writeShellScript "switch-work" (
         if isDarwin then
           ''
-            darwin-rebuild switch --flake .#work
+            sudo nix run nix-darwin -- switch --flake .#work
           ''
         else
           ''
-            home-manager switch --flake .#work
+            nix run nixpkgs#home-manager -- switch --flake .#work
           ''
       )
     );

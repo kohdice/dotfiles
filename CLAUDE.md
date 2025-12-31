@@ -13,7 +13,7 @@ Nix Flake-based macOS/Linux development environment dotfiles. Uses nix-darwin (m
 nix run .#build          # Build kohdice profile
 nix run .#build-work     # Build work profile
 
-# Apply configuration
+# Apply configuration (macOS uses sudo internally)
 nix run .#switch         # Apply kohdice profile
 nix run .#switch-work    # Apply work profile
 
@@ -22,6 +22,15 @@ nix fmt                  # Format Nix and Lua files (nixfmt, stylua)
 
 # Validation
 nix flake check          # Validate entire flake
+
+# Update packages
+nix flake update && nix run .#switch  # Update all inputs and apply
+
+# Troubleshooting
+darwin-rebuild --list-generations     # List generations (macOS)
+darwin-rebuild switch --rollback      # Rollback to previous (macOS)
+home-manager generations              # List generations (Linux)
+nix eval .#darwinConfigurations.kohdice.system --show-trace  # Debug build errors
 ```
 
 ## Architecture
@@ -41,21 +50,20 @@ dotfiles/
 │   │   ├── default.nix           # Module imports only
 │   │   ├── dotfiles.nix          # XDG symlinks and home.file configurations
 │   │   ├── packages.nix          # CLI tools
-│   │   ├── dev/                  # Language-specific tools (go.nix, rust.nix, etc.)
+│   │   ├── dev/                  # Language-specific tools (go, rust, python, js, lua, zig, nix, c, docker, terraform, etc.)
 │   │   ├── editors/              # Editor configurations (neovim.nix)
 │   │   ├── git/                  # Git configuration and aliases
-│   │   └── programs/             # App-specific configs (claude-code.nix, codex.nix, gh.nix)
-│   └── linux/                    # Linux-specific configuration
+│   │   └── programs/             # App-specific configs (zsh.nix, claude-code.nix, codex.nix, gh.nix)
+│   └── linux/                    # Linux-specific (default.nix, packages.nix)
 ├── users/                        # User profile definitions
 │   ├── kohdice/default.nix       # Personal profile
 │   └── work/default.nix          # Work profile
 └── config/                       # App configs (symlinked via XDG)
     ├── nvim/                     # Neovim (Lazy.nvim plugin manager)
     ├── zsh/, bash/               # Shell configs
+    ├── git/                      # Git config templates
     ├── tmux/, ghostty/, lazygit/, starship/, karabiner/
     ├── claude/                   # Claude Code config templates
-    │   ├── commands/             # Custom slash commands
-    │   └── go/, rust/, zig/      # Language-specific project settings
     └── codex/                    # OpenAI Codex config templates
 ```
 
@@ -73,10 +81,6 @@ Defined in `users/` directory and referenced from `flake.nix`:
 - **Symlinks**: Managed in `modules/home/dotfiles.nix` (XDG) and app-specific modules
 - **Platform conditionals**: Use `lib.optionals isDarwin/isLinux` for platform-specific packages
 - **System builder**: `lib/mkSystem.nix` handles both Darwin and Linux configurations
-
-## Primary Languages
-
-Go, Rust, Python, TypeScript/JavaScript, Lua, Zig, Nix
 
 ## Neovim Structure (config/nvim/)
 

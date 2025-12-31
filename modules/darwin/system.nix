@@ -37,10 +37,10 @@
 
     NSGlobalDomain = {
       # Key repeat rate (lower = faster, range: 1-120, default: 6)
-      KeyRepeat = 1;
+      KeyRepeat = 2;
 
       # Delay until key repeat (lower = faster, range: 10-120, default: 25)
-      InitialKeyRepeat = 10;
+      InitialKeyRepeat = 15;
 
       # Enable dark mode
       AppleInterfaceStyle = "Dark";

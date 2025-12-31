@@ -6,6 +6,9 @@ Thumbs.db
 result
 result-*
 
+# Neovim
+config/nvim/lazy-lock.json
+
 # Claude
 settings.local.json
 .mcp.json

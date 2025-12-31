@@ -40,6 +40,7 @@ return {
           toml = { "taplo" },
           yaml = { "yamlfmt" },
           zig = { "zigfmt" },
+          ["_"] = { "trim_newlines" },
         },
         format_on_save = {
           lsp_format = "fallback",
@@ -48,12 +49,8 @@ return {
         log_level = vim.log.levels.ERROR,
       })
 
-      conform.formatters.rustfmt = {
-        default_edition = "2024",
-      }
-
       conform.formatters.taplo = {
-        args = { "format", "--option", "indent_string=    ", "--option", "trailing_newline=false", "-" },
+        args = { "format", "--option", "indent_string=    ", "-" },
       }
     end,
   },

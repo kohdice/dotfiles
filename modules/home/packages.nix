@@ -13,6 +13,7 @@ in
       curl
       eza
       fd
+      fzf
       htop
       jq
       ripgrep

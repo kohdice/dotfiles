@@ -1,21 +1,8 @@
-{
-  config,
-  pkgs,
-  dotfilesDir,
-  ...
-}:
+{ pkgs, ... }:
 
-let
-  claudeDotfilesDir = "${dotfilesDir}/config/claude";
-in
 {
+  # Claude Code CLI
+  # Configuration files are managed in modules/home/dotfiles.nix
+  # using mkOutOfStoreSymlink to enable direct editing
   home.packages = [ pkgs.claude-code ];
-
-  home.file = {
-    ".claude/CLAUDE.md".source = config.lib.file.mkOutOfStoreSymlink "${claudeDotfilesDir}/CLAUDE.md";
-    ".claude/settings.json".source =
-      config.lib.file.mkOutOfStoreSymlink "${claudeDotfilesDir}/settings.json";
-    ".claude/statusline.sh".source =
-      config.lib.file.mkOutOfStoreSymlink "${claudeDotfilesDir}/statusline.sh";
-  };
 }

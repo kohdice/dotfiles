@@ -7,7 +7,7 @@ MODEL_DISPLAY=$(echo "$input" | jq -r '.model.display_name')
 CURRENT_DIR=$(echo "$input" | jq -r '.workspace.current_dir')
 TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path')
 
-# Get git branch information
+# Git branch information
 GIT_BRANCH=""
 if git rev-parse &>/dev/null; then
   BRANCH=$(git branch --show-current)
@@ -21,7 +21,7 @@ if git rev-parse &>/dev/null; then
   fi
 fi
 
-# Get token summary
+# Token summary
 if [ -z "$TRANSCRIPT_PATH" ] || [ ! -f "$TRANSCRIPT_PATH" ]; then
   TOKEN_COUNT="_ tokens. (_%)"
 else

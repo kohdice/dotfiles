@@ -45,15 +45,11 @@ dotfiles/
 │   ├── lazygit/                  # lazygit 設定
 │   ├── starship/                 # Starship プロンプト設定
 │   ├── karabiner/                # Karabiner-Elements 設定
-│   ├── git/                      # Git 設定テンプレート
+│   ├── git/                      # Git 設定
 │   ├── zsh/                      # Zsh 設定
 │   ├── bash/                     # Bash 設定
-│   ├── claude/                   # Claude Code 設定テンプレート
-│   │   ├── CLAUDE.md             # ベース設定
-│   │   ├── settings.json
-│   │   ├── commands/             # カスタムスラッシュコマンド
-│   │   └── go/, rust/, zig/      # 言語別プロジェクト設定
-│   └── codex/                    # OpenAI Codex 設定テンプレート
+│   ├── claude/                   # Claude Code 設定
+│   └── codex/                    # OpenAI Codex 設定
 └── docs/                         # ドキュメント
     ├── ARCHITECTURE.md           # このファイル
     ├── CUSTOMIZATION.md          # カスタマイズガイド
@@ -170,34 +166,16 @@ config/nvim/
 
 ### Claude Code
 
-`config/claude/` ディレクトリに Claude Code の設定テンプレートがあります:
+`config/claude/` ディレクトリに Claude Code の設定があります:
 
-- **ベース設定** (`config/claude/`) - カスタムコマンドやベース CLAUDE.md
-- **カスタムコマンド** (`config/claude/commands/`) - 共通のスラッシュコマンド
-- **言語別設定** (`config/claude/go/`, `config/claude/rust/`, `config/claude/zig/`) - プロジェクト固有の設定
-
-言語別設定をプロジェクトで使用するには:
-
-```bash
-# Go プロジェクトの場合
-cp -r ~/developments/dotfiles/config/claude/go/.claude .
-cp ~/developments/dotfiles/config/claude/go/.mcp.json .
-
-# Rust プロジェクトの場合
-cp -r ~/developments/dotfiles/config/claude/rust/.claude .
-cp ~/developments/dotfiles/config/claude/rust/.mcp.json .
-
-# Zig プロジェクトの場合
-cp -r ~/developments/dotfiles/config/claude/zig/.claude .
-cp ~/developments/dotfiles/config/claude/zig/.mcp.json .
-```
+- **ベース設定** - CLAUDE.md、settings.json、statusline.sh
+- **MCP 設定** - mcp.json（MCP サーバー設定テンプレート）
 
 ### OpenAI Codex
 
-`config/codex/` ディレクトリに OpenAI Codex の設定テンプレートがあります:
+`config/codex/` ディレクトリに OpenAI Codex の設定があります:
 
-- **ベース設定** (`config/codex/`) - AGENTS.md など
-- **言語別設定** (`config/codex/go/`, `config/codex/rust/`, `config/codex/zig/`)
+- **ベース設定** - AGENTS.md、config.toml
 
 ## Overlays
 

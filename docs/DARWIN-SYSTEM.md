@@ -131,8 +131,8 @@ finder = {
 
 ```nix
 NSGlobalDomain = {
-  KeyRepeat = 1;
-  InitialKeyRepeat = 10;
+  KeyRepeat = 2;
+  InitialKeyRepeat = 15;
   AppleInterfaceStyle = "Dark";
   ApplePressAndHoldEnabled = false;
   NSAutomaticCapitalizationEnabled = true;
@@ -147,8 +147,8 @@ NSGlobalDomain = {
 
 | 設定項目                   | 値      | 説明                                                                                       |
 | -------------------------- | ------- | ------------------------------------------------------------------------------------------ |
-| `KeyRepeat`                | `1`     | キーリピート速度。1が最速、120が最遅（デフォルト: 6）                                      |
-| `InitialKeyRepeat`         | `10`    | キーリピート開始までの遅延。10が最短、120が最長（デフォルト: 25）                          |
+| `KeyRepeat`                | `2`     | キーリピート速度。1が最速、120が最遅（デフォルト: 6）                                      |
+| `InitialKeyRepeat`         | `15`    | キーリピート開始までの遅延。10が最短、120が最長（デフォルト: 25）                          |
 | `ApplePressAndHoldEnabled` | `false` | キーの長押しでアクセント文字メニューを無効化。開発者向け：長押しでキーリピートを有効にする |
 
 **システム設定での対応箇所:**
@@ -423,7 +423,7 @@ $ defaults read com.apple.dock autohide
 1
 
 $ defaults read NSGlobalDomain KeyRepeat
-1
+2
 ```
 
 （`1` = `true`、`0` = `false`）

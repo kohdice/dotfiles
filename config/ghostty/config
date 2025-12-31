@@ -1,0 +1,23 @@
+theme = Solarized Dark Patched
+
+background-opacity = 0.9
+background-blur-radius = 20
+background = #031219
+
+font-feature = -calt
+font-feature = -liga
+font-feature = -dlig
+font-size = 12
+font-thicken = true
+font-family = JetBrainsMonoNL Nerd Font Mono
+
+mouse-hide-while-typing = true
+
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
+
+macos-option-as-alt = left
+macos-titlebar-proxy-icon = hidden
+
+keybind = shift+enter=text:\n

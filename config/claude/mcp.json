@@ -14,15 +14,6 @@
         "https://mcp.deepwiki.com/sse"
       ]
     },
-    "lsmcp": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@mizchi/lsmcp",
-        "-p",
-        "rust-analyzer"
-      ]
-    },
     "sequential-thinking": {
       "command": "npx",
       "args": [

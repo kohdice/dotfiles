@@ -1,10 +1,10 @@
 # Overlays entry point
-# Usage in flake.nix:
-#   nixpkgs.overlays = [ (import ./overlays) ];
+# Usage in mkSystem.nix:
+#   overlays = [ (import ../overlays { inherit latestPkgs; }) ];
 
+{ latestPkgs }:
 final: prev:
 {
   # Import all overlays
-  # Each overlay is a function (final: prev: { ... })
 }
-// (import ./ai-tools.nix final prev)
+// (import ./ai-tools.nix { inherit latestPkgs; } final prev)

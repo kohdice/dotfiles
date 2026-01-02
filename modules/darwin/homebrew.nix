@@ -22,6 +22,8 @@
 
     # GUI applications (Cask) - only apps NOT available in nixpkgs
     casks = [
+      "chatgpt"
+      "claude"
       "coteditor"
       "discord"
       "docker-desktop"

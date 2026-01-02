@@ -4,6 +4,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
+    # Frequently updated packages - independent update cycle
+    nixpkgs-latest.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -37,12 +40,9 @@
       ...
     }@inputs:
     let
-      # Custom overlays
-      overlays = [ (import ./overlays) ];
-
       # Unified system builder
       mkSystem = import ./lib/mkSystem.nix {
-        inherit self inputs overlays;
+        inherit self inputs;
       };
 
       # Supported systems

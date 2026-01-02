@@ -3,7 +3,6 @@
 {
   self,
   inputs,
-  overlays,
 }:
 
 # Platform name: "darwin" or "linux"
@@ -21,6 +20,20 @@ let
   # Platform detection
   isDarwin = inputs.nixpkgs.lib.hasSuffix "darwin" system;
 
+  # Common nixpkgs configuration
+  nixpkgsConfig = {
+    allowUnfree = true;
+  };
+
+  # Frequently updated packages (independent update cycle)
+  latestPkgs = import inputs.nixpkgs-latest {
+    inherit system;
+    config = nixpkgsConfig;
+  };
+
+  # Custom overlays
+  overlays = [ (import ../overlays { inherit latestPkgs; }) ];
+
   # Common specialArgs passed to all modules
   specialArgs = {
     inherit inputs;
@@ -36,16 +49,13 @@ if isDarwin then
   inputs.nix-darwin.lib.darwinSystem {
     inherit system specialArgs;
     modules = [
-      # Platform-specific configuration
       ../modules/${platform}
 
-      # Apply overlays and allow unfree packages
       {
         nixpkgs.overlays = overlays;
-        nixpkgs.config.allowUnfree = true;
+        nixpkgs.config = nixpkgsConfig;
       }
 
-      # home-manager integration
       inputs.home-manager.darwinModules.home-manager
       {
         home-manager = {
@@ -59,7 +69,6 @@ if isDarwin then
         };
       }
 
-      # nix-homebrew integration
       inputs.nix-homebrew.darwinModules.nix-homebrew
       {
         nix-homebrew = {
@@ -75,7 +84,7 @@ else
   inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {
       inherit system overlays;
-      config.allowUnfree = true;
+      config = nixpkgsConfig;
     };
     extraSpecialArgs = specialArgs // {
       inherit dotfilesDir;

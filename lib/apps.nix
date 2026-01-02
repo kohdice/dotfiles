@@ -77,4 +77,44 @@ in
     );
     meta.description = "Apply work profile";
   };
+
+  # Update nixpkgs-latest and apply (frequently updated packages)
+  update-latest = {
+    type = "app";
+    program = toString (
+      pkgs.writeShellScript "update-latest" (
+        if isDarwin then
+          ''
+            nix flake lock --update-input nixpkgs-latest
+            sudo nix run nix-darwin -- switch --flake .#kohdice
+          ''
+        else
+          ''
+            nix flake lock --update-input nixpkgs-latest
+            nix run nixpkgs#home-manager -- switch --flake .#kohdice
+          ''
+      )
+    );
+    meta.description = "Update nixpkgs-latest and apply";
+  };
+
+  # Update all inputs and apply
+  update = {
+    type = "app";
+    program = toString (
+      pkgs.writeShellScript "update" (
+        if isDarwin then
+          ''
+            nix flake update
+            sudo nix run nix-darwin -- switch --flake .#kohdice
+          ''
+        else
+          ''
+            nix flake update
+            nix run nixpkgs#home-manager -- switch --flake .#kohdice
+          ''
+      )
+    );
+    meta.description = "Update all inputs and apply";
+  };
 }

@@ -1,13 +1,9 @@
 # Overlays entry point
-# Usage in flake.nix:
-#   overlays = [ (import ./overlays { inherit inputs; }) ];
+# Usage in mkSystem.nix:
+#   overlays = [ (import ../overlays { inherit latestPkgs; }) ];
 
-{ inputs }:
+{ latestPkgs }:
 final: prev:
-let
-  # Frequently updated packages from nixpkgs-latest
-  latestPkgs = inputs.nixpkgs-latest.legacyPackages.${prev.system};
-in
 {
   # Import all overlays
 }

@@ -40,12 +40,9 @@
       ...
     }@inputs:
     let
-      # Custom overlays
-      overlays = [ (import ./overlays { inherit inputs; }) ];
-
       # Unified system builder
       mkSystem = import ./lib/mkSystem.nix {
-        inherit self inputs overlays;
+        inherit self inputs;
       };
 
       # Supported systems

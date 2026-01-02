@@ -35,6 +35,9 @@ in
       protobuf
       typos
 
+      # AI tools (nixpkgs-latest)
+      ai-tools
+
       # Build tools
       tree-sitter
 

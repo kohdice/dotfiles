@@ -1,16 +1,18 @@
 # AI development tools overlay
-# Provides grouped AI tools and custom configurations
+# Uses latestPkgs (nixpkgs-latest) for frequently updated packages
+# Update with: nix flake lock --update-input nixpkgs-latest
 
+{ latestPkgs }:
 final: prev: {
-  # AI tools bundle - convenient meta package for all AI development tools
+  claude-code = latestPkgs.claude-code;
+  codex = latestPkgs.codex;
+
   ai-tools = final.symlinkJoin {
     name = "ai-tools";
     paths = with final; [
       claude-code
       codex
     ];
-    meta = {
-      description = "AI development tools bundle (Claude Code, Codex)";
-    };
+    meta.description = "AI development tools bundle (Claude Code, Codex)";
   };
 }

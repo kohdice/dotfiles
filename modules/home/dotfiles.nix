@@ -2,23 +2,23 @@
   config,
   pkgs,
   lib,
-  dotfilesDir,
   ...
 }:
 
 let
   isDarwin = pkgs.stdenv.isDarwin;
-  # mkOutOfStoreSymlink requires absolute path
-  # dotfilesDir from flake is in /nix/store, so we need to use actual repo path
+  # mkOutOfStoreSymlink requires absolute path for direct symlinks
+  # This allows edits to reflect immediately without running switch
   dotfilesPath = "${config.home.homeDirectory}/developments/dotfiles";
 in
 {
   home.file = {
     # Shell
-    ".zshenv".source = "${dotfilesDir}/config/zsh/.zshenv";
-    ".zshrc".source = "${dotfilesDir}/config/zsh/.zshrc";
-    ".bash_profile".source = "${dotfilesDir}/config/bash/.bash_profile";
-    ".bashrc".source = "${dotfilesDir}/config/bash/.bashrc";
+    ".zshenv".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/zsh/.zshenv";
+    ".zshrc".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/zsh/.zshrc";
+    ".bash_profile".source =
+      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/bash/.bash_profile";
+    ".bashrc".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/bash/.bashrc";
 
     # Claude Code
     ".claude/CLAUDE.md".source =
@@ -37,10 +37,11 @@ in
 
   xdg.enable = true;
   xdg.configFile = {
-    "ghostty".source = "${dotfilesDir}/config/ghostty";
+    "ghostty".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/ghostty";
     "nvim".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/nvim";
-    "starship.toml".source = "${dotfilesDir}/config/starship/starship.toml";
-    "tmux".source = "${dotfilesDir}/config/tmux";
+    "starship.toml".source =
+      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/starship/starship.toml";
+    "tmux".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/tmux";
     "lazygit".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/lazygit";
   }
   // lib.optionalAttrs isDarwin {

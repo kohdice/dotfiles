@@ -23,7 +23,6 @@ in
       delta
       ghq
       lazygit
-      peco
 
       # Terminal tools
       fastfetch

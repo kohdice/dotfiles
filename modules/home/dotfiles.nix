@@ -2,50 +2,47 @@
   config,
   pkgs,
   lib,
+  dotfilesDir,
   ...
 }:
 
 let
   isDarwin = pkgs.stdenv.isDarwin;
-  # mkOutOfStoreSymlink requires absolute path for direct symlinks
-  # This allows edits to reflect immediately without running switch
-  dotfilesPath = "${config.home.homeDirectory}/developments/dotfiles";
+  dotfilesPath = "${dotfilesDir}";
+
+  # Helper to create symlink
+  mkSymlink = path: {
+    source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/${path}";
+  };
+
+  # home.file symlinks (target -> source path in config/)
+  homeSymlinks = {
+    ".claude/CLAUDE.md" = "config/claude/CLAUDE.md";
+    ".claude/settings.json" = "config/claude/settings.json";
+    ".claude/statusline.sh" = "config/claude/statusline.sh";
+    ".codex/AGENTS.md" = "config/codex/AGENTS.md";
+    ".codex/config.toml" = "config/codex/config.toml";
+  };
+
+  # xdg.configFile symlinks (target -> source path in config/)
+  xdgSymlinks = {
+    "ghostty" = "config/ghostty";
+    "nvim" = "config/nvim";
+    "starship.toml" = "config/starship/starship.toml";
+    "tmux" = "config/tmux";
+    "lazygit" = "config/lazygit";
+  };
+
+  # Darwin-only xdg.configFile symlinks
+  darwinXdgSymlinks = {
+    "karabiner/karabiner.json" = "config/karabiner/karabiner.json";
+  };
 in
 {
-  home.file = {
-    # Shell
-    ".zshenv".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/zsh/.zshenv";
-    ".zshrc".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/zsh/.zshrc";
-    ".bash_profile".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/bash/.bash_profile";
-    ".bashrc".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/bash/.bashrc";
-
-    # Claude Code
-    ".claude/CLAUDE.md".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/claude/CLAUDE.md";
-    ".claude/settings.json".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/claude/settings.json";
-    ".claude/statusline.sh".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/claude/statusline.sh";
-
-    # Codex
-    ".codex/AGENTS.md".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/codex/AGENTS.md";
-    ".codex/config.toml".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/codex/config.toml";
-  };
+  home.file = lib.mapAttrs (_: mkSymlink) homeSymlinks;
 
   xdg.enable = true;
-  xdg.configFile = {
-    "ghostty".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/ghostty";
-    "nvim".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/nvim";
-    "starship.toml".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/starship/starship.toml";
-    "tmux".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/tmux";
-    "lazygit".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/lazygit";
-  }
-  // lib.optionalAttrs isDarwin {
-    "karabiner/karabiner.json".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/config/karabiner/karabiner.json";
-  };
+  xdg.configFile =
+    lib.mapAttrs (_: mkSymlink) xdgSymlinks
+    // lib.optionalAttrs isDarwin (lib.mapAttrs (_: mkSymlink) darwinXdgSymlinks);
 }

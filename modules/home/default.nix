@@ -13,7 +13,7 @@
     ./dotfiles.nix
     ./editors
     ./git
-    ./jujutsu
+    ./jj
     ./packages.nix
     ./programs
     ./ssh

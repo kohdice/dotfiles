@@ -32,10 +32,12 @@
       };
 
       ghq.root = "~/developments";
+    };
 
-      gpg.format = "ssh";
-      commit.gpgsign = true;
-      tag.gpgsign = true;
+    signing = {
+      key = "~/.ssh/id_ed25519.pub";
+      signByDefault = true;
+      format = "ssh";
     };
   };
 

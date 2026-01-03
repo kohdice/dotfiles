@@ -7,9 +7,6 @@
     bun
     deno
 
-    # Package Managers
-    pnpm
-
     # TypeScript
     typescript
 

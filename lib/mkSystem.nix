@@ -25,9 +25,6 @@ let
     allowUnfree = true;
   };
 
-  # Custom overlays
-  overlays = [ (import ../overlays) ];
-
   # Common specialArgs passed to all modules
   specialArgs = {
     inherit inputs;
@@ -46,7 +43,6 @@ if isDarwin then
       ../modules/${platform}
 
       {
-        nixpkgs.overlays = overlays;
         nixpkgs.config = nixpkgsConfig;
       }
 
@@ -77,7 +73,7 @@ else
   # Linux configuration (home-manager standalone)
   inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {
-      inherit system overlays;
+      inherit system;
       config = nixpkgsConfig;
     };
     extraSpecialArgs = specialArgs // {

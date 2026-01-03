@@ -35,9 +35,6 @@ in
       protobuf
       typos
 
-      # AI tools
-      ai-tools
-
       # Build tools
       tree-sitter
 

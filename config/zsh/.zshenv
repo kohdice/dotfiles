@@ -17,3 +17,9 @@ export PATH=$PATH:$GOPATH/bin
 
 # Cargo
 export PATH=$PATH:$HOME/.cargo/bin
+
+# Bun
+export PATH=$PATH:$HOME/.bun/bin
+
+# Deno
+export PATH=$PATH:$HOME/.deno/bin

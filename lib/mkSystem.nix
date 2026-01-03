@@ -25,14 +25,8 @@ let
     allowUnfree = true;
   };
 
-  # Frequently updated packages (independent update cycle)
-  latestPkgs = import inputs.nixpkgs-latest {
-    inherit system;
-    config = nixpkgsConfig;
-  };
-
   # Custom overlays
-  overlays = [ (import ../overlays { inherit latestPkgs; }) ];
+  overlays = [ (import ../overlays) ];
 
   # Common specialArgs passed to all modules
   specialArgs = {

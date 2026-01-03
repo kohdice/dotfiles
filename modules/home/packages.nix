@@ -35,7 +35,7 @@ in
       protobuf
       typos
 
-      # AI tools (nixpkgs-latest)
+      # AI tools
       ai-tools
 
       # Build tools

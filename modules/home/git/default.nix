@@ -33,6 +33,12 @@
 
       ghq.root = "~/developments";
     };
+
+    signing = {
+      key = "~/.ssh/id_ed25519.pub";
+      signByDefault = true;
+      format = "ssh";
+    };
   };
 
   programs.delta = {

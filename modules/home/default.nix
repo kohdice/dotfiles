@@ -13,8 +13,10 @@
     ./dotfiles.nix
     ./editors
     ./git
+    ./jujutsu
     ./packages.nix
     ./programs
+    ./ssh
   ];
 
   home = {

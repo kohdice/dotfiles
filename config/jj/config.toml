@@ -1,0 +1,7 @@
+[signing]
+backend = "ssh"
+sign-all = true
+
+[user]
+email = "kohdice.biz@gmail.com"
+name = "kodai"

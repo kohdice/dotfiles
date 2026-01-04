@@ -72,16 +72,19 @@ if command -v zoxide >/dev/null 2>&1; then
 fi
 
 # Plugins
-ZSH_AUTOSUGGESTIONS="$HOME/.local/state/home-manager/gcroots/current-home/home-path/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-ZSH_SYNTAX_HIGHLIGHTING="$HOME/.local/state/home-manager/gcroots/current-home/home-path/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+for dir in "/usr/share" "/usr/local/share" "${HOMEBREW_PREFIX:-/opt/homebrew}/share" "$HOME/.nix-profile/share"; do
+  if [ -f "$dir/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+    source "$dir/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    break
+  fi
+done
 
-if [ -f "$ZSH_AUTOSUGGESTIONS" ]; then
-  source "$ZSH_AUTOSUGGESTIONS"
-fi
-
-if [ -f "$ZSH_SYNTAX_HIGHLIGHTING" ]; then
-  source "$ZSH_SYNTAX_HIGHLIGHTING"
-fi
+for dir in "/usr/share" "/usr/local/share" "${HOMEBREW_PREFIX:-/opt/homebrew}/share" "$HOME/.nix-profile/share"; do
+  if [ -f "$dir/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+    source "$dir/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    break
+  fi
+done
 
 ### fzf ###
 

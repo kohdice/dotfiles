@@ -17,6 +17,13 @@ let
   # Import user configuration
   userConfig = import ../users/${user};
 
+  # User info
+  userInfo = userConfig.info;
+
+  # User modules
+  userHomeModule = userConfig.home;
+  userDarwinModule = userConfig.darwin;
+
   # Platform detection
   isDarwin = inputs.nixpkgs.lib.hasSuffix "darwin" system;
 
@@ -28,7 +35,7 @@ let
   # Common specialArgs passed to all modules
   specialArgs = {
     inherit inputs;
-    user = userConfig.user;
+    user = userInfo;
   };
 
   # dotfiles directory (flake root)
@@ -41,6 +48,7 @@ if isDarwin then
     inherit system specialArgs;
     modules = [
       ../modules/${platform}
+      userDarwinModule
 
       {
         nixpkgs.config = nixpkgsConfig;
@@ -55,7 +63,12 @@ if isDarwin then
           extraSpecialArgs = specialArgs // {
             inherit dotfilesDir;
           };
-          users.${userConfig.user.name} = import ../modules/home;
+          users.${userInfo.name} = {
+            imports = [
+              ../modules/home
+              userHomeModule
+            ];
+          };
         };
       }
 
@@ -63,7 +76,7 @@ if isDarwin then
       {
         nix-homebrew = {
           enable = true;
-          user = userConfig.user.name;
+          user = userInfo.name;
           autoMigrate = true;
         };
       }
@@ -82,6 +95,7 @@ else
     modules = [
       ../modules/home
       ../modules/${platform}
+      userHomeModule
       inputs.nix-index-database.hmModules.nix-index
     ];
   }

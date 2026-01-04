@@ -9,22 +9,16 @@ Nix Flake-based macOS/Linux development environment dotfiles. Uses nix-darwin (m
 ## Commands
 
 ```bash
-# Build configuration
-nix run .#build          # Build kohdice profile
-nix run .#build-work     # Build work profile
-
-# Apply configuration (macOS uses sudo internally)
-nix run .#switch         # Apply kohdice profile
+# Build and apply configuration
+nix run .#build          # Build kohdice profile (dry-run)
+nix run .#build-work     # Build work profile (dry-run)
+nix run .#switch         # Apply kohdice profile (macOS uses sudo internally)
 nix run .#switch-work    # Apply work profile
+nix run .#update         # Update all inputs and apply
 
-# Format code
+# Format and validate
 nix fmt                  # Format Nix and Lua files (nixfmt, stylua)
-
-# Validation
 nix flake check          # Validate entire flake
-
-# Update packages
-nix flake update && nix run .#switch  # Update all inputs and apply
 
 # Troubleshooting
 darwin-rebuild --list-generations     # List generations (macOS)
@@ -35,56 +29,48 @@ nix eval .#darwinConfigurations.kohdice.system --show-trace  # Debug build error
 
 ## Architecture
 
-```
-dotfiles/
-├── flake.nix                     # Entry point - darwinConfigurations & homeConfigurations
-├── lib/
-│   ├── mkSystem.nix              # Unified system builder (darwin/linux)
-│   └── apps.nix                  # App definitions for `nix run .#<app>`
-├── overlays/                     # Custom package overlays
-│   ├── default.nix               # Overlay entry point
-│   └── ai-tools.nix              # AI tools bundle (claude-code, codex)
-├── modules/
-│   ├── darwin/                   # macOS-specific (system.nix, homebrew.nix, packages.nix)
-│   ├── home/                     # home-manager modules (cross-platform)
-│   │   ├── default.nix           # Module imports only
-│   │   ├── dotfiles.nix          # XDG symlinks and home.file configurations
-│   │   ├── packages.nix          # CLI tools
-│   │   ├── dev/                  # Language-specific tools (go, rust, python, js, lua, zig, nix, c, docker, terraform, etc.)
-│   │   ├── editors/              # Editor configurations (neovim.nix)
-│   │   ├── git/                  # Git configuration and aliases
-│   │   └── programs/             # App-specific configs (zsh.nix, claude-code.nix, codex.nix, gh.nix)
-│   └── linux/                    # Linux-specific (default.nix, packages.nix)
-├── users/                        # User profile definitions
-│   ├── kohdice/default.nix       # Personal profile
-│   └── work/default.nix          # Work profile
-└── config/                       # App configs (symlinked via XDG)
-    ├── nvim/                     # Neovim (Lazy.nvim plugin manager)
-    ├── zsh/, bash/               # Shell configs
-    ├── git/                      # Git config templates
-    ├── tmux/, ghostty/, lazygit/, starship/, karabiner/
-    ├── claude/                   # Claude Code config templates
-    └── codex/                    # OpenAI Codex config templates
-```
+- `flake.nix` - Entry point defining `darwinConfigurations` and `homeConfigurations`
+- `lib/mkSystem.nix` - Unified system builder for Darwin/Linux
+- `lib/apps.nix` - App definitions for `nix run .#<app>`
+- `modules/darwin/` - macOS-specific (system.nix, homebrew.nix, packages.nix)
+- `modules/home/` - Cross-platform home-manager modules
+- `modules/linux/` - Linux-specific configuration
+- `users/` - User profile definitions
+- `config/` - App configs (symlinked via XDG)
 
 ## User Profiles
 
-Defined in `users/` directory and referenced from `flake.nix`:
+Each profile in `users/<name>/` has three files:
 
-- `kohdice` - Personal profile (/Users/kohdice)
-- `work` - Work profile (/Users/karei)
+```nix
+# users/<name>/default.nix - Exports the profile
+{
+  info = import ./info.nix;    # User info (name, email, home, dotfilesDir)
+  home = ./home.nix;           # home-manager module overrides
+  darwin = ./darwin.nix;       # Darwin-specific overrides (macOS only)
+}
+```
+
+Profiles: `kohdice` (personal, /Users/kohdice) and `work` (business, /Users/karei)
 
 ## Key Patterns
 
-- **Overlays**: Custom packages defined in `overlays/`, applied via `flake.nix`
-- **Module imports**: Alphabetically ordered in `modules/home/default.nix`
-- **Symlinks**: Managed in `modules/home/dotfiles.nix` (XDG) and app-specific modules
+- **Module arguments**: All modules receive `user` (from info.nix) and `dotfilesDir` via `specialArgs`
 - **Platform conditionals**: Use `lib.optionals isDarwin/isLinux` for platform-specific packages
-- **System builder**: `lib/mkSystem.nix` handles both Darwin and Linux configurations
+- **Symlinks**: Managed in `modules/home/dotfiles.nix` for XDG config and home.file
+- **Module imports**: Alphabetically ordered in `modules/home/default.nix`
+- **Nix vs Symlink decision**: See `docs/ARCHITECTURE.md` for when to use Nix modules vs symlinks
 
-## Neovim Structure (config/nvim/)
+## Adding Packages
 
-- `init.lua` → `lua/config/lazy.lua` - Entry and plugin manager
+- **CLI tools (cross-platform)**: `modules/home/packages.nix`
+- **Language tools**: `modules/home/dev/<language>.nix` (import in dev/default.nix)
+- **macOS system packages**: `modules/darwin/packages.nix`
+- **Homebrew/Cask/MAS**: `modules/darwin/homebrew.nix`
+
+## Neovim (config/nvim/)
+
+- `init.lua` → `lua/config/lazy.lua` - Entry and Lazy.nvim plugin manager
 - `lua/config/` - keymaps.lua, options.lua
 - `lua/plugins/` - Individual plugin configs
-- `lsp/` - LSP configs (gopls, rust_analyzer, lua_ls, ts_ls)
+- `lsp/` - Native LSP server configs (gopls, rust_analyzer, lua_ls, ts_ls, etc.)

@@ -41,13 +41,15 @@ nix run .#switch
 
 ## Daily Usage
 
-| Command                                | Description                   |
-| -------------------------------------- | ----------------------------- |
-| `nix run .#build`                      | Build configuration (dry-run) |
-| `nix run .#switch`                     | Apply configuration           |
-| `nix flake update && nix run .#switch` | Update all packages           |
-| `nix fmt`                              | Format Nix and Lua files      |
-| `nix flake check`                      | Validate flake configuration  |
+| Command                | Description                               |
+| ---------------------- | ----------------------------------------- |
+| `nix run .#build`      | Build kohdice profile (dry-run)           |
+| `nix run .#build-work` | Build work profile (dry-run)              |
+| `nix run .#switch`     | Apply kohdice profile                     |
+| `nix run .#switch-work`| Apply work profile                        |
+| `nix run .#update`     | Update all packages and apply             |
+| `nix fmt`              | Format Nix and Lua files                  |
+| `nix flake check`      | Validate flake configuration              |
 
 ## Module Structure
 
@@ -55,7 +57,6 @@ nix run .#switch
 dotfiles/
 ├── flake.nix              # Entry point
 ├── lib/                   # Helper functions (mkSystem.nix, apps.nix)
-├── overlays/              # Custom package overlays
 ├── modules/
 │   ├── darwin/            # macOS system configuration
 │   ├── home/              # home-manager configuration (cross-platform)
@@ -68,3 +69,5 @@ dotfiles/
 
 - [Architecture](docs/ARCHITECTURE.md) - Project structure and included tools
 - [Customization](docs/CUSTOMIZATION.md) - Adding packages and creating profiles
+- [Dependencies](docs/DEPENDENCIES.md) - How Nix dependency management works
+- [Usage](docs/USAGE.md) - Detailed usage guide and workflow

@@ -16,9 +16,6 @@ dotfiles/
 ├── lib/
 │   ├── mkSystem.nix              # 統合システムビルダー (darwin/linux)
 │   └── apps.nix                  # App 定義 (`nix run .#<app>`)
-├── overlays/                     # カスタムパッケージ overlay
-│   ├── default.nix               # Overlay エントリーポイント
-│   └── ai-tools.nix              # AI ツールバンドル (claude-code, codex)
 ├── modules/
 │   ├── darwin/                   # macOS 固有モジュール
 │   │   ├── default.nix           # Darwin モジュールのインポート
@@ -26,36 +23,40 @@ dotfiles/
 │   │   ├── packages.nix          # Nix パッケージ
 │   │   └── homebrew.nix          # Homebrew, Cask, Mac App Store
 │   ├── home/                     # home-manager モジュール（クロスプラットフォーム）
-│   │   ├── default.nix           # モジュールインポートのみ（アルファベット順）
+│   │   ├── default.nix           # モジュールインポートのみ
 │   │   ├── dotfiles.nix          # XDG シンボリックリンク、home.file 設定
 │   │   ├── packages.nix          # ユーザーパッケージ
-│   │   ├── dev/                  # 言語別開発ツール (go.nix, rust.nix 等)
+│   │   ├── dev/                  # 言語別開発ツール
 │   │   ├── editors/              # エディタ設定 (neovim.nix)
 │   │   ├── git/                  # Git 設定 (default.nix, aliases.nix)
-│   │   └── programs/             # アプリ固有設定 (claude-code.nix, codex.nix, gh.nix)
+│   │   ├── jj/                   # Jujutsu VCS 設定
+│   │   ├── programs/             # アプリ固有設定 (zsh.nix, bash.nix, gh.nix)
+│   │   ├── shell/                # 共通シェル設定 (aliases.nix, env.nix, paths.nix)
+│   │   └── ssh/                  # SSH 設定
 │   └── linux/
-│       └── default.nix           # Linux 固有設定
+│       ├── default.nix           # Linux 固有設定
+│       └── packages.nix          # Linux 固有パッケージ
 ├── users/                        # ユーザープロファイル定義
-│   ├── kohdice/default.nix       # 個人用プロファイル
-│   └── work/default.nix          # 業務用プロファイル
-├── config/                       # アプリケーション設定（~/.config へシンボリックリンク）
+│   ├── kohdice/                  # 個人用プロファイル
+│   │   ├── default.nix           # プロファイルエクスポート
+│   │   ├── info.nix              # ユーザー情報 (name, email, home, dotfilesDir)
+│   │   ├── home.nix              # home-manager オーバーライド
+│   │   └── darwin.nix            # Darwin 固有オーバーライド
+│   └── work/                     # 業務用プロファイル (同様の構造)
+├── config/                       # アプリケーション設定（シンボリックリンク経由）
 │   ├── nvim/                     # Neovim 設定
 │   ├── tmux/                     # tmux 設定
 │   ├── ghostty/                  # Ghostty ターミナル設定
 │   ├── lazygit/                  # lazygit 設定
 │   ├── starship/                 # Starship プロンプト設定
-│   ├── karabiner/                # Karabiner-Elements 設定
+│   ├── karabiner/                # Karabiner-Elements 設定 (macOS のみ)
 │   ├── git/                      # Git 設定
+│   ├── jj/                       # Jujutsu VCS 設定
 │   ├── zsh/                      # Zsh 設定
 │   ├── bash/                     # Bash 設定
 │   ├── claude/                   # Claude Code 設定
 │   └── codex/                    # OpenAI Codex 設定
 └── docs/                         # ドキュメント
-    ├── ARCHITECTURE.md           # このファイル
-    ├── CUSTOMIZATION.md          # カスタマイズガイド
-    ├── DARWIN-SYSTEM.md          # macOS システム設定ガイド
-    ├── DEPENDENCIES.md           # 依存関係管理ガイド
-    └── USAGE.md                  # 使い方ガイド
 ```
 
 ## ユーザープロファイル
@@ -78,6 +79,9 @@ nix run .#build-work     # work プロファイルをビルド
 nix run .#switch         # kohdice プロファイルを適用
 nix run .#switch-work    # work プロファイルを適用
 
+# パッケージの更新
+nix run .#update         # 全入力を更新して適用
+
 # コードフォーマット
 nix fmt                  # Nix と Lua ファイルをフォーマット
 ```
@@ -86,14 +90,15 @@ nix fmt                  # Nix と Lua ファイルをフォーマット
 
 ### 開発言語
 
-| 言語        | パッケージ                    |
-| ----------- | ----------------------------- |
-| **Go**      | go, golangci-lint, delve      |
-| **Rust**    | rustup (rust-analyzer は別途) |
-| **Python**  | python3, uv, ruff             |
-| **Node.js** | nodejs, pnpm, npm             |
-| **Lua**     | lua, luajit                   |
-| **Zig**     | zig                           |
+| 言語        | パッケージ                          |
+| ----------- | ----------------------------------- |
+| **Go**      | go, golangci-lint, delve            |
+| **Rust**    | rustup (rust-analyzer は rustup で) |
+| **Python**  | uv, ruff, pyright                   |
+| **Node.js** | nodejs_24, bun, deno, typescript    |
+| **Lua**     | lua, luajit                         |
+| **C/C++**   | gcc, clang-tools                    |
+| **Zig**     | zig, zls                            |
 
 ### LSP サーバー
 
@@ -104,32 +109,51 @@ nix fmt                  # Nix と Lua ファイルをフォーマット
 | Python                | pyright                    | Nix      |
 | TypeScript/JavaScript | typescript-language-server | Nix      |
 | Lua                   | lua-language-server        | Nix      |
+| C/C++                 | clangd                     | Nix      |
+| JSON                  | vscode-langservers-json    | Nix      |
+| YAML                  | yaml-language-server       | Nix      |
+| TOML                  | taplo                      | Nix      |
 | Nix                   | nil                        | Nix      |
 | Zig                   | zls                        | Nix      |
+| Markdown              | marksman                   | Nix      |
 
 ### CLI ツール
 
-| カテゴリ       | ツール                                      |
-| -------------- | ------------------------------------------- |
-| **コアツール** | bat, curl, eza, fd, htop, jq, ripgrep, tree |
-| **Git ツール** | gh, ghq, delta, lazygit, peco               |
-| **ターミナル** | fastfetch, yazi, zoxide                     |
-| **開発ツール** | protobuf, stylua, typos, tree-sitter, gcc   |
+| カテゴリ       | ツール                                                   |
+| -------------- | -------------------------------------------------------- |
+| **コアツール** | bat, curl, dust, eza, fd, fzf, htop, jq, ripgrep, tree   |
+| **Git ツール** | gh, ghq, delta, lazygit                                  |
+| **ターミナル** | fastfetch, navi, starship, yazi, zoxide                  |
+| **開発ツール** | protobuf, typos, tree-sitter                             |
+| **AI ツール**  | claude-code, codex                                       |
 
-### macOS GUI アプリケーション（Homebrew 経由）
+### macOS GUI アプリケーション
 
-**Cask アプリケーション:**
+**Nix パッケージ（システムレベル）:**
 
+- Karabiner-Elements
+- Scroll Reverser
+
+**Nix パッケージ（ユーザーレベル）:**
+
+- Discord (macOS / x86_64-linux のみ)
+- Google Chrome
+- Slack
+- TablePlus
+- VS Code
+
+**Homebrew Cask:**
+
+- ChatGPT
+- Claude
 - CotEditor
 - Docker Desktop
+- Ghostty
 - Google Japanese IME
-- Karabiner-Elements
-- MySQL Workbench
 - Numi
 - Postman
 - Raycast
-- Scroll Reverser
-- TablePlus
+- VLC
 - Zoom
 
 **Mac App Store:**
@@ -154,52 +178,58 @@ config/nvim/
 │   │   ├── lazy.lua              # プラグインマネージャー設定
 │   │   ├── keymaps.lua           # キーマッピング
 │   │   └── options.lua           # Neovim オプション
-│   └── plugins/                  # 個別プラグイン設定
+│   ├── plugins/                  # 個別プラグイン設定
+│   └── utils/                    # ユーティリティ関数
 └── lsp/                          # LSP サーバー設定
+    ├── clangd.lua
     ├── gopls.lua
+    ├── jsonls.lua
     ├── lua_ls.lua
     ├── rust_analyzer.lua
-    └── ts_ls.lua
+    ├── taplo.lua
+    ├── ts_ls.lua
+    └── yamlls.lua
 ```
 
 ## AI コーディングツール連携
+
+`modules/home/dotfiles.nix` で設定ファイルのシンボリックリンクを管理しています。
 
 ### Claude Code
 
 `config/claude/` ディレクトリに Claude Code の設定があります:
 
-- **ベース設定** - CLAUDE.md、settings.json、statusline.sh
-- **MCP 設定** - mcp.json（MCP サーバー設定テンプレート）
+- **CLAUDE.md** - プロジェクト固有の指示
+- **settings.json** - Claude Code の設定
+- **statusline.sh** - ステータスライン用スクリプト
+- **mcp.json** - MCP サーバー設定テンプレート
+
+シンボリックリンク先: `~/.claude/`
 
 ### OpenAI Codex
 
 `config/codex/` ディレクトリに OpenAI Codex の設定があります:
 
-- **ベース設定** - AGENTS.md、config.toml
+- **AGENTS.md** - エージェント設定
+- **config.toml** - Codex 設定
 
-## Overlays
+シンボリックリンク先: `~/.codex/`
 
-`overlays/` でカスタムパッケージを定義し、`flake.nix` で適用します:
-
-- **default.nix**: 全 overlay のエントリーポイント
-- **ai-tools.nix**: AI 開発ツールのバンドル（claude-code, codex）
-
-Overlay は `flake.nix` の `overlays` 変数で定義され、Darwin/Linux 両方の設定に適用されます。
-
-## XDG シンボリックリンク
+## シンボリックリンク
 
 `modules/home/dotfiles.nix` で以下のシンボリックリンクが設定されます:
 
-### ホームディレクトリ直下
+### ホームディレクトリ直下 (home.file)
 
-| ソース                      | リンク先          |
-| --------------------------- | ----------------- |
-| `config/zsh/.zshenv`        | `~/.zshenv`       |
-| `config/zsh/.zshrc`         | `~/.zshrc`        |
-| `config/bash/.bash_profile` | `~/.bash_profile` |
-| `config/bash/.bashrc`       | `~/.bashrc`       |
+| ソース                        | リンク先                  |
+| ----------------------------- | ------------------------- |
+| `config/claude/CLAUDE.md`     | `~/.claude/CLAUDE.md`     |
+| `config/claude/settings.json` | `~/.claude/settings.json` |
+| `config/claude/statusline.sh` | `~/.claude/statusline.sh` |
+| `config/codex/AGENTS.md`      | `~/.codex/AGENTS.md`      |
+| `config/codex/config.toml`    | `~/.codex/config.toml`    |
 
-### ~/.config 配下
+### ~/.config 配下 (xdg.configFile)
 
 | ソース                            | リンク先                                          |
 | --------------------------------- | ------------------------------------------------- |
@@ -209,3 +239,36 @@ Overlay は `flake.nix` の `overlays` 変数で定義され、Darwin/Linux 両�
 | `config/tmux`                     | `~/.config/tmux`                                  |
 | `config/lazygit`                  | `~/.config/lazygit`                               |
 | `config/karabiner/karabiner.json` | `~/.config/karabiner/karabiner.json` (macOS のみ) |
+
+## 設定ファイル管理の方針
+
+アプリケーション設定を Nix モジュール（`programs.*`）で管理するか、シンボリンクで管理するかの判断基準：
+
+### Nix 管理が適切な条件
+
+1. **動的な値の注入が必要** - `user.email`, `user.fullName` 等のプロファイル依存値
+2. **home-manager との統合が必要** - `home.sessionPath`, `home.sessionVariables`
+3. **他の Nix モジュールとの連携** - 例: `programs.delta` + `programs.git`
+4. **宣言的オプションで大部分を表現可能** - `extraConfig` が 50% 未満
+
+### シンボリンクが適切な条件
+
+1. **設定が複雑で extraConfig が大部分** - 50% 以上
+2. **ファイル分割・条件分岐がネイティブに可能** - `source`, `if-shell` 等
+3. **独自言語でシンタックスハイライトが重要** - Lua, tmux 設定等
+4. **home-manager との統合が不要** - 環境変数や PATH はシェルから継承
+
+### 現在の構成
+
+| アプリ         | 管理方法     | 理由                                     |
+| -------------- | ------------ | ---------------------------------------- |
+| git, jj        | Nix          | `user.*` 注入、100% 宣言的               |
+| zsh, bash      | Nix          | `home.sessionPath` 統合が必須            |
+| ssh            | Nix          | ホスト設定など宣言的管理が適切           |
+| claude, codex  | シンボリンク | 設定ファイルの直接編集が多い             |
+| tmux           | シンボリンク | 20% しか宣言的でない、ファイル分割が必要 |
+| neovim         | シンボリンク | Lua 言語、home-manager 統合不要          |
+| ghostty        | シンボリンク | home-manager 統合不要                    |
+| starship       | シンボリンク | home-manager 統合不要                    |
+| lazygit        | シンボリンク | home-manager 統合不要                    |
+| karabiner      | シンボリンク | JSON 設定、macOS のみ                    |

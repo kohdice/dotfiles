@@ -8,6 +8,7 @@ in
 {
   programs.zsh = {
     enable = true;
+    enableCompletion = true;
     shellAliases = aliases // {
       zshreload = "source ~/.zshrc";
     };

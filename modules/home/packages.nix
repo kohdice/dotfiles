@@ -23,7 +23,6 @@ in
       delta
       ghq
       lazygit
-      peco
 
       # Terminal tools
       fastfetch
@@ -34,9 +33,6 @@ in
       # Development tools
       protobuf
       typos
-
-      # AI tools (nixpkgs-latest)
-      ai-tools
 
       # Build tools
       tree-sitter

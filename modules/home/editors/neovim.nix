@@ -1,5 +1,13 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
+let
+  isLinux = pkgs.stdenv.isLinux;
+in
 {
   programs.neovim = {
     enable = true;
@@ -8,10 +16,11 @@
     vimAlias = true;
 
     # Dependencies for Neovim plugins
-    extraPackages = with pkgs; [
-      # Clipboard support (Linux)
-      xclip
-    ];
+    extraPackages =
+      with pkgs;
+      lib.optionals isLinux [
+        xclip # Clipboard support (Linux only)
+      ];
   };
 
   # Note: Neovim configuration is managed via xdg.configFile in default.nix

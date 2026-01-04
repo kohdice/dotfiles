@@ -48,13 +48,8 @@ alias tf="terraform"
 # Ghostty
 alias gstcfg="nvim ~/.config/ghostty/config"
 
-# Lazy tools
+# Lazygit
 alias lg="lazygit"
-alias lsq="lazysql"
-alias ldk="lazydocker"
-
-# Nix
-alias rebuild="nix run ~/.dotfiles#switch"
 
 ### Settings ###
 
@@ -65,12 +60,12 @@ shopt -s extglob
 shopt -s globstar
 shopt -s checkjobs
 
-# Mise
-if [ -f ~/.local/bin/mise ]; then
-  eval "$(~/.local/bin/mise activate bash)"
+# Starship
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
 fi
 
-# Starship Prompt
-if command -v starship >/dev/null 2>&1; then
-  eval "$(starship init bash)"
+# Zoxide
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
 fi

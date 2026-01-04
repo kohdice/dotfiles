@@ -25,15 +25,6 @@ let
     allowUnfree = true;
   };
 
-  # Frequently updated packages (independent update cycle)
-  latestPkgs = import inputs.nixpkgs-latest {
-    inherit system;
-    config = nixpkgsConfig;
-  };
-
-  # Custom overlays
-  overlays = [ (import ../overlays { inherit latestPkgs; }) ];
-
   # Common specialArgs passed to all modules
   specialArgs = {
     inherit inputs;
@@ -52,7 +43,6 @@ if isDarwin then
       ../modules/${platform}
 
       {
-        nixpkgs.overlays = overlays;
         nixpkgs.config = nixpkgsConfig;
       }
 
@@ -83,7 +73,7 @@ else
   # Linux configuration (home-manager standalone)
   inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {
-      inherit system overlays;
+      inherit system;
       config = nixpkgsConfig;
     };
     extraSpecialArgs = specialArgs // {

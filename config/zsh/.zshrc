@@ -61,11 +61,15 @@ setopt hist_ignore_dups      # Ignore duplicate commands in history
 setopt share_history         # Share history between sessions
 setopt inc_append_history    # Save history immediately
 
-# Starship Prompt
-eval "$(starship init zsh)"
+# Starship
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
 
-# zoxide
-eval "$(zoxide init zsh)"
+# Zoxide
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
 
 # Plugins
 ZSH_AUTOSUGGESTIONS="$HOME/.local/state/home-manager/gcroots/current-home/home-path/share/zsh-autosuggestions/zsh-autosuggestions.zsh"

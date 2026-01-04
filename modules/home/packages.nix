@@ -37,6 +37,10 @@ in
       protobuf
       typos
 
+      # AI tools
+      claude-code
+      codex
+
       # Build tools
       tree-sitter
 

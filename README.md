@@ -41,15 +41,15 @@ nix run .#switch
 
 ## Daily Usage
 
-| Command                | Description                               |
-| ---------------------- | ----------------------------------------- |
-| `nix run .#build`      | Build kohdice profile (dry-run)           |
-| `nix run .#build-work` | Build work profile (dry-run)              |
-| `nix run .#switch`     | Apply kohdice profile                     |
-| `nix run .#switch-work`| Apply work profile                        |
-| `nix run .#update`     | Update all packages and apply             |
-| `nix fmt`              | Format Nix and Lua files                  |
-| `nix flake check`      | Validate flake configuration              |
+| Command                 | Description                     |
+| ----------------------- | ------------------------------- |
+| `nix run .#build`       | Build kohdice profile (dry-run) |
+| `nix run .#build-work`  | Build work profile (dry-run)    |
+| `nix run .#switch`      | Apply kohdice profile           |
+| `nix run .#switch-work` | Apply work profile              |
+| `nix run .#update`      | Update all packages and apply   |
+| `nix fmt`               | Format Nix and Lua files        |
+| `nix flake check`       | Validate flake configuration    |
 
 ## Module Structure
 

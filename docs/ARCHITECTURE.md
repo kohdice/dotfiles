@@ -119,13 +119,13 @@ nix fmt                  # Nix と Lua ファイルをフォーマット
 
 ### CLI ツール
 
-| カテゴリ       | ツール                                                   |
-| -------------- | -------------------------------------------------------- |
-| **コアツール** | bat, curl, dust, eza, fd, fzf, htop, jq, ripgrep, tree   |
-| **Git ツール** | gh, ghq, delta, lazygit                                  |
-| **ターミナル** | fastfetch, navi, starship, yazi, zoxide                  |
-| **開発ツール** | protobuf, typos, tree-sitter                             |
-| **AI ツール**  | claude-code, codex                                       |
+| カテゴリ       | ツール                                                 |
+| -------------- | ------------------------------------------------------ |
+| **コアツール** | bat, curl, dust, eza, fd, fzf, htop, jq, ripgrep, tree |
+| **Git ツール** | gh, ghq, delta, lazygit                                |
+| **ターミナル** | fastfetch, navi, starship, yazi, zoxide                |
+| **開発ツール** | protobuf, typos, tree-sitter                           |
+| **AI ツール**  | claude-code, codex                                     |
 
 ### macOS GUI アプリケーション
 
@@ -260,15 +260,15 @@ config/nvim/
 
 ### 現在の構成
 
-| アプリ         | 管理方法     | 理由                                     |
-| -------------- | ------------ | ---------------------------------------- |
-| git, jj        | Nix          | `user.*` 注入、100% 宣言的               |
-| zsh, bash      | Nix          | `home.sessionPath` 統合が必須            |
-| ssh            | Nix          | ホスト設定など宣言的管理が適切           |
-| claude, codex  | シンボリンク | 設定ファイルの直接編集が多い             |
-| tmux           | シンボリンク | 20% しか宣言的でない、ファイル分割が必要 |
-| neovim         | シンボリンク | Lua 言語、home-manager 統合不要          |
-| ghostty        | シンボリンク | home-manager 統合不要                    |
-| starship       | シンボリンク | home-manager 統合不要                    |
-| lazygit        | シンボリンク | home-manager 統合不要                    |
-| karabiner      | シンボリンク | JSON 設定、macOS のみ                    |
+| アプリ        | 管理方法     | 理由                                     |
+| ------------- | ------------ | ---------------------------------------- |
+| git, jj       | Nix          | `user.*` 注入、100% 宣言的               |
+| zsh, bash     | Nix          | `home.sessionPath` 統合が必須            |
+| ssh           | Nix          | ホスト設定など宣言的管理が適切           |
+| claude, codex | シンボリンク | 設定ファイルの直接編集が多い             |
+| tmux          | シンボリンク | 20% しか宣言的でない、ファイル分割が必要 |
+| neovim        | シンボリンク | Lua 言語、home-manager 統合不要          |
+| ghostty       | シンボリンク | home-manager 統合不要                    |
+| starship      | シンボリンク | home-manager 統合不要                    |
+| lazygit       | シンボリンク | home-manager 統合不要                    |
+| karabiner     | シンボリンク | JSON 設定、macOS のみ                    |

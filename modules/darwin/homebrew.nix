@@ -25,18 +25,14 @@
       "chatgpt"
       "claude"
       "coteditor"
-      "discord"
       "docker-desktop"
       "ghostty"
       "google-japanese-ime"
-      "mysqlworkbench"
       "numi"
       "postman"
       "raycast"
-      "slack"
-      "spotify"
-      "visual-studio-code"
       "vlc"
+      "zoom"
     ];
 
     # Mac App Store apps

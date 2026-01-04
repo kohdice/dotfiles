@@ -226,13 +226,12 @@ home.packages = with pkgs; [
 ```nix
 # modules/home/dev/javascript.nix
 home.packages = with pkgs; [
-  nodejs
+  nodejs_24    # LTS (current)
   bun
   deno
-  nodePackages.pnpm
-  nodePackages.npm
-  nodePackages.typescript
-  nodePackages.typescript-language-server
+  typescript
+  typescript-language-server
+  prettierd    # Formatter
 ];
 ```
 

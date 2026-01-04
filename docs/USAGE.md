@@ -14,6 +14,7 @@
 | `nix run .#build-work`  | work プロファイルをビルド（検証）    |
 | `nix run .#switch`      | kohdice プロファイルを適用           |
 | `nix run .#switch-work` | work プロファイルを適用              |
+| `nix run .#update`      | 全入力を更新して適用                 |
 | `nix fmt`               | Nix と Lua ファイルをフォーマット    |
 | `nix flake check`       | Flake 全体を検証                     |
 
@@ -24,7 +25,7 @@
 `nix run .#switch` は内部で以下を実行します:
 
 ```bash
-darwin-rebuild switch --flake .#kohdice
+sudo nix run nix-darwin -- switch --flake .#kohdice
 ```
 
 ### Linux の場合
@@ -32,7 +33,7 @@ darwin-rebuild switch --flake .#kohdice
 `nix run .#switch` は内部で以下を実行します:
 
 ```bash
-home-manager switch --flake .#kohdice
+nix run nixpkgs#home-manager -- switch --flake .#kohdice
 ```
 
 ## 具体的に何が起こるか
@@ -68,8 +69,8 @@ home-manager switch --flake .#kohdice
 nix run .#switch
        │
        ▼
-darwin-rebuild switch --flake .#kohdice  (macOS)
-home-manager switch --flake .#kohdice    (Linux)
+sudo nix run nix-darwin -- switch --flake .#kohdice  (macOS)
+nix run nixpkgs#home-manager -- switch --flake .#kohdice    (Linux)
        │
        ▼
 ┌───────────────────────────────────────────────┐

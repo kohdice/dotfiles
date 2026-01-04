@@ -1,9 +1,6 @@
 # User configuration for kohdice (personal)
 {
-  user = {
-    name = "kohdice";
-    fullName = "kohdice";
-    email = "kohdice.biz@gmail.com";
-    home = "/Users/kohdice";
-  };
+  info = import ./info.nix;
+  home = ./home.nix;
+  darwin = ./darwin.nix;
 }

@@ -1,9 +1,6 @@
 # User configuration for work
 {
-  user = {
-    name = "karei";
-    fullName = "kohdice";
-    email = "kohdice.biz@gmail.com";
-    home = "/Users/karei";
-  };
+  info = import ./info.nix;
+  home = ./home.nix;
+  darwin = ./darwin.nix;
 }

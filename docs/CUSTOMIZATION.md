@@ -79,49 +79,41 @@ homebrew = {
 };
 ```
 
-### カスタム Overlay の追加
-
-`overlays/` にカスタムパッケージを定義できます:
-
-```nix
-# overlays/my-tools.nix
-final: prev: {
-  my-tool-bundle = final.symlinkJoin {
-    name = "my-tool-bundle";
-    paths = with final; [
-      tool1
-      tool2
-    ];
-  };
-}
-```
-
-`overlays/default.nix` でインポート:
-
-```nix
-final: prev:
-{
-}
-// (import ./ai-tools.nix final prev)
-// (import ./my-tools.nix final prev)  # 追加
-```
-
 ## 新しいプロファイルの作成
 
 ### 1. ユーザー定義を追加
 
-`users/` ディレクトリに新しいプロファイルを作成:
+`users/` ディレクトリに新しいプロファイルを作成（3 ファイル構成）:
 
 ```nix
-# users/newprofile/default.nix
+# users/newprofile/info.nix - ユーザー情報
 {
-  user = {
-    name = "username";
-    fullName = "Your Name";
-    email = "your@email.com";
-    home = "/Users/username";  # macOS の場合
-    # home = "/home/username";  # Linux の場合
-  };
+  name = "username";
+  fullName = "Your Name";
+  email = "your@email.com";
+  home = "/Users/username";  # macOS の場合 (/home/username for Linux)
+  dotfilesDir = "/Users/username/developments/dotfiles";
+}
+```
+
+```nix
+# users/newprofile/home.nix - home-manager オーバーライド（空でも可）
+{ ... }:
+{ }
+```
+
+```nix
+# users/newprofile/darwin.nix - Darwin 固有オーバーライド（空でも可）
+{ ... }:
+{ }
+```
+
+```nix
+# users/newprofile/default.nix - プロファイルエクスポート
+{
+  info = import ./info.nix;
+  home = ./home.nix;
+  darwin = ./darwin.nix;
 }
 ```
 
@@ -192,14 +184,19 @@ switch-newprofile = {
 `modules/home/dotfiles.nix` でシンボリックリンクを管理しています:
 
 ```nix
-# ホームディレクトリ直下へのリンク
-home.file = {
-  ".your-config".source = "${dotfilesDir}/config/your-app/.your-config";
+# homeSymlinks に追加（ホームディレクトリ直下へのリンク）
+homeSymlinks = {
+  ".your-config" = "config/your-app/.your-config";
 };
 
-# ~/.config 配下へのリンク
-xdg.configFile = {
-  "your-app".source = "${dotfilesDir}/config/your-app";
+# xdgSymlinks に追加（~/.config 配下へのリンク）
+xdgSymlinks = {
+  "your-app" = "config/your-app";
+};
+
+# macOS のみの場合は darwinXdgSymlinks に追加
+darwinXdgSymlinks = {
+  "your-macos-app" = "config/your-macos-app";
 };
 ```
 

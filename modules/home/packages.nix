@@ -3,6 +3,7 @@
 let
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
+  isX86_64Linux = pkgs.stdenv.hostPlatform.system == "x86_64-linux";
 in
 {
   home.packages =
@@ -11,6 +12,7 @@ in
       # Core tools
       bat
       curl
+      dust
       eza
       fd
       fzf
@@ -26,6 +28,7 @@ in
 
       # Terminal tools
       fastfetch
+      navi
       starship
       yazi
       zoxide
@@ -34,6 +37,10 @@ in
       protobuf
       typos
 
+      # AI tools
+      claude-code
+      codex
+
       # Build tools
       tree-sitter
 
@@ -41,13 +48,20 @@ in
       google-chrome
     ]
     ++ lib.optionals isDarwin [
+      # GUI Apps
+      slack
       tableplus
-      zoom-us
+      vscode
     ]
     ++ lib.optionals isLinux [
+      # Development tools
       docker
+
+      # GUI Apps
       ghostty
-      mysql-workbench
-      zoom-us
+    ]
+    ++ lib.optionals (isDarwin || isX86_64Linux) [
+      # Discord (aarch64-linux not supported)
+      discord
     ];
 }

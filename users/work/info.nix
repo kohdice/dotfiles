@@ -2,6 +2,7 @@
 {
   name = "karei";
   fullName = "kohdice";
-  email = "kohdice.biz@gmail.com";
+  email = "kohdice@gmail.com";
   home = "/Users/karei";
+  dotfilesDir = "/Users/karei/kohdice/dotfiles";
 }

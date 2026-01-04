@@ -38,8 +38,8 @@ let
     user = userInfo;
   };
 
-  # dotfiles directory (flake root)
-  dotfilesDir = self;
+  # dotfiles directory (from user config for writable symlinks)
+  dotfilesDir = userInfo.dotfilesDir;
 
 in
 if isDarwin then

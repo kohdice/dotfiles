@@ -14,41 +14,45 @@ platform:
 }:
 
 let
+  # Platform detection
+  isDarwin = inputs.nixpkgs.lib.hasSuffix "darwin" system;
+
   # Import user configuration
   userConfig = import ../users/${user};
 
-  # User info
-  userInfo = userConfig.info;
+  # Helper functions for platform-specific configuration
+  mkUserInfo =
+    homeDir:
+    userConfig.info
+    // {
+      home = homeDir;
+      dotfilesDir = "${homeDir}/developments/dotfiles";
+    };
 
-  # User modules
-  userHomeModule = userConfig.home;
-  userDarwinModule = userConfig.darwin;
-
-  # Platform detection
-  isDarwin = inputs.nixpkgs.lib.hasSuffix "darwin" system;
+  mkSpecialArgs = userInfo: {
+    inherit inputs;
+    user = userInfo;
+  };
 
   # Common nixpkgs configuration
   nixpkgsConfig = {
     allowUnfree = true;
   };
 
-  # Common specialArgs passed to all modules
-  specialArgs = {
-    inherit inputs;
-    user = userInfo;
-  };
-
-  # dotfiles directory (from user config for writable symlinks)
-  dotfilesDir = userInfo.dotfilesDir;
-
 in
 if isDarwin then
+  let
+    homeDir = "/Users/${userConfig.info.name}";
+    userInfo = mkUserInfo homeDir;
+    specialArgs = mkSpecialArgs userInfo;
+    dotfilesDir = userInfo.dotfilesDir;
+  in
   # Darwin (macOS) configuration
   inputs.nix-darwin.lib.darwinSystem {
     inherit system specialArgs;
     modules = [
       ../modules/${platform}
-      userDarwinModule
+      userConfig.darwin
 
       {
         nixpkgs.config = nixpkgsConfig;
@@ -66,7 +70,7 @@ if isDarwin then
           users.${userInfo.name} = {
             imports = [
               ../modules/home
-              userHomeModule
+              userConfig.home
             ];
           };
         };
@@ -83,6 +87,12 @@ if isDarwin then
     ];
   }
 else
+  let
+    homeDir = "/home/${userConfig.info.name}";
+    userInfo = mkUserInfo homeDir;
+    specialArgs = mkSpecialArgs userInfo;
+    dotfilesDir = userInfo.dotfilesDir;
+  in
   # Linux configuration (home-manager standalone)
   inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {
@@ -95,7 +105,7 @@ else
     modules = [
       ../modules/home
       ../modules/${platform}
-      userHomeModule
+      userConfig.home
       inputs.nix-index-database.hmModules.nix-index
     ];
   }

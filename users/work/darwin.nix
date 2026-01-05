@@ -3,6 +3,7 @@
 
 {
   homebrew.casks = [
+    "elasticvue"
     "figma"
     "notion"
   ];

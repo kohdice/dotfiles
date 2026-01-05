@@ -8,6 +8,7 @@ in
 {
   programs.zsh = {
     enable = true;
+    dotDir = config.home.homeDirectory;
     enableCompletion = true;
     shellAliases = aliases // {
       zshreload = "source ~/.zshrc";

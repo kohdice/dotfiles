@@ -1,9 +1,10 @@
-# nix-darwin module for work profile
+# nix-darwin module for kohdice profile
 { ... }:
 
 {
-  # Profile-specific Homebrew settings can be added here
-  # homebrew.brews = [ ];
-  # homebrew.casks = [ ];
-  # homebrew.masApps = { };
+  # Mac App Store apps
+  homebrew.masApps = {
+    "1Password 7" = 1333542190;
+    "LINE" = 539883307;
+  };
 }

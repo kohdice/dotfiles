@@ -3,6 +3,7 @@
 
 {
   homebrew.casks = [
+    "android-studio"
     "elasticvue"
     "figma"
     "notion"

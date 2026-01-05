@@ -9,5 +9,8 @@
 
     # GCP
     google-cloud-sdk
+
+    # GUI
+    android-studio
   ];
 }

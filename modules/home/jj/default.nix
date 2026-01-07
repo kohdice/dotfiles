@@ -18,6 +18,12 @@
         backend = "ssh";
         sign-all = true;
       };
+
+      ui = {
+        editor = "nvim";
+        pager = "delta";
+        diff-formatter = ":git";
+      };
     };
   };
 }

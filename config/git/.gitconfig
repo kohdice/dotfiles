@@ -1,6 +1,6 @@
 [user]
     name = kohdice
-    email = kohdice.biz@gmail.com
+    email = kohdice@gmail.com
 [core]
     editor = nvim
     excludesfile = ~/.gitignore

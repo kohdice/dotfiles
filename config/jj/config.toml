@@ -2,6 +2,11 @@
 backend = "ssh"
 sign-all = true
 
+[ui]
+editor = "nvim"
+pager = "delta"
+diff-formatter = ":git"
+
 [user]
-email = "kohdice.biz@gmail.com"
+email = "kohdice@gmail.com"
 name = "kodai"

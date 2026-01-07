@@ -30,10 +30,12 @@ in
       fastfetch
       navi
       starship
+      tmux
       yazi
       zoxide
 
       # Development tools
+      devcontainer
       protobuf
       typos
 

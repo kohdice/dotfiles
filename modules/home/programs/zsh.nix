@@ -26,7 +26,7 @@ in
       share = true;
     };
 
-    initExtra = ''
+    initContent = ''
       # Zsh options
       setopt no_beep
       setopt auto_pushd

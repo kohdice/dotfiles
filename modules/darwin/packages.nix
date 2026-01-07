@@ -4,8 +4,9 @@
   # Darwin-specific system packages
   # These require system-level installation (not home-manager)
   environment.systemPackages = with pkgs; [
-    # System Utilities (macOS only)
-    karabiner-elements
+    google-chrome
+    slack
     scroll-reverser
+    tableplus
   ];
 }

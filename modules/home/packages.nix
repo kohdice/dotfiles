@@ -47,12 +47,6 @@ in
       tree-sitter
 
       # GUI Apps
-      google-chrome
-    ]
-    ++ lib.optionals isDarwin [
-      # GUI Apps
-      slack
-      tableplus
       vscode
     ]
     ++ lib.optionals isLinux [

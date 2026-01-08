@@ -17,6 +17,7 @@
 
     # GUI applications (Cask)
     casks = [
+      "azookey"
       "chatgpt"
       "claude"
       "coteditor"

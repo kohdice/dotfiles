@@ -17,6 +17,7 @@
       signing = {
         backend = "ssh";
         sign-all = true;
+        key = "~/.ssh/id_ed25519.pub";
       };
 
       ui = {

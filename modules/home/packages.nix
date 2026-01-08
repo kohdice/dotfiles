@@ -30,10 +30,12 @@ in
       fastfetch
       navi
       starship
+      tmux
       yazi
       zoxide
 
       # Development tools
+      devcontainer
       protobuf
       typos
 
@@ -45,12 +47,6 @@ in
       tree-sitter
 
       # GUI Apps
-      google-chrome
-    ]
-    ++ lib.optionals isDarwin [
-      # GUI Apps
-      slack
-      tableplus
       vscode
     ]
     ++ lib.optionals isLinux [

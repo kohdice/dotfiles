@@ -23,6 +23,7 @@
       "docker-desktop"
       "ghostty"
       "google-japanese-ime"
+      "karabiner-elements"
       "numi"
       "postman"
       "raycast"

@@ -15,18 +15,21 @@
       "mas"
     ];
 
-    # GUI applications (Cask) - only apps NOT available in nixpkgs
+    # GUI applications (Cask)
     casks = [
       "chatgpt"
       "claude"
       "coteditor"
       "docker-desktop"
       "ghostty"
-      "google-japanese-ime"
+      "google-chrome"
       "karabiner-elements"
       "numi"
       "postman"
       "raycast"
+      "scroll-reverser"
+      "slack"
+      "tableplus"
       "vlc"
       "zoom"
     ];

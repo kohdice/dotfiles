@@ -1,6 +1,9 @@
 # home-manager module for kohdice profile
-{ ... }:
+{ pkgs, lib, ... }:
 
 {
-  # Profile-specific packages can be added here
+  # Profile-specific packages
+  home.packages = lib.optionals pkgs.stdenv.isLinux [
+    pkgs.discord
+  ];
 }

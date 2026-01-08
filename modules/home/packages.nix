@@ -3,7 +3,6 @@
 let
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
-  isX86_64Linux = pkgs.stdenv.hostPlatform.system == "x86_64-linux";
 in
 {
   home.packages =
@@ -55,9 +54,7 @@ in
 
       # GUI Apps
       ghostty
-    ]
-    ++ lib.optionals (isDarwin || isX86_64Linux) [
-      # Discord (aarch64-linux not supported)
-      discord
+      google-chrome
+      slack
     ];
 }

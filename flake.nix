@@ -44,10 +44,7 @@
 
       # Supported systems
       darwinSystem = "aarch64-darwin";
-      linuxSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      linuxSystems = [ "x86_64-linux" ];
       allSystems = [ darwinSystem ] ++ linuxSystems;
 
       # Helper to generate per-system attributes

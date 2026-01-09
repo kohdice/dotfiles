@@ -9,7 +9,6 @@
 {
   imports = [
     ./homebrew.nix
-    ./packages.nix
     ./system.nix
   ];
 

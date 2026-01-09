@@ -2,6 +2,11 @@
 { ... }:
 
 {
+  # Homebrew Cask apps
+  homebrew.casks = [
+    "discord"
+  ];
+
   # Mac App Store apps
   homebrew.masApps = {
     "1Password 7" = 1333542190;

@@ -1,6 +1,11 @@
 {
   description = "kohdice's dotfiles - Nix-based";
 
+  nixConfig = {
+    extra-substituters = [ "https://cache.numtide.com" ];
+    extra-trusted-public-keys = [ "cache.numtide.com-1:xK8dXLdBj3zJ4gSxkrb/21Ex8CoIkcuBNWtoMq7Idgs=" ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
@@ -27,6 +32,9 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # AI coding agents
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs =

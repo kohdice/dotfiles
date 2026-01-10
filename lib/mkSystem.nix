@@ -39,6 +39,9 @@ let
     allowUnfree = true;
   };
 
+  # Import overlays
+  overlays = import ../overlays { inherit inputs; };
+
 in
 if isDarwin then
   let
@@ -55,7 +58,10 @@ if isDarwin then
       userConfig.darwin
 
       {
-        nixpkgs.config = nixpkgsConfig;
+        nixpkgs = {
+          config = nixpkgsConfig;
+          overlays = overlays;
+        };
       }
 
       inputs.home-manager.darwinModules.home-manager
@@ -98,6 +104,7 @@ else
     pkgs = import inputs.nixpkgs {
       inherit system;
       config = nixpkgsConfig;
+      overlays = overlays;
     };
     extraSpecialArgs = specialArgs // {
       inherit dotfilesDir;

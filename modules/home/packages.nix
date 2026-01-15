@@ -39,8 +39,10 @@ in
       typos
 
       # AI tools
+      amp
       claude-code
       codex
+      opencode
 
       # Build tools
       tree-sitter

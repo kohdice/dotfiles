@@ -124,7 +124,7 @@
   },
   "model": "opus",
   "includeCoAuthoredBy": true,
-  "plansDirectory": "./plan",
+  "plansDirectory": "./.plans",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"

@@ -21,6 +21,7 @@
       "chatgpt"
       "claude"
       "coteditor"
+      "devtoys"
       "docker-desktop"
       "ghostty"
       "google-chrome"

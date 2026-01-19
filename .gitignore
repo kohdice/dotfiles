@@ -12,3 +12,4 @@ config/nvim/lazy-lock.json
 # Claude
 settings.local.json
 .mcp.json
+.plans/

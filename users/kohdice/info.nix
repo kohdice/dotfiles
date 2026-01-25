@@ -2,5 +2,5 @@
 {
   name = "kohdice";
   fullName = "kohdice";
-  email = "kohdice@gmail.com";
+  email = "k@kohdice.com";
 }

@@ -10,5 +10,5 @@ pager = "delta"
 diff-formatter = ":git"
 
 [user]
-email = "kohdice@gmail.com"
-name = "kodai"
+email = "k@kohdice.com"
+name = "kohdice"

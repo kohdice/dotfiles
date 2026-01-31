@@ -32,6 +32,7 @@
       "scroll-reverser"
       "slack"
       "tableplus"
+      "visual-studio-code"
       "vlc"
       "zoom"
     ];

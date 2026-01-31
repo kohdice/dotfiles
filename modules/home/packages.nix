@@ -46,9 +46,6 @@ in
 
       # Build tools
       tree-sitter
-
-      # GUI Apps
-      vscode
     ]
     ++ lib.optionals isLinux [
       # Development tools
@@ -58,5 +55,6 @@ in
       ghostty
       google-chrome
       slack
+      vscode
     ];
 }

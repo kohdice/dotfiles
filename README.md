@@ -8,10 +8,10 @@ Uses [nix-darwin](https://github.com/LnL7/nix-darwin) and [home-manager](https:/
 
 ### Prerequisites
 
-Install [Determinate Nix](https://github.com/DeterminateSystems/nix-installer):
+Install [Nix](https://github.com/NixOS/nix-installer):
 
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+curl --proto '=https' --tlsv1.2 -sSf -L https://artifacts.nixos.org/nix-installer | sh -s -- install
 ```
 
 ### Installation
@@ -23,7 +23,7 @@ git clone https://github.com/kohdice/dotfiles.git ~/developments/dotfiles
 cd ~/developments/dotfiles
 
 # Initial setup (first time only)
-nix run nix-darwin -- switch --flake .#kohdice
+sudo nix run nix-darwin -- switch --flake .#kohdice
 
 # After initial setup
 nix run .#switch

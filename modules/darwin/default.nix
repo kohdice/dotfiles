@@ -12,24 +12,9 @@
     ./system.nix
   ];
 
-  # Nix settings
-  # Note: nix.enable is set to false because Determinate Nix is used
-  # Determinate manages Nix installation with its own daemon
-  nix = {
-    enable = false;
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      trusted-users = [
-        "root"
-        user.name
-      ];
-    };
-    # gc configuration is not available when nix.enable = false
-    # Use Determinate's built-in GC settings instead
-  };
+  # Nix settings are managed by nix-installer (not nix-darwin)
+  # See README.md for installation options
+  nix.enable = false;
 
   # System state version
   system.stateVersion = 5;

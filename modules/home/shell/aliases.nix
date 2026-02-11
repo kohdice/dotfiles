@@ -9,12 +9,6 @@
   "..3" = "cd ../../..";
   "..4" = "cd ../../../..";
 
-  # Enhanced ls (eza)
-  ls = "eza --icons --git";
-  la = "eza -A --icons --git";
-  ll = "eza -l -g --icons";
-  lla = "eza -l -a --icons";
-
   # Neovim
   v = "nvim";
   view = "nvim -R";

@@ -33,11 +33,28 @@ in
       setopt pushd_ignore_dups
       setopt inc_append_history
 
+      # Enhanced ls (eza)
+      if command -v eza >/dev/null 2>&1; then
+        alias ls="eza --icons --git"
+        alias la="eza -A --icons --git"
+        alias ll="eza -l -g --icons"
+        alias lla="eza -l -a --icons"
+      else
+        alias ls="ls -p -G"
+        alias la="ls -A"
+        alias ll="ls -l"
+        alias lla="ll -A"
+      fi
+
       # Starship
-      eval "$(starship init zsh)"
+      if command -v starship >/dev/null 2>&1; then
+        eval "$(starship init zsh)"
+      fi
 
       # zoxide
-      eval "$(zoxide init zsh)"
+      if command -v zoxide >/dev/null 2>&1; then
+        eval "$(zoxide init zsh --cmd cd)"
+      fi
 
       ### fzf ###
 

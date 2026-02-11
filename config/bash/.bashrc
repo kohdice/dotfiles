@@ -62,10 +62,41 @@ shopt -s checkjobs
 
 # Starship
 if command -v starship >/dev/null 2>&1; then
-  eval "$(starship init zsh)"
+  eval "$(starship init bash)"
 fi
 
 # Zoxide
 if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
+  eval "$(zoxide init bash --cmd cd)"
 fi
+
+### fzf ###
+
+# fzf history search (Ctrl+R)
+fzf-history() {
+  local selected
+  selected=$(history | tac | awk '{$1=""; print substr($0,2)}' | fzf --query "$READLINE_LINE" --reverse)
+  READLINE_LINE="$selected"
+  READLINE_POINT=${#READLINE_LINE}
+}
+bind -x '"\C-r": fzf-history'
+
+# fzf ghq (Ctrl+T)
+ghq-fzf() {
+  local src
+  src=$(ghq list | fzf --preview "bat --color=always --style=grid $(ghq root)/{}/README.*")
+  if [ -n "$src" ]; then
+    cd "$(ghq root)/$src" || return
+  fi
+}
+bind -x '"\C-t": ghq-fzf'
+
+# fzf cd to recent directory (Ctrl+F)
+fzf-zoxide() {
+  local selected
+  selected=$(zoxide query -l | fzf --reverse)
+  if [ -n "$selected" ]; then
+    cd "$selected" || return
+  fi
+}
+bind -x '"\C-f": fzf-zoxide'

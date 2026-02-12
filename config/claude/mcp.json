@@ -6,7 +6,7 @@
     },
     "deepwiki": {
       "command": "npx",
-      "args": ["mcp-remote", "https://mcp.deepwiki.com/sse"]
+      "args": ["mcp-remote", "https://mcp.deepwiki.com/mcp"]
     },
     "sequential-thinking": {
       "command": "npx",

@@ -66,6 +66,11 @@
       TrackpadThreeFingerTapGesture = 0;
     };
 
+    WindowManager = {
+      # Click wallpaper to show desktop: Only in Stage Manager
+      EnableStandardClickToShowDesktop = false;
+    };
+
     menuExtraClock = {
       # Show 24-hour time
       Show24Hour = true;

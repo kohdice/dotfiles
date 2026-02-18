@@ -39,8 +39,10 @@ in
       typos
 
       # AI tools
+      agent-browser
       amp
       claude-code
+      coderabbit-cli
       codex
       opencode
 

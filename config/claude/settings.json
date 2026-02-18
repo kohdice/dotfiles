@@ -15,6 +15,7 @@
     "DISABLE_COST_WARNINGS": "0",
     "MAX_THINKING_TOKENS": "31999"
   },
+  "includeCoAuthoredBy": true,
   "permissions": {
     "allow": [
       "Bash(ls:*)",
@@ -123,8 +124,6 @@
     ]
   },
   "model": "opus",
-  "includeCoAuthoredBy": true,
-  "plansDirectory": "./.plans",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -140,8 +139,12 @@
     "pr-review-toolkit@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "plugin-dev@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true
+    "feature-dev@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "explanatory-output-style@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true,
-  "language": "Japanese"
+  "language": "Japanese",
+  "plansDirectory": "./.plans"
 }

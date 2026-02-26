@@ -19,6 +19,7 @@ in
       jq
       ripgrep
       tree
+      zoxide
 
       # Git tools
       delta
@@ -31,7 +32,6 @@ in
       starship
       tmux
       yazi
-      zoxide
 
       # Development tools
       devcontainer

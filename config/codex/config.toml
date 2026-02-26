@@ -4,6 +4,11 @@ model = "gpt-5.3-codex"
 model_reasoning_effort = "medium"
 personality = "pragmatic"
 
+[features]
+collaboration_modes = true
+multi_agent = true
+search_tool = true
+
 [mcp_servers.context7]
 command = "npx"
 args = ["-y", "@upstash/context7-mcp"]

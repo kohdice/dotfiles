@@ -19,6 +19,7 @@ in
       jq
       ripgrep
       tree
+      zoxide
 
       # Git tools
       delta
@@ -31,16 +32,17 @@ in
       starship
       tmux
       yazi
-      zoxide
 
       # Development tools
-      devcontainer
+      # devcontainer  TODO: nixpkgs issue - build failure
       protobuf
       typos
 
       # AI tools
+      agent-browser
       amp
       claude-code
+      coderabbit-cli
       codex
       opencode
 

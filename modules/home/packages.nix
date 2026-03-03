@@ -34,7 +34,7 @@ in
       yazi
 
       # Development tools
-      # devcontainer  TODO: nixpkgs issue - build failure
+      devcontainer
       protobuf
       typos
 

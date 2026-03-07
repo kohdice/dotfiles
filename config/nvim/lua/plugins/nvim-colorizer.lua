@@ -3,9 +3,11 @@ return {
   event = "BufReadPre",
   opts = {
     filetypes = { "*" },
-    user_default_options = {
-      css = true,
-      tailwind = "normal",
+    options = {
+      parsers = {
+        css = true,
+        tailwind = { enable = true },
+      },
     },
   },
 }

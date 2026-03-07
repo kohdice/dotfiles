@@ -3,7 +3,7 @@
 {
   home.packages = with pkgs; [
     # Runtime
-    go
+    go_1_26
     tinygo
 
     # Tools

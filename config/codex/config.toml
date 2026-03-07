@@ -1,6 +1,6 @@
 approval_policy = "on-request"
 hide_agent_reasoning = true
-model = "gpt-5.3-codex"
+model = "gpt-5.4"
 model_reasoning_effort = "medium"
 personality = "pragmatic"
 
@@ -8,6 +8,10 @@ personality = "pragmatic"
 collaboration_modes = true
 multi_agent = true
 search_tool = true
+
+[agents]
+max_threads = 6
+max_depth = 2
 
 [mcp_servers.context7]
 command = "npx"

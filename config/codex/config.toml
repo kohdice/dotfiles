@@ -1,8 +1,11 @@
 approval_policy = "on-request"
 hide_agent_reasoning = true
 model = "gpt-5.4"
-model_reasoning_effort = "medium"
+model_context_window = 1000000
+model_auto_compact_token_limit = 950000
+model_reasoning_effort = "xhigh"
 personality = "pragmatic"
+service_tier = "fast"
 
 [features]
 collaboration_modes = true
@@ -27,3 +30,6 @@ url = "https://mcp.grep.app"
 [mcp_servers.sequential-thinking]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+
+[tui]
+theme = "solarized-dark"

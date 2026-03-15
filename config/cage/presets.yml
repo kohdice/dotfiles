@@ -1,0 +1,71 @@
+presets:
+  base:
+    allow:
+      - "."
+      - "/dev/tty"
+      - "/tmp" # on Linux
+      - "/private/tmp" # on macOS
+  ai-tools:
+    allow:
+      - "$HOME/.agent-browser"
+      - "$HOME/.browser-profile"
+  cargo:
+    allow:
+      - "$HOME/.cargo"
+      - "$HOME/.rustup"
+      - "$HOME/.cache/sccache"
+  claude-code:
+    allow:
+      - "$CLAUDE_CONFIG_DIR"
+      - "$HOME/.claude"
+      - "$HOME/.claude.json"
+      - "$HOME/.claude.json.backup"
+      - "$HOME/.claude.json.lock"
+      - "$HOME/.claude.lock"
+  codex:
+    allow:
+      - "$HOME/.codex"
+  git-enabled:
+    allow-git: true
+    allow-keychain: true # macOS only
+  go:
+    allow:
+      - "$HOME/go"
+      - "$HOME/.cache/go-build" # Linux
+      - "$HOME/Library/Caches/go-build" # macOS
+      - "$HOME/Library/Application Support/go" # macOS (telemetry)
+  npm:
+    allow:
+      - "$HOME/.npm"
+      - "$HOME/.npmrc"
+  uv:
+    allow:
+      - "$HOME/.local/share/uv"
+      - "$HOME/.cache/uv"
+auto-presets:
+  - command: claude
+    presets:
+      - base
+      - ai-tools
+      - cargo
+      - claude-code
+      - codex
+      - go
+      - npm
+      - uv
+      - git-enabled
+  - command: codex
+    presets:
+      - base
+      - ai-tools
+      - cargo
+      - claude-code
+      - codex
+      - go
+      - npm
+      - uv
+      - git-enabled
+  - command: git
+    presets:
+      - base
+      - git-enabled

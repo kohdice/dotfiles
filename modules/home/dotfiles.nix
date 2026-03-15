@@ -26,11 +26,13 @@ let
 
   # xdg.configFile symlinks (target -> source path in config/)
   xdgSymlinks = {
+    "cage/presets.yml" = "config/cage/presets.yml";
     "ghostty" = "config/ghostty";
     "nvim" = "config/nvim";
     "starship.toml" = "config/starship/starship.toml";
     "tmux" = "config/tmux";
     "lazygit" = "config/lazygit";
+    "zsh-abbr/user-abbreviations" = "config/zsh-abbr/user-abbreviations";
   };
 
   # Darwin-only xdg.configFile symlinks

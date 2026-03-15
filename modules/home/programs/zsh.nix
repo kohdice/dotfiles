@@ -1,23 +1,34 @@
 { pkgs, config, ... }:
 
 let
-  aliases = import ../shell/aliases.nix;
   env = import ../shell/env.nix;
   paths = import ../shell/paths.nix;
+
+  zsh-abbr = pkgs.fetchFromGitHub {
+    owner = "olets";
+    repo = "zsh-abbr";
+    rev = "2de4a08c5e0d9dbe8447e11e0a177b59b5b6d6ea";
+    hash = "sha256-RvdMEk1bQ/mCbcTneg8mMJJh6j60km0/wchBBQQ+Ugo=";
+    fetchSubmodules = true;
+  };
 in
 {
   programs.zsh = {
     enable = true;
     dotDir = config.home.homeDirectory;
     enableCompletion = true;
-    shellAliases = aliases // {
-      zshreload = "source ~/.zshrc";
-    };
     sessionVariables = env;
 
     # Zsh options
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+
+    plugins = [
+      {
+        name = "zsh-abbr";
+        src = zsh-abbr;
+      }
+    ];
 
     history = {
       size = 10000;
@@ -34,27 +45,16 @@ in
       setopt inc_append_history
 
       # Enhanced ls (eza)
-      if command -v eza >/dev/null 2>&1; then
-        alias ls="eza --icons --git"
-        alias la="eza -A --icons --git"
-        alias ll="eza -l -g --icons"
-        alias lla="eza -l -a --icons"
-      else
-        alias ls="ls -p -G"
-        alias la="ls -A"
-        alias ll="ls -l"
-        alias lla="ll -A"
-      fi
+      alias ls="eza --icons --git"
+      alias la="eza -A --icons --git"
+      alias ll="eza -l -g --icons"
+      alias lla="eza -l -a --icons"
 
       # Starship
-      if command -v starship >/dev/null 2>&1; then
-        eval "$(starship init zsh)"
-      fi
+      eval "$(starship init zsh)"
 
       # zoxide
-      if command -v zoxide >/dev/null 2>&1; then
-        eval "$(zoxide init zsh --cmd cd)"
-      fi
+      eval "$(zoxide init zsh --cmd cd)"
 
       ### fzf ###
 
@@ -99,6 +99,7 @@ in
       }
       zle -N ghq-fzf
       bindkey '^t' ghq-fzf
+
     '';
   };
 

@@ -41,11 +41,8 @@ in
 
       # AI tools
       agent-browser
-      amp
       claude-code
-      coderabbit-cli
       codex
-      opencode
 
       # Build tools
       tree-sitter

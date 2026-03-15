@@ -27,7 +27,6 @@
       "google-chrome"
       "karabiner-elements"
       "numi"
-      "postman"
       "raycast"
       "scroll-reverser"
       "slack"
@@ -39,7 +38,6 @@
 
     # Mac App Store apps
     masApps = {
-      "iMovie" = 408981434;
       "RunCat" = 1429033973;
       "Spark" = 6445813049;
       "Xcode" = 497799835;

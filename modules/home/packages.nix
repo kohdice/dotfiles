@@ -35,6 +35,7 @@ in
 
       # Development tools
       devcontainer
+      podman
       protobuf
       typos
 

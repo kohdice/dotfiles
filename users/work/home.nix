@@ -9,9 +9,5 @@
 
     # GCP
     google-cloud-sdk
-
-    # mobile development
-    cocoapods
-    fastlane
   ];
 }

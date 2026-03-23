@@ -23,6 +23,7 @@ in
       ];
   };
 
-  # Note: Neovim configuration is managed via xdg.configFile in default.nix
-  # This allows using the existing Lua configuration as-is
+  # Keep using config/nvim as the source of truth and suppress Home Manager's
+  # generated init.lua, which would otherwise collide with the directory symlink.
+  xdg.configFile."nvim/init.lua".enable = false;
 }

@@ -3,9 +3,16 @@
 # Read JSON input from stdin
 input=$(cat)
 
-MODEL_DISPLAY=$(echo "$input" | jq -r '.model.display_name')
-CURRENT_DIR=$(echo "$input" | jq -r '.workspace.current_dir')
-TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path')
+MODEL_DISPLAY=$(echo "$input" | jq -r '.model.display_name // "Claude"')
+CURRENT_DIR=$(echo "$input" | jq -r '.workspace.current_dir // ""')
+CTX_PCT=$(echo "$input" | jq -r '.context_window.used_percentage // empty | round')
+CTX_TOKENS=$(echo "$input" | jq -r '
+  .context_window.current_usage // null |
+  if . == null then empty
+  else (.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0)
+  end')
+FIVE_HOUR_PCT=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty | round')
+SEVEN_DAY_PCT=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty | round')
 
 # Git branch information
 GIT_BRANCH=""
@@ -21,48 +28,58 @@ if git rev-parse &>/dev/null; then
   fi
 fi
 
-# Token summary
-if [ -z "$TRANSCRIPT_PATH" ] || [ ! -f "$TRANSCRIPT_PATH" ]; then
-  TOKEN_COUNT="_ tokens. (_%)"
-else
-  # Get last assistant message with usage data using jq
-  total_tokens=$(tail -n 100 "$TRANSCRIPT_PATH" 2>/dev/null | \
-      jq -s 'map(select(.type == "assistant" and .message.usage)) |
-    last |
-    .message.usage |
-    (.input_tokens // 0) +
-    (.output_tokens // 0) +
-    (.cache_creation_input_tokens // 0) +
-  (.cache_read_input_tokens // 0)' 2>/dev/null)
+# ANSI escape helpers
+RST=$'\033[0m'
+DIM=$'\033[2m'
+BOLD=$'\033[1m'
 
-  # Default to 0 if no valid result
-  total_tokens=${total_tokens:-0}
-
-  # max token count: 200k
-  # compaction threshold: 80% (160k)
-  COMPACTION_THRESHOLD=160000
-  # Calculate percentage
-  percentage=$((total_tokens * 100 / COMPACTION_THRESHOLD))
-
-  # Format token display
-  if [ "$total_tokens" -ge 1000 ]; then
-    thousands=$(echo "scale=1; $total_tokens/1000" | bc)
-    token_display=$(printf "%.1fK" "$thousands")
+# colored_pct(pct) - outputs gradient-colored bold percentage
+# Gradient: green(0%) -> yellow(50%) -> red(100%)
+colored_pct() {
+  local pct=${1:-0}
+  local r g
+  if [ "$pct" -lt 50 ]; then
+    r=$(( pct * 51 / 10 ))
+    printf '\033[1;38;2;%d;200;80m%d%%\033[0m' "$r" "$pct"
   else
-    token_display="$total_tokens"
+    g=$(( 200 - (pct - 50) * 4 ))
+    [ "$g" -lt 0 ] && g=0
+    printf '\033[1;38;2;255;%d;60m%d%%\033[0m' "$g" "$pct"
   fi
+}
 
-  # Color coding for percentage
-  if [ "$percentage" -ge 90 ]; then
-    color="\033[31m"  # Red
-  elif [ "$percentage" -ge 70 ]; then
-    color="\033[33m"  # Yellow
+# format_tokens(n) - outputs human-readable token count (e.g., 130.5k, 1.2m)
+format_tokens() {
+  local tokens=$1
+  if [ "$tokens" -ge 1000000 ]; then
+    printf '%.1fm' "$(echo "scale=1; $tokens/1000000" | bc)"
+  elif [ "$tokens" -ge 1000 ]; then
+    printf '%.1fk' "$(echo "scale=1; $tokens/1000" | bc)"
   else
-    color="\033[32m"  # Green
+    printf '%d' "$tokens"
   fi
+}
 
-  # Format: "123 tokens. (10%)"
-  TOKEN_COUNT=$(echo -e "${token_display} tokens. (${color}${percentage}%\033[0m)")
+# Build metrics section
+METRICS=""
+
+if [ -n "$CTX_PCT" ]; then
+  if [ -n "$CTX_TOKENS" ]; then
+    METRICS="ctx $(format_tokens "$CTX_TOKENS") ($(colored_pct "$CTX_PCT"))"
+  else
+    METRICS="ctx $(colored_pct "$CTX_PCT")"
+  fi
+fi
+if [ -n "$FIVE_HOUR_PCT" ]; then
+  [ -n "$METRICS" ] && METRICS="${METRICS}  "
+  METRICS="${METRICS}5h $(colored_pct "$FIVE_HOUR_PCT")"
+fi
+if [ -n "$SEVEN_DAY_PCT" ]; then
+  [ -n "$METRICS" ] && METRICS="${METRICS}  "
+  METRICS="${METRICS}7d $(colored_pct "$SEVEN_DAY_PCT")"
 fi
 
-echo "󰚩 ${MODEL_DISPLAY} |  ${CURRENT_DIR##*/}${GIT_BRANCH} |  ${TOKEN_COUNT}"
+# Final output
+OUTPUT="󰚩 ${MODEL_DISPLAY} |  ${CURRENT_DIR##*/}${GIT_BRANCH}"
+[ -n "$METRICS" ] && OUTPUT="${OUTPUT} |  ${METRICS}"
+printf '%s\n' "$OUTPUT"

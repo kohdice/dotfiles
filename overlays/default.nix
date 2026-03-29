@@ -3,6 +3,7 @@
 
 let
   overlayFiles = [
+    ./marksman-fix.nix # TODO: Remove after nixpkgs fixes .NET wrapper for macOS
     ./llm-agents.nix
   ];
 

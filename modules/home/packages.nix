@@ -35,6 +35,7 @@ in
 
       # Development tools
       devcontainer
+      just
       podman
       protobuf
       typos
@@ -45,6 +46,7 @@ in
       codex
 
       # Build tools
+      gnumake
       tree-sitter
     ]
     ++ lib.optionals isLinux [

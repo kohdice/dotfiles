@@ -7,7 +7,7 @@ return {
       {
         "<leader>cf",
         function()
-          require("conform").format({ async = true, lsp_fallback = true })
+          require("conform").format({ async = true, lsp_format = "fallback" })
         end,
         mode = { "n", "v" },
         desc = "[C]ode [F]ormat with conform.nvim",
@@ -19,13 +19,19 @@ return {
       conform.setup({
         formatters_by_ft = {
           c = { "clang_format" },
+          cmake = { lsp_format = "prefer" },
+          cpp = { "clang_format" },
+          cuda = { lsp_format = "prefer" },
           css = { "prettierd", "prettier", stop_after_first = true },
+          dockerfile = { lsp_format = "prefer" },
           go = { "goimports", "gofmt" },
           html = { "prettierd", "prettier", stop_after_first = true },
           json = { "prettierd", "prettier", stop_after_first = true },
           jsonc = { "prettierd", "prettier", stop_after_first = true },
           lua = { "stylua" },
           markdown = { "prettierd", "prettier", stop_after_first = true },
+          objcpp = { lsp_format = "prefer" },
+          proto = { lsp_format = "prefer" },
           python = function(bufnr)
             if require("conform").get_formatter_info("ruff_format", bufnr).available then
               return { "ruff_format" }

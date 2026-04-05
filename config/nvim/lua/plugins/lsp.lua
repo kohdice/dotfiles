@@ -2,10 +2,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
-    dependencies = { "folke/neodev.nvim" },
     config = function()
-      require("neodev").setup()
-
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       if has_cmp then
@@ -27,7 +24,7 @@ return {
             if desc then
               desc = "LSP: " .. desc
             end
-            vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
+            vim.keymap.set("n", keys, func, { buf = bufnr, desc = desc })
           end
 
           nmap("gd", vim.lsp.buf.definition, "[G]oto [D]efinition")

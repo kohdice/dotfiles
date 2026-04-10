@@ -1,6 +1,5 @@
 -- General Settings
 vim.g.mapleader = " " -- Set leader key to space
-vim.g.ai_cmp = true -- Enable AI completion via nvim-cmp (for Copilot integration)
 vim.opt.number = true -- Enable line numbers
 vim.opt.relativenumber = true -- Enable relative line numbers
 vim.opt.title = true -- Show window title

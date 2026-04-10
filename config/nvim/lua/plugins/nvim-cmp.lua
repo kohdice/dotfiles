@@ -20,22 +20,6 @@ return {
       "hrsh7th/cmp-cmdline",
 
       "rafamadriz/friendly-snippets",
-
-      {
-        "zbirenbaum/copilot-cmp",
-        config = function()
-          local copilot_cmp = require("copilot_cmp")
-          copilot_cmp.setup()
-
-          vim.api.nvim_create_autocmd("InsertEnter", {
-            callback = function()
-              vim.defer_fn(function()
-                copilot_cmp._on_insert_enter({})
-              end, 100)
-            end,
-          })
-        end,
-      },
     },
     config = function()
       local cmp = require("cmp")
@@ -97,7 +81,6 @@ return {
         }),
 
         sources = cmp.config.sources({
-          { name = "copilot", group_index = 1, priority = 100 },
           { name = "nvim_lsp", group_index = 1 },
           { name = "luasnip", group_index = 2 },
           { name = "path", group_index = 2 },
@@ -133,7 +116,6 @@ return {
               Event = "",
               Operator = "󰆕",
               TypeParameter = "󰅲",
-              Copilot = "",
             }
 
             vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind)
@@ -144,7 +126,6 @@ return {
               luasnip = "[LuaSnip]",
               nvim_lua = "[Lua]",
               path = "[Path]",
-              copilot = "[Copilot]",
             })[entry.source.name]
 
             return vim_item

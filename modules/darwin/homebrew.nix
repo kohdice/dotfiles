@@ -21,6 +21,7 @@
       "google-chrome"
       "karabiner-elements"
       "numi"
+      "podman-desktop"
       "raycast"
       "scroll-reverser"
       "slack"

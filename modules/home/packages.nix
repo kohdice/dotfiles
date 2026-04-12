@@ -45,6 +45,9 @@ in
       claude-code
       codex
 
+      # Google Workspace
+      gws
+
       # Build tools
       gnumake
       tree-sitter

@@ -57,6 +57,5 @@ in
       ghostty
       google-chrome
       slack
-      vscode
     ];
 }

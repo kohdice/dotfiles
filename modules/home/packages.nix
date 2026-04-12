@@ -28,16 +28,13 @@ in
 
       # Terminal tools
       fastfetch
-      navi
       starship
       tmux
       yazi
 
       # Development tools
       devcontainer
-      just
       podman
-      protobuf
       typos
 
       # AI tools

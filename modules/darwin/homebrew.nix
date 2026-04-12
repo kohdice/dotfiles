@@ -10,11 +10,6 @@
       upgrade = true;
     };
 
-    # CLI tools managed via Homebrew (not available in nixpkgs)
-    brews = [
-      "mas"
-    ];
-
     # GUI applications (Cask)
     casks = [
       "azookey"
@@ -35,12 +30,5 @@
       "vlc"
       "zoom"
     ];
-
-    # Mac App Store apps
-    masApps = {
-      "RunCat" = 1429033973;
-      "Spark" = 6445813049;
-      "Xcode" = 497799835;
-    };
   };
 }

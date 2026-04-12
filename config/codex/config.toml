@@ -3,7 +3,7 @@ hide_agent_reasoning = true
 model = "gpt-5.4"
 # model_context_window = 1000000
 # model_auto_compact_token_limit = 950000
-model_reasoning_effort = "medium"
+model_reasoning_effort = "xhigh"
 personality = "pragmatic"
 service_tier = "fast"
 
@@ -31,5 +31,15 @@ url = "https://mcp.grep.app"
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
 
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
 [tui]
 theme = "solarized-dark"
+status_line = [
+    "model-with-reasoning",
+    "context-remaining",
+    "five-hour-limit",
+    "current-dir",
+    "git-branch",
+]

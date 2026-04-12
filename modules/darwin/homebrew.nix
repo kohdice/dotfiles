@@ -17,7 +17,6 @@
       "claude"
       "coteditor"
       "devtoys"
-      "docker-desktop"
       "ghostty"
       "google-chrome"
       "karabiner-elements"
@@ -25,7 +24,6 @@
       "raycast"
       "scroll-reverser"
       "slack"
-      "tableplus"
       "vlc"
       "zoom"
     ];

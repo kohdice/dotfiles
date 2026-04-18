@@ -28,7 +28,6 @@ in
 
       # Terminal tools
       fastfetch
-      navi
       starship
       tmux
       yazi
@@ -36,7 +35,6 @@ in
       # Development tools
       devcontainer
       podman
-      protobuf
       typos
 
       # AI tools
@@ -45,6 +43,7 @@ in
       codex
 
       # Build tools
+      gnumake
       tree-sitter
     ]
     ++ lib.optionals isLinux [
@@ -55,6 +54,5 @@ in
       ghostty
       google-chrome
       slack
-      vscode
     ];
 }

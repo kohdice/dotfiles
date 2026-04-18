@@ -129,10 +129,12 @@
       "Write(~/.ssh/*_ed25519)",
       "Write(/etc/passwd)",
       "Write(/etc/shadow)",
-      "Write(/etc/sudoers)"
+      "Write(/etc/sudoers)",
+      "Bash(nix run .#switch*)",
+      "Bash(nix flake update:*)",
+      "Bash(darwin-rebuild switch:*)"
     ]
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -151,8 +153,11 @@
     "plugin-dev@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
-    "explanatory-output-style@claude-plugins-official": true
+    "explanatory-output-style@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
   },
   "language": "Japanese",
-  "plansDirectory": "./.plans"
+  "effortLevel": "high",
+  "plansDirectory": "./.plans",
+  "showThinkingSummaries": true
 }

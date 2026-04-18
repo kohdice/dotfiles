@@ -55,7 +55,7 @@ return {
           function(state)
             local node = state.tree:get_node()
             local path = node.path or node:get_id()
-            local cmd = vim.loop.os_uname().sysname == "Darwin" and "open" or "xdg-open"
+            local cmd = vim.uv.os_uname().sysname == "Darwin" and "open" or "xdg-open"
             vim.fn.system({ cmd, path })
           end,
           desc = "Open with System Application",

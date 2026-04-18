@@ -7,7 +7,8 @@
     awscli2
     ssm-session-manager-plugin
 
-    # GCP
+    # Google
     google-cloud-sdk
+    gws
   ];
 }

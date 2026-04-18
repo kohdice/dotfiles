@@ -47,7 +47,7 @@ for _, mapping in ipairs(window_management_mappings) do
 end
 
 keymap.set("n", "<C-j>", function()
-  vim.diagnostic.goto_next()
+  vim.diagnostic.jump({ count = 1 })
 end, { desc = "Go to next diagnostic", silent = true })
 
 keymap.set(

@@ -4,13 +4,22 @@ return {
     cmd = "Copilot",
     build = ":Copilot auth",
     event = "BufReadPost",
+    keys = {
+      {
+        "<Leader>cp",
+        function()
+          require("copilot.suggestion").toggle_auto_trigger()
+        end,
+        desc = "Toggle Copilot suggestion",
+      },
+    },
     opts = {
       suggestion = {
-        enabled = not vim.g.ai_cmp,
-        auto_trigger = true,
-        hide_during_completion = vim.g.ai_cmp,
+        enabled = true,
+        auto_trigger = false,
+        hide_during_completion = true,
         keymap = {
-          accept = false, -- handled by nvim-cmp / blink.cmp
+          accept = "<C-l>",
           next = "<M-]>",
           prev = "<M-[>",
         },

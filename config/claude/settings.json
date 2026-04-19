@@ -38,7 +38,7 @@
       "Bash(go vet:*)",
       "Bash(go test:*)",
       "Bash(zig fmt:*)",
-      "Bash(zig build test:*)",
+      "Bash(zig build:*)",
       "Bash(git grep:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr diff:*)",
@@ -46,8 +46,7 @@
       "Edit(~/developments/**)",
       "Grep(**)",
       "Glob(**)",
-      "LS(**)",
-      "WebFetch(domain:*)"
+      "LS(**)"
     ],
     "deny": [
       "Bash(rm -rf /)",
@@ -133,7 +132,8 @@
       "Bash(nix run .#switch*)",
       "Bash(nix flake update:*)",
       "Bash(darwin-rebuild switch:*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "statusLine": {
     "type": "command",
@@ -154,10 +154,86 @@
     "feature-dev@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "explanatory-output-style@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
+    "claude-md-management@claude-plugins-official": true,
+    "codex@openai-codex": true
+  },
+  "extraKnownMarketplaces": {
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    }
   },
   "language": "Japanese",
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "autoAllowBashIfSandboxed": true,
+    "allowUnsandboxedCommands": false,
+    "network": {
+      "allowedDomains": [
+        "127.0.0.1",
+        "localhost",
+        "::1",
+        "github.com",
+        "*.github.com",
+        "crates.io",
+        "*.crates.io",
+        "static.rust-lang.org",
+        "proxy.golang.org",
+        "sum.golang.org",
+        "storage.googleapis.com",
+        "registry.npmjs.org",
+        "pypi.org",
+        "*.pythonhosted.org",
+        "ziglang.org",
+        "*.ziglang.org"
+      ]
+    },
+    "filesystem": {
+      "allowWrite": [
+        "/dev/tty",
+        "/tmp",
+        "/private/tmp",
+        "~/.agent-browser",
+        "~/.browser-profile",
+        "~/.cargo",
+        "~/.rustup",
+        "~/.cache/sccache",
+        "~/.claude",
+        "~/.claude.json",
+        "~/.claude.json.backup",
+        "~/.claude.json.lock",
+        "~/.claude.lock",
+        "~/.codex",
+        "~/go",
+        "~/.cache/go-build",
+        "~/Library/Caches/go-build",
+        "~/Library/Application Support/go",
+        "~/.npm",
+        "~/.npmrc",
+        "~/.local/share/uv",
+        "~/.cache/uv",
+        "~/.cache/zig",
+        "~/developments"
+      ],
+      "denyRead": [
+        "~/.ssh",
+        "~/.aws/credentials",
+        "~/.gnupg",
+        "~/.netrc",
+        "/etc/shadow",
+        "/etc/sudoers",
+        "/boot"
+      ],
+      "allowRead": ["~/.ssh/id_ed25519", "~/.ssh/id_ed25519.pub"]
+    },
+    "excludedCommands": ["codex", "gh", "git"]
+  },
   "effortLevel": "high",
   "plansDirectory": "./.plans",
-  "showThinkingSummaries": true
+  "showThinkingSummaries": true,
+  "allwaysThinkingEnabled": "true",
+  "skipAutoPermissionPrompt": true
 }

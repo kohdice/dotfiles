@@ -37,8 +37,9 @@ url = "https://developers.openai.com/mcp"
 theme = "solarized-dark"
 status_line = [
     "model-with-reasoning",
-    "context-remaining",
-    "five-hour-limit",
     "current-dir",
     "git-branch",
+    "context-remaining",
+    "five-hour-limit",
+    "weekly-limit",
 ]

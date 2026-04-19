@@ -1,58 +1,48 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
-let
-  isDarwin = pkgs.stdenv.isDarwin;
-  isLinux = pkgs.stdenv.isLinux;
-in
 {
-  home.packages =
-    with pkgs;
-    [
-      # Core tools
-      bat
-      curl
-      dust
-      eza
-      fd
-      fzf
-      htop
-      jq
-      ripgrep
-      tree
-      zoxide
+  home.packages = with pkgs; [
+    # Core tools
+    bat
+    curl
+    dust
+    eza
+    fd
+    fzf
+    htop
+    jq
+    ripgrep
+    tree
+    zoxide
 
-      # Git tools
-      delta
-      ghq
-      lazygit
+    # Git tools
+    delta
+    ghq
+    lazygit
 
-      # Terminal tools
-      fastfetch
-      starship
-      tmux
-      yazi
+    # Terminal tools
+    fastfetch
+    starship
+    tmux
+    yazi
 
-      # Development tools
-      devcontainer
-      podman
-      typos
+    # Development tools
+    devcontainer
+    podman
+    podman-desktop
+    typos
 
-      # AI tools
-      agent-browser
-      claude-code
-      codex
+    # Communication
+    slack
+    zoom-us
 
-      # Build tools
-      gnumake
-      tree-sitter
-    ]
-    ++ lib.optionals isLinux [
-      # Development tools
-      docker
+    # AI tools
+    agent-browser
+    claude-code
+    codex
 
-      # GUI Apps
-      ghostty
-      google-chrome
-      slack
-    ];
+    # Build tools
+    gnumake
+    tree-sitter
+  ];
 }

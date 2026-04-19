@@ -1,8 +1,12 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   home.packages = with pkgs; [
-    _1password-gui
-    _1password-cli
+    # Development tools
+    docker
+
+    # GUI Apps
+    ghostty
+    google-chrome
   ];
 }

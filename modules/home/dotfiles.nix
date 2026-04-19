@@ -31,14 +31,10 @@ let
     }:
     let
       entries = builtins.readDir (flakeSource + "/${sourceRelPath}");
-      names = builtins.attrNames (
-        lib.filterAttrs (_: type: builtins.elem type entryTypes) entries
-      );
+      names = builtins.attrNames (lib.filterAttrs (_: type: builtins.elem type entryTypes) entries);
     in
     lib.listToAttrs (
-      map (
-        name: lib.nameValuePair "${targetDir}/${name}" "${sourceRelPath}/${name}"
-      ) names
+      map (name: lib.nameValuePair "${targetDir}/${name}" "${sourceRelPath}/${name}") names
     );
 
   claudeSkillSymlinks = mkDirEntrySymlinks {

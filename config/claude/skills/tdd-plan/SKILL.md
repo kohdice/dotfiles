@@ -16,7 +16,7 @@ Execute these steps in order when creating a plan.
 ### Step 1: Clarify Requirements
 
 1. Read the user's request to understand the desired feature or change
-2. If the request is ambiguous, ask targeted questions before proceeding
+2. If the request is ambiguous, ask targeted questions (3–7 items covering scope, tech stack, and non-functional requirements) before proceeding. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `./plans/` directory or any plan / questions file — no filesystem side effects
 3. Identify the scope: new feature, extension of existing feature, bug fix, or refactor
 
 ### Step 2: Analyze the Codebase
@@ -42,17 +42,18 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 - One behavior per test — each test validates exactly one thing
 - A test name must clearly describe what is being verified
-- Use descriptive Zig inline test names (e.g., `test "parses empty sequence diagram"`)
+- Follow the target project's existing test naming convention, discovered in Step 2 (e.g., Zig inline tests `test "parses empty sequence diagram"`, Rust `#[test] fn parses_empty_sequence_diagram`, Go `TestParsesEmptySequenceDiagram`)
 
 **Structural changes:**
 
 - When refactoring or reorganizing code is needed before or during implementation, include it as a separate plan item marked with `Refactor:` instead of `Test:`
 - Structural items must not change behavior — they prepare the codebase for the next behavioral change
+- Placement: put a `Refactor:` item immediately before the first `Test:` item that depends on that structural change. Consecutive `Refactor:` items may be grouped together only when they all gate the same next behavioral test — this group goes right before that test, not at the top of the Test Cases list. Do not interleave structural items with unrelated behavioral tests
 
 ### Step 4: Write the Plan File
 
-1. Create the `./plans/` directory if it does not exist
-2. Choose a descriptive file name based on the feature (e.g., `sequence-parser.md`, `table-renderer.md`)
+1. Create the `./plans/` directory if it does not exist (resolved against the current working directory, which should be the project root)
+2. Choose a descriptive kebab-case file name based on the feature (e.g., `sequence-parser.md`, `table-renderer.md`)
 3. Write the plan file using the format specified below
 
 ## Plan File Format

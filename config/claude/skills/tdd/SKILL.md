@@ -36,7 +36,7 @@ Each test case in the plan uses a checkbox to track progress:
 
 ## TDD Cycle: Red, Green, Refactor
 
-Execute each test through three distinct phases:
+Execute each test through three distinct phases. In this skill, "run all tests" means the project's complete test suite, not just the file currently being edited. Run the full suite at every checkpoint. If the suite is prohibitively slow, state the scoped subset you are running and why.
 
 ### Phase 1: Red (Write a Failing Test)
 
@@ -58,6 +58,16 @@ Execute each test through three distinct phases:
 2. Apply one refactoring change at a time
 3. Run all tests after each refactoring step
 4. Stop refactoring when the code is clean enough
+
+### When to Skip or Stop Phase 3
+
+- **Skip entirely** when the Green code has no visible duplication, names already express intent, and each method has a single responsibility. Phase 3 is optional per cycle, not mandatory — report it as skipped rather than inventing trivial refactors.
+- **"Clean enough" = stop** when all three hold: no duplication across the code just written, names express intent, methods have single responsibility. Do not chase subjective polish beyond this bar.
+- Refactor does not update plan checkboxes. Plan items track behavioral increments; record structural decisions in commit messages or a separate log, not in the plan file.
+
+### Standalone Refactor (No Red/Green This Turn)
+
+When the user requests refactoring outside a Red-Green cycle (for example, all plan tests already pass and the user asks to remove duplication), run Phase 3 on its own. The invariant "all tests pass before AND after" still applies. Do not add or modify tests during a standalone refactor — that would be a behavioral change.
 
 ## Tidy First: Structural vs. Behavioral Changes
 
@@ -81,6 +91,8 @@ To validate: run all tests before AND after. Results must be identical.
 To validate: a new test must fail before (Red) and pass after (Green).
 
 ## Commit Discipline
+
+This section applies only when a commit is being created (the user requests a commit, or a logical unit is complete and a commit is intended). If the current task does not involve committing, skip this section entirely — do not invent commits on your own.
 
 Commit only when ALL of the following are true:
 

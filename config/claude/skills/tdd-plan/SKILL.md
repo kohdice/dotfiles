@@ -1,13 +1,13 @@
 ---
 name: tdd-plan
-description: "This skill should be used when the user asks to create an implementation plan, design a development plan, or prepare a TDD plan for a feature. Triggers on phrases like: 'plan to implement X', 'create a plan for X', 'design a development plan', 'prepare a TDD plan', 'make a plan', or any request that involves creating a structured plan file in ./plans/ for later TDD execution. Do NOT trigger when the user says 'go' or asks to implement the next test — that is handled by the tdd skill."
+description: "This skill should be used when the user asks to create an implementation plan, design a development plan, or prepare a TDD plan for a feature. Triggers on phrases like: 'plan to implement X', 'create a plan for X', 'design a development plan', 'prepare a TDD plan', 'make a plan', or any request that involves creating a structured plan file in .plans/ for later TDD execution. Do NOT trigger when the user says 'go' or asks to implement the next test — that is handled by the tdd skill."
 ---
 
 # TDD Plan
 
 ## Overview
 
-Create structured implementation plans for TDD-driven development. Analyze the user's requirements and the existing codebase, then produce a plan file in `./plans/` containing ordered test cases ready for execution by the tdd skill.
+Create structured implementation plans for TDD-driven development. Analyze the user's requirements and the existing codebase, then produce a plan file in `.plans/` containing ordered test cases ready for execution by the tdd skill. Always end by telling the user the exact plan filename that was created so they can continue with `go` in the same session or `/tdd <filename>` later.
 
 ## Plan Creation Workflow
 
@@ -16,7 +16,7 @@ Execute these steps in order when creating a plan.
 ### Step 1: Clarify Requirements
 
 1. Read the user's request to understand the desired feature or change
-2. If the request is ambiguous, ask targeted questions (3–7 items covering scope, tech stack, and non-functional requirements) before proceeding. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `./plans/` directory or any plan / questions file — no filesystem side effects
+2. If the request is ambiguous, ask targeted questions (3–7 items covering scope, tech stack, and non-functional requirements) before proceeding. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `.plans/` directory or any plan / questions file — no filesystem side effects
 3. Identify the scope: new feature, extension of existing feature, bug fix, or refactor
 
 ### Step 2: Analyze the Codebase
@@ -52,9 +52,10 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 ### Step 4: Write the Plan File
 
-1. Create the `./plans/` directory if it does not exist (resolved against the current working directory, which should be the project root)
+1. Create the `.plans/` directory if it does not exist (resolved against the current working directory, which should be the project root)
 2. Choose a descriptive kebab-case file name based on the feature (e.g., `sequence-parser.md`, `table-renderer.md`)
 3. Write the plan file using the format specified below
+4. In the final reply, print the exact created filename and `.plans/` path, and mention that a follow-up bare `go` in the same session should continue with that plan
 
 ## Plan File Format
 
@@ -99,3 +100,4 @@ Before presenting the plan to the user, verify:
 5. Edge cases and error conditions are covered
 6. The plan references specific files, types, and functions from the codebase
 7. No test case implicitly depends on unplanned work
+8. The final reply includes the exact created plan filename and `.plans/` path

@@ -155,7 +155,8 @@
     "security-guidance@claude-plugins-official": true,
     "explanatory-output-style@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "codex@openai-codex": true
+    "codex@openai-codex": true,
+    "context7@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "openai-codex": {
@@ -234,6 +235,6 @@
   "effortLevel": "high",
   "plansDirectory": "./.plans",
   "showThinkingSummaries": true,
-  "allwaysThinkingEnabled": "true",
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "allwaysThinkingEnabled": "true"
 }

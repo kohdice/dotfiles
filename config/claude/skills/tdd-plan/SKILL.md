@@ -1,13 +1,13 @@
 ---
 name: tdd-plan
-description: "This skill should be used when the user asks to create an implementation plan, design a development plan, or prepare a TDD plan for a feature. Triggers on phrases like: 'plan to implement X', 'create a plan for X', 'design a development plan', 'prepare a TDD plan', 'make a plan', or any request that involves creating a structured plan file in ./plans/ for later TDD execution. Do NOT trigger when the user says 'go' or asks to implement the next test — that is handled by the tdd skill."
+description: "This skill should be used when the user asks to create an implementation plan, design a development plan, or prepare a TDD plan for a feature. Triggers on phrases like: 'plan to implement X', 'create a plan for X', 'design a development plan', 'prepare a TDD plan', 'make a plan', or any request that involves creating a structured plan file in .plans/ for later TDD execution. Do NOT trigger when the user says 'go' or asks to implement the next test — that is handled by the tdd skill."
 ---
 
 # TDD Plan
 
 ## Overview
 
-Create structured implementation plans for TDD-driven development. Analyze the user's requirements and the existing codebase, then produce a plan file in `./plans/` containing ordered test cases ready for execution by the tdd skill.
+Create structured implementation plans for TDD-driven development. Analyze the user's requirements and the existing codebase, then produce a plan file in `.plans/` containing ordered test cases ready for execution by the tdd skill. Always end by telling the user the exact plan filename that was created so they can continue with `go` in the same session or `/tdd <filename>` later.
 
 ## Plan Creation Workflow
 
@@ -16,7 +16,7 @@ Execute these steps in order when creating a plan.
 ### Step 1: Clarify Requirements
 
 1. Read the user's request to understand the desired feature or change
-2. If the request is ambiguous, ask targeted questions before proceeding
+2. If the request is ambiguous, ask targeted questions (3–7 items covering scope, tech stack, and non-functional requirements) before proceeding. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `.plans/` directory or any plan / questions file — no filesystem side effects
 3. Identify the scope: new feature, extension of existing feature, bug fix, or refactor
 
 ### Step 2: Analyze the Codebase
@@ -42,18 +42,20 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 - One behavior per test — each test validates exactly one thing
 - A test name must clearly describe what is being verified
-- Use descriptive Zig inline test names (e.g., `test "parses empty sequence diagram"`)
+- Follow the target project's existing test naming convention, discovered in Step 2 (e.g., Zig inline tests `test "parses empty sequence diagram"`, Rust `#[test] fn parses_empty_sequence_diagram`, Go `TestParsesEmptySequenceDiagram`)
 
 **Structural changes:**
 
 - When refactoring or reorganizing code is needed before or during implementation, include it as a separate plan item marked with `Refactor:` instead of `Test:`
 - Structural items must not change behavior — they prepare the codebase for the next behavioral change
+- Placement: put a `Refactor:` item immediately before the first `Test:` item that depends on that structural change. Consecutive `Refactor:` items may be grouped together only when they all gate the same next behavioral test — this group goes right before that test, not at the top of the Test Cases list. Do not interleave structural items with unrelated behavioral tests
 
 ### Step 4: Write the Plan File
 
-1. Create the `./plans/` directory if it does not exist
-2. Choose a descriptive file name based on the feature (e.g., `sequence-parser.md`, `table-renderer.md`)
+1. Create the `.plans/` directory if it does not exist (resolved against the current working directory, which should be the project root)
+2. Choose a descriptive kebab-case file name based on the feature (e.g., `sequence-parser.md`, `table-renderer.md`)
 3. Write the plan file using the format specified below
+4. In the final reply, print the exact created filename and `.plans/` path, and mention that a follow-up bare `go` in the same session should continue with that plan
 
 ## Plan File Format
 
@@ -98,3 +100,4 @@ Before presenting the plan to the user, verify:
 5. Edge cases and error conditions are covered
 6. The plan references specific files, types, and functions from the codebase
 7. No test case implicitly depends on unplanned work
+8. The final reply includes the exact created plan filename and `.plans/` path

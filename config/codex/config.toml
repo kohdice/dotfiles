@@ -1,6 +1,6 @@
 approval_policy = "on-request"
 hide_agent_reasoning = true
-model = "gpt-5.4"
+model = "gpt-5.5"
 # model_context_window = 1000000
 # model_auto_compact_token_limit = 950000
 model_reasoning_effort = "xhigh"
@@ -10,10 +10,33 @@ personality = "pragmatic"
 collaboration_modes = true
 multi_agent = true
 search_tool = true
+skills = true
 
 [agents]
 max_threads = 6
 max_depth = 2
+
+[tui]
+theme = "solarized-dark"
+status_line = [
+    "model-with-reasoning",
+    "current-dir",
+    "git-branch",
+    "context-remaining",
+    "five-hour-limit",
+    "weekly-limit",
+]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[[skills.config]]
+path = "~/.agents/skills/tdd"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/tdd-plan"
+enabled = true
 
 [mcp_servers.context7]
 command = "npx"
@@ -32,14 +55,3 @@ args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
 
 [mcp_servers.openaiDeveloperDocs]
 url = "https://developers.openai.com/mcp"
-
-[tui]
-theme = "solarized-dark"
-status_line = [
-    "model-with-reasoning",
-    "current-dir",
-    "git-branch",
-    "context-remaining",
-    "five-hour-limit",
-    "weekly-limit",
-]

@@ -31,6 +31,10 @@ status_line = [
 "gpt-5.5" = 4
 
 [[skills.config]]
+path = "~/.agents/skills/git-commit"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/tdd"
 enabled = true
 

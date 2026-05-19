@@ -12,15 +12,13 @@ in
     enable = true;
     enableDefaultConfig = false;
 
-    matchBlocks = {
+    settings = {
       "github.com" = {
-        identityFile = "~/.ssh/id_ed25519";
-        extraOptions = {
-          AddKeysToAgent = "yes";
-        }
-        // lib.optionalAttrs isDarwin {
-          UseKeychain = "yes";
-        };
+        IdentityFile = "~/.ssh/id_ed25519";
+        AddKeysToAgent = "yes";
+      }
+      // lib.optionalAttrs isDarwin {
+        UseKeychain = "yes";
       };
     };
   };

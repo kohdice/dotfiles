@@ -37,7 +37,6 @@
     zoom-us
 
     # AI tools
-    agent-browser
     claude-code
     codex
 

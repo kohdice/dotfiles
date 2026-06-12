@@ -60,7 +60,7 @@ Profiles: `kohdice` (personal, /Users/kohdice) and `work` (business, /Users/kare
 - **Platform conditionals**: Use `lib.optionals isDarwin/isLinux` for platform-specific packages
 - **Symlinks**: Managed in `modules/home/dotfiles.nix` for XDG config and home.file
 - **Module imports**: Alphabetically ordered in `modules/home/default.nix`
-- **Nix vs Symlink decision**: See `docs/ARCHITECTURE.md` for when to use Nix modules vs symlinks
+- **Nix vs Symlink decision**: See `docs/ARCHITECTURE.md` for the decision criteria, the full symlink map, and new-profile creation steps
 
 ## Adding Packages
 

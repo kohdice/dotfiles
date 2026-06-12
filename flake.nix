@@ -10,7 +10,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     nix-darwin = {
-      url = "github:LnL7/nix-darwin";
+      url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -19,7 +19,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
     # Formatter
     treefmt-nix = {
@@ -34,7 +34,11 @@
     };
 
     # AI coding agents
-    llm-agents.url = "github:numtide/llm-agents.nix";
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
   };
 
   outputs =
@@ -97,7 +101,23 @@
       # Formatter (nix fmt)
       formatter = forAllSystems (system: treefmtEval.${system}.config.build.wrapper);
 
+      # Checks (nix flake check): formatting plus full builds of every configuration
+      checks = forAllSystems (
+        system:
+        {
+          formatting = treefmtEval.${system}.config.build.check self;
+        }
+        // nixpkgs.lib.optionalAttrs (system == darwinSystem) {
+          kohdice = self.darwinConfigurations.kohdice.system;
+          work = self.darwinConfigurations.work.system;
+        }
+        // nixpkgs.lib.optionalAttrs (builtins.elem system linuxSystems) {
+          kohdice-home = self.homeConfigurations.kohdice.activationPackage;
+          work-home = self.homeConfigurations.work.activationPackage;
+        }
+      );
+
       # Apps (nix run .#<app>)
-      apps = forAllSystems (system: import ./lib/apps.nix { inherit nixpkgs system; });
+      apps = forAllSystems (system: import ./lib/apps.nix { inherit inputs system; });
     };
 }

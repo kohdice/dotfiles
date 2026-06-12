@@ -1,19 +1,9 @@
-# Overlay aggregator
+# Overlay aggregator: each entry is a standard `final: prev:` overlay, so
+# nixpkgs composes them with its usual fixed-point semantics. Flake inputs
+# are passed to each overlay file directly instead of being injected into
+# the package set.
 { inputs }:
 
-let
-  overlayFiles = [
-    ./llm-agents.nix
-  ];
-
-  baseOverlay = final: prev: {
-    _llm-agents = inputs.llm-agents;
-  };
-
-  applyOverlays =
-    final: prev: builtins.foldl' (acc: overlay: acc // (import overlay final prev)) { } overlayFiles;
-in
 [
-  baseOverlay
-  applyOverlays
+  (import ./llm-agents.nix inputs)
 ]

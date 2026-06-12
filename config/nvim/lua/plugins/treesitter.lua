@@ -6,8 +6,6 @@ return {
     lazy = false,
     build = ":TSUpdate",
     config = function()
-      require("nvim-treesitter").setup({})
-
       -- Programmatic parser installation (replaces ensure_installed)
       local ensure = {
         "bash",
@@ -56,15 +54,32 @@ return {
           if ok and stats and stats.size > max_filesize then
             return
           end
-          if vim.b[buf] and vim.b[buf].large_file then
-            return
-          end
           pcall(vim.treesitter.start, buf)
         end,
       })
 
-      -- Enable treesitter-based indentation
+      -- Enable treesitter-based indentation only for filetypes with solid
+      -- indent queries; others keep their well-tested ftplugin indent
       vim.api.nvim_create_autocmd("FileType", {
+        pattern = {
+          "c",
+          "cmake",
+          "css",
+          "go",
+          "gomod",
+          "graphql",
+          "hcl",
+          "html",
+          "javascript",
+          "javascriptreact",
+          "json",
+          "lua",
+          "rust",
+          "terraform",
+          "typescript",
+          "typescriptreact",
+          "zig",
+        },
         callback = function()
           vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end,
@@ -89,14 +104,26 @@ return {
         end, { desc = desc })
       end
 
+      -- ]c/[c shadow the built-in diff-mode jump-to-change, so fall back
+      -- to it in diff windows (same pattern as the gitsigns mappings)
+      local class_map = function(lhs, fn, desc)
+        vim.keymap.set({ "n", "x", "o" }, lhs, function()
+          if vim.wo.diff then
+            vim.cmd.normal({ lhs, bang = true })
+            return
+          end
+          fn("@class.outer", "textobjects")
+        end, { desc = desc })
+      end
+
       map("]f", move.goto_next_start, "@function.outer", "Next function start")
-      map("]c", move.goto_next_start, "@class.outer", "Next class start")
+      class_map("]c", move.goto_next_start, "Next class start")
       map("]a", move.goto_next_start, "@parameter.inner", "Next parameter start")
       map("]F", move.goto_next_end, "@function.outer", "Next function end")
       map("]C", move.goto_next_end, "@class.outer", "Next class end")
       map("]A", move.goto_next_end, "@parameter.inner", "Next parameter end")
       map("[f", move.goto_previous_start, "@function.outer", "Prev function start")
-      map("[c", move.goto_previous_start, "@class.outer", "Prev class start")
+      class_map("[c", move.goto_previous_start, "Prev class start")
       map("[a", move.goto_previous_start, "@parameter.inner", "Prev parameter start")
       map("[F", move.goto_previous_end, "@function.outer", "Prev function end")
       map("[C", move.goto_previous_end, "@class.outer", "Prev class end")

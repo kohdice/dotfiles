@@ -1,6 +1,7 @@
 { pkgs, config, ... }:
 
 let
+  aliases = import ../shell/aliases.nix;
   env = import ../shell/env.nix;
 in
 {
@@ -8,6 +9,9 @@ in
     enable = true;
     dotDir = config.home.homeDirectory;
     enableCompletion = true;
+    shellAliases = aliases // {
+      zshreload = "source ~/.zshrc";
+    };
     sessionVariables = env;
 
     # Zsh options

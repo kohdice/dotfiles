@@ -1,13 +1,13 @@
-{
-  config,
-  pkgs,
-  user,
-  ...
-}:
+{ user, ... }:
 
 {
   programs.git = {
     enable = true;
+
+    # Global ignore patterns, written to ~/.config/git/ignore
+    ignores = [
+      ".DS_Store"
+    ];
 
     settings = {
       user = {
@@ -19,7 +19,6 @@
 
       core = {
         editor = "nvim";
-        excludesfile = "~/.gitignore";
         ignorecase = false;
       };
 

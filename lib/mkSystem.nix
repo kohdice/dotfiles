@@ -1,9 +1,6 @@
 # Unified system configuration builder
 # Handles both Darwin (macOS) and Linux (home-manager standalone)
-{
-  self,
-  inputs,
-}:
+{ inputs }:
 
 # Platform name: "darwin" or "linux"
 platform:
@@ -20,16 +17,16 @@ let
   # Import user configuration
   userConfig = import ../users/${user};
 
-  # Helper functions for platform-specific configuration
-  mkUserInfo =
-    homeDir:
-    userConfig.info
-    // {
-      home = homeDir;
-      dotfilesDir = "${homeDir}/developments/dotfiles";
-    };
+  homeDir = if isDarwin then "/Users/${userConfig.info.name}" else "/home/${userConfig.info.name}";
 
-  mkSpecialArgs = userInfo: {
+  userInfo = userConfig.info // {
+    home = homeDir;
+    dotfilesDir = "${homeDir}/developments/dotfiles";
+  };
+
+  # Passed to all modules (and to home-manager via extraSpecialArgs);
+  # dotfilesDir is reachable as `user.dotfilesDir`.
+  specialArgs = {
     inherit inputs;
     user = userInfo;
   };
@@ -44,21 +41,17 @@ let
 
 in
 if isDarwin then
-  let
-    homeDir = "/Users/${userConfig.info.name}";
-    userInfo = mkUserInfo homeDir;
-    specialArgs = mkSpecialArgs userInfo;
-    dotfilesDir = userInfo.dotfilesDir;
-  in
   # Darwin (macOS) configuration
   inputs.nix-darwin.lib.darwinSystem {
-    inherit system specialArgs;
+    inherit specialArgs;
     modules = [
       ../modules/${platform}
       userConfig.darwin
 
       {
         nixpkgs = {
+          # Recommended replacement for darwinSystem's legacy `system` argument
+          hostPlatform = system;
           config = nixpkgsConfig;
           overlays = overlays;
         };
@@ -70,9 +63,7 @@ if isDarwin then
           useGlobalPkgs = true;
           useUserPackages = true;
           backupFileExtension = "backup";
-          extraSpecialArgs = specialArgs // {
-            inherit dotfilesDir;
-          };
+          extraSpecialArgs = specialArgs;
           users.${userInfo.name} = {
             imports = [
               ../modules/home
@@ -93,12 +84,6 @@ if isDarwin then
     ];
   }
 else
-  let
-    homeDir = "/home/${userConfig.info.name}";
-    userInfo = mkUserInfo homeDir;
-    specialArgs = mkSpecialArgs userInfo;
-    dotfilesDir = userInfo.dotfilesDir;
-  in
   # Linux configuration (home-manager standalone)
   inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {
@@ -106,9 +91,7 @@ else
       config = nixpkgsConfig;
       overlays = overlays;
     };
-    extraSpecialArgs = specialArgs // {
-      inherit dotfilesDir;
-    };
+    extraSpecialArgs = specialArgs;
     modules = [
       ../modules/home
       ../modules/${platform}

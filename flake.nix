@@ -51,7 +51,7 @@
     let
       # Unified system builder
       mkSystem = import ./lib/mkSystem.nix {
-        inherit self inputs;
+        inherit inputs;
       };
 
       # Supported systems

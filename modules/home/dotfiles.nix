@@ -2,21 +2,23 @@
   config,
   pkgs,
   lib,
-  dotfilesDir,
+  user,
   inputs,
   ...
 }:
 
 let
   isDarwin = pkgs.stdenv.isDarwin;
-  dotfilesPath = "${dotfilesDir}";
 
   # Flake source in /nix/store — safe to readDir under pure evaluation.
+  # NOTE: it only contains git-tracked files, so new entries under the
+  # enumerated directories below must be `git add`ed before they are linked;
+  # untracked entries are silently skipped.
   flakeSource = inputs.self.outPath;
 
   # Helper to create symlink
   mkSymlink = path: {
-    source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/${path}";
+    source = config.lib.file.mkOutOfStoreSymlink "${user.dotfilesDir}/${path}";
   };
 
   # Enumerate each matching entry under `sourceRelPath` and map it to a
@@ -62,7 +64,6 @@ let
 
   # xdg.configFile symlinks (target -> source path in config/)
   xdgSymlinks = {
-    "cage/presets.yml" = "config/cage/presets.yml";
     "ghostty" = "config/ghostty";
     "nvim" = "config/nvim";
     "starship.toml" = "config/starship/starship.toml";

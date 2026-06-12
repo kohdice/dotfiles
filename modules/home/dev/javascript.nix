@@ -11,7 +11,7 @@
     typescript
 
     # LSP
-    typescript-language-server
+    typescript-go
 
     # Formatter
     prettierd

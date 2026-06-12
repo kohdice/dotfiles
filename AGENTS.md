@@ -14,7 +14,8 @@ nix run .#build          # Build kohdice profile (dry-run)
 nix run .#build-work     # Build work profile (dry-run)
 nix run .#switch         # Apply kohdice profile (macOS uses sudo internally)
 nix run .#switch-work    # Apply work profile
-nix run .#update         # Update all inputs and apply
+nix run .#update         # Update all inputs and apply kohdice profile (run from repo root)
+nix run .#update-work    # Update all inputs and apply work profile (run from repo root)
 
 # Format and validate
 nix fmt                  # Format Nix and Lua files (nixfmt, stylua)

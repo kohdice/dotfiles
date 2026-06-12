@@ -6,14 +6,12 @@
     bat
     curl
     dust
-    eza
     fd
     fzf
     htop
     jq
     ripgrep
     tree
-    zoxide
 
     # Git tools
     delta
@@ -22,7 +20,6 @@
 
     # Terminal tools
     fastfetch
-    starship
     tmux
     yazi
 

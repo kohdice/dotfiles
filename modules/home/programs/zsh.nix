@@ -2,15 +2,6 @@
 
 let
   env = import ../shell/env.nix;
-  paths = import ../shell/paths.nix;
-
-  zsh-abbr = pkgs.fetchFromGitHub {
-    owner = "olets";
-    repo = "zsh-abbr";
-    rev = "2de4a08c5e0d9dbe8447e11e0a177b59b5b6d6ea";
-    hash = "sha256-RvdMEk1bQ/mCbcTneg8mMJJh6j60km0/wchBBQQ+Ugo=";
-    fetchSubmodules = true;
-  };
 in
 {
   programs.zsh = {
@@ -23,10 +14,14 @@ in
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
+    # Plugin from nixpkgs rather than programs.zsh.zsh-abbr: the module
+    # generates its own user-abbreviations file, which would collide with
+    # the writable symlink managed in dotfiles.nix.
     plugins = [
       {
         name = "zsh-abbr";
-        src = zsh-abbr;
+        src = pkgs.zsh-abbr;
+        file = "share/zsh/zsh-abbr/zsh-abbr.plugin.zsh";
       }
     ];
 
@@ -43,18 +38,6 @@ in
       setopt auto_pushd
       setopt pushd_ignore_dups
       setopt inc_append_history
-
-      # Enhanced ls (eza)
-      alias ls="eza --icons --git"
-      alias la="eza -A --icons --git"
-      alias ll="eza -l -g --icons"
-      alias lla="eza -l -a --icons"
-
-      # Starship
-      eval "$(starship init zsh)"
-
-      # zoxide
-      eval "$(zoxide init zsh --cmd cd)"
 
       ### fzf ###
 
@@ -102,6 +85,4 @@ in
 
     '';
   };
-
-  home.sessionPath = paths;
 }

@@ -1,10 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  user,
-  ...
-}:
+{ user, ... }:
 
 {
   imports = [
@@ -26,7 +20,6 @@
   # User configuration
   users.users.${user.name} = {
     home = user.home;
-    shell = pkgs.zsh;
   };
 
   # Enable zsh system-wide

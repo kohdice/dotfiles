@@ -67,7 +67,4 @@ dotfiles/
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md) - Project structure and included tools
-- [Customization](docs/CUSTOMIZATION.md) - Adding packages and creating profiles
-- [Dependencies](docs/DEPENDENCIES.md) - How Nix dependency management works
-- [Usage](docs/USAGE.md) - Detailed usage guide and workflow
+- [Architecture](docs/ARCHITECTURE.md) - Design decisions (Nix module vs symlink), symlink map, and profile creation

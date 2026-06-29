@@ -15,7 +15,18 @@ on:
   workflow_dispatch:
 jobs:
   check:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-latest
+            system: x86_64-linux
+          - name: macOS
+            os: macos-15
+            system: aarch64-darwin
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -28,4 +39,4 @@ jobs:
       - name: Check format
         run: nix fmt -- --ci
       - name: Flake check
-        run: nix flake check --all-systems --show-trace
+        run: nix flake check --system ${{ matrix.system }} --show-trace

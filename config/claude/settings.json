@@ -229,5 +229,5 @@
   "theme": "dark",
   "editorMode": "vim",
   "skipAutoPermissionPrompt": true,
-  "allwaysThinkingEnabled": "true"
+  "alwaysThinkingEnabled": true
 }

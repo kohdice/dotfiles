@@ -13,3 +13,6 @@ config/nvim/lazy-lock.json
 settings.local.json
 .mcp.json
 .plans/
+
+#Codex
+.codex/config.toml

@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+{ pkgs, lib, ... }:
 
 let
   isLinux = pkgs.stdenv.isLinux;
@@ -21,9 +16,9 @@ in
       lib.optionals isLinux [
         xclip # Clipboard support (Linux only)
       ];
-  };
 
-  # Keep using config/nvim as the source of truth and suppress Home Manager's
-  # generated init.lua, which would otherwise collide with the directory symlink.
-  xdg.configFile."nvim/init.lua".enable = lib.mkForce false;
+    # Load Home Manager-generated Lua via wrapper args instead of a generated
+    # init.lua, which would collide with the config/nvim directory symlink.
+    sideloadInitLua = true;
+  };
 }

@@ -1,227 +1,56 @@
 # Architecture
 
-このリポジトリは Nix Flake をベースとした macOS/Linux の開発環境設定です。
+Repo-specific design decisions and procedures that cannot be derived from the
+code itself. For the directory layout, commands, and module overview, see
+[AGENTS.md](../AGENTS.md) and [README.md](../README.md).
 
-## 概要
+## Config Management Policy: Nix Module vs Symlink
 
-- **macOS**: nix-darwin + home-manager による宣言的システム設定
-- **Linux**: home-manager のみによるユーザー環境設定
-- **フォーマッター**: treefmt-nix (nixfmt, stylua)
+Criteria for deciding whether an application config is managed as a Nix module
+(`programs.*`) or as a symlink to `config/`.
 
-## ディレクトリ構造
+### Prefer a Nix module when
 
-```
-dotfiles/
-├── flake.nix                     # エントリーポイント - Nix Flake 定義
-├── lib/
-│   ├── mkSystem.nix              # 統合システムビルダー (darwin/linux)
-│   └── apps.nix                  # App 定義 (`nix run .#<app>`)
-├── modules/
-│   ├── darwin/                   # macOS 固有モジュール
-│   │   ├── default.nix           # Darwin モジュールのインポート
-│   │   ├── system.nix            # システム設定
-│   │   ├── packages.nix          # Nix パッケージ
-│   │   └── homebrew.nix          # Homebrew, Cask, Mac App Store
-│   ├── home/                     # home-manager モジュール（クロスプラットフォーム）
-│   │   ├── default.nix           # モジュールインポートのみ
-│   │   ├── dotfiles.nix          # XDG シンボリックリンク、home.file 設定
-│   │   ├── packages.nix          # ユーザーパッケージ
-│   │   ├── dev/                  # 言語別開発ツール
-│   │   ├── editors/              # エディタ設定 (neovim.nix)
-│   │   ├── git/                  # Git 設定 (default.nix, aliases.nix)
-│   │   ├── jj/                   # Jujutsu VCS 設定
-│   │   ├── programs/             # アプリ固有設定 (zsh.nix, bash.nix, gh.nix)
-│   │   ├── shell/                # 共通シェル設定 (aliases.nix, env.nix, paths.nix)
-│   │   └── ssh/                  # SSH 設定
-│   └── linux/
-│       ├── default.nix           # Linux 固有設定
-│       └── packages.nix          # Linux 固有パッケージ
-├── users/                        # ユーザープロファイル定義
-│   ├── kohdice/                  # 個人用プロファイル
-│   │   ├── default.nix           # プロファイルエクスポート
-│   │   ├── info.nix              # ユーザー情報 (name, email, home, dotfilesDir)
-│   │   ├── home.nix              # home-manager オーバーライド
-│   │   └── darwin.nix            # Darwin 固有オーバーライド
-│   └── work/                     # 業務用プロファイル (同様の構造)
-├── config/                       # アプリケーション設定（シンボリックリンク経由）
-│   ├── nvim/                     # Neovim 設定
-│   ├── tmux/                     # tmux 設定
-│   ├── ghostty/                  # Ghostty ターミナル設定
-│   ├── lazygit/                  # lazygit 設定
-│   ├── starship/                 # Starship プロンプト設定
-│   ├── karabiner/                # Karabiner-Elements 設定 (macOS のみ)
-│   ├── git/                      # Git 設定
-│   ├── jj/                       # Jujutsu VCS 設定
-│   ├── zsh/                      # Zsh 設定
-│   ├── bash/                     # Bash 設定
-│   ├── claude/                   # Claude Code 設定
-│   └── codex/                    # OpenAI Codex 設定
-└── docs/                         # ドキュメント
-```
+1. **Dynamic value injection is needed** - profile-dependent values such as
+   `user.email`, `user.fullName`
+2. **home-manager integration is needed** - `home.sessionPath`,
+   `home.sessionVariables`
+3. **It interacts with other Nix modules** - e.g. `programs.delta` +
+   `programs.git`
+4. **Most of the config is expressible declaratively** - `extraConfig` stays
+   below 50%
 
-## ユーザープロファイル
+### Prefer a symlink when
 
-`users/` ディレクトリで定義された 2 つのプロファイル:
+1. **The config is complex and mostly `extraConfig`** - 50% or more
+2. **The format natively supports file splitting / conditionals** - `source`,
+   `if-shell`, etc.
+3. **Syntax highlighting for a dedicated language matters** - Lua, tmux config
+4. **No home-manager integration is needed** - env vars and PATH are inherited
+   from the shell
 
-| プロファイル | ユーザー名 | ホームディレクトリ | 用途   |
-| ------------ | ---------- | ------------------ | ------ |
-| `kohdice`    | kohdice    | `/Users/kohdice`   | 個人用 |
-| `work`       | karei      | `/Users/karei`     | 業務用 |
+### Current Layout
 
-## コマンド
+| App           | Method  | Reason                                      |
+| ------------- | ------- | ------------------------------------------- |
+| git, jj       | Nix     | `user.*` injection, 100% declarative        |
+| zsh, bash     | Nix     | `home.sessionPath` integration is required  |
+| ssh           | Nix     | host entries fit declarative management     |
+| claude, codex | Symlink | config files are edited directly and often  |
+| tmux          | Symlink | only ~20% declarative, needs file splitting |
+| neovim        | Symlink | Lua language, no home-manager integration   |
+| ghostty       | Symlink | no home-manager integration                 |
+| starship      | Symlink | no home-manager integration                 |
+| lazygit       | Symlink | no home-manager integration                 |
+| karabiner     | Symlink | JSON config, macOS only                     |
 
-```bash
-# 設定のビルド（検証）
-nix run .#build          # kohdice プロファイルをビルド
-nix run .#build-work     # work プロファイルをビルド
+## Symlinks
 
-# 設定の適用
-nix run .#switch         # kohdice プロファイルを適用
-nix run .#switch-work    # work プロファイルを適用
+All symlinks are defined in `modules/home/dotfiles.nix`.
 
-# パッケージの更新
-nix run .#update         # 全入力を更新して適用
+### Home directory (home.file)
 
-# コードフォーマット
-nix fmt                  # Nix と Lua ファイルをフォーマット
-```
-
-## 含まれるツール
-
-### 開発言語
-
-| 言語        | パッケージ                          |
-| ----------- | ----------------------------------- |
-| **Go**      | go, golangci-lint, delve            |
-| **Rust**    | rustup (rust-analyzer は rustup で) |
-| **Python**  | uv, ruff, pyright                   |
-| **Node.js** | nodejs_24, bun, deno, typescript    |
-| **Lua**     | lua, luajit                         |
-| **C/C++**   | gcc, clang-tools                    |
-| **Zig**     | zig, zls                            |
-
-### LSP サーバー
-
-| 言語                  | LSP サーバー               | 管理方法 |
-| --------------------- | -------------------------- | -------- |
-| Go                    | gopls                      | Nix      |
-| Rust                  | rust-analyzer              | rustup   |
-| Python                | pyright                    | Nix      |
-| TypeScript/JavaScript | typescript-language-server | Nix      |
-| Lua                   | lua-language-server        | Nix      |
-| C/C++                 | clangd                     | Nix      |
-| JSON                  | vscode-langservers-json    | Nix      |
-| YAML                  | yaml-language-server       | Nix      |
-| TOML                  | taplo                      | Nix      |
-| Nix                   | nil                        | Nix      |
-| Zig                   | zls                        | Nix      |
-| Markdown              | marksman                   | Nix      |
-
-### CLI ツール
-
-| カテゴリ       | ツール                                                 |
-| -------------- | ------------------------------------------------------ |
-| **コアツール** | bat, curl, dust, eza, fd, fzf, htop, jq, ripgrep, tree |
-| **Git ツール** | gh, ghq, delta, lazygit                                |
-| **ターミナル** | fastfetch, navi, starship, yazi, zoxide                |
-| **開発ツール** | protobuf, typos, tree-sitter                           |
-| **AI ツール**  | claude-code, codex                                     |
-
-### macOS GUI アプリケーション
-
-**Nix パッケージ（システムレベル）:**
-
-- Karabiner-Elements
-- Scroll Reverser
-
-**Nix パッケージ（ユーザーレベル）:**
-
-- Discord (macOS / x86_64-linux のみ)
-- Google Chrome
-- Slack
-- TablePlus
-- VS Code
-
-**Homebrew Cask:**
-
-- ChatGPT
-- Claude
-- CotEditor
-- Docker Desktop
-- Ghostty
-- Google Japanese IME
-- Numi
-- Postman
-- Raycast
-- VLC
-- Zoom
-
-**Mac App Store:**
-
-- 1Password 7
-- iMovie
-- LINE
-- RunCat
-- Spark
-- Xcode
-
-## Neovim 設定
-
-Neovim は [Lazy.nvim](https://github.com/folke/lazy.nvim) でプラグイン管理しています。
-
-```
-config/nvim/
-├── init.lua                      # エントリーポイント
-├── stylua.toml                   # Lua フォーマッター設定
-├── lua/
-│   ├── config/
-│   │   ├── lazy.lua              # プラグインマネージャー設定
-│   │   ├── keymaps.lua           # キーマッピング
-│   │   └── options.lua           # Neovim オプション
-│   ├── plugins/                  # 個別プラグイン設定
-│   └── utils/                    # ユーティリティ関数
-└── lsp/                          # LSP サーバー設定
-    ├── clangd.lua
-    ├── gopls.lua
-    ├── jsonls.lua
-    ├── lua_ls.lua
-    ├── rust_analyzer.lua
-    ├── taplo.lua
-    ├── ts_ls.lua
-    └── yamlls.lua
-```
-
-## AI コーディングツール連携
-
-`modules/home/dotfiles.nix` で設定ファイルのシンボリックリンクを管理しています。
-
-### Claude Code
-
-`config/claude/` ディレクトリに Claude Code の設定があります:
-
-- **CLAUDE.md** - プロジェクト固有の指示
-- **settings.json** - Claude Code の設定
-- **statusline.sh** - ステータスライン用スクリプト
-- **mcp.json** - MCP サーバー設定テンプレート
-
-シンボリックリンク先: `~/.claude/`
-
-### OpenAI Codex
-
-`config/codex/` ディレクトリに OpenAI Codex の設定があります:
-
-- **AGENTS.md** - エージェント設定
-- **config.toml** - Codex 設定
-
-シンボリックリンク先: `~/.codex/`
-
-## シンボリックリンク
-
-`modules/home/dotfiles.nix` で以下のシンボリックリンクが設定されます:
-
-### ホームディレクトリ直下 (home.file)
-
-| ソース                        | リンク先                  |
+| Source                        | Target                    |
 | ----------------------------- | ------------------------- |
 | `config/claude/CLAUDE.md`     | `~/.claude/CLAUDE.md`     |
 | `config/claude/settings.json` | `~/.claude/settings.json` |
@@ -229,46 +58,107 @@ config/nvim/
 | `config/codex/AGENTS.md`      | `~/.codex/AGENTS.md`      |
 | `config/codex/config.toml`    | `~/.codex/config.toml`    |
 
-### ~/.config 配下 (xdg.configFile)
+### ~/.config (xdg.configFile)
 
-| ソース                            | リンク先                                          |
-| --------------------------------- | ------------------------------------------------- |
-| `config/ghostty`                  | `~/.config/ghostty`                               |
-| `config/nvim`                     | `~/.config/nvim`                                  |
-| `config/starship/starship.toml`   | `~/.config/starship.toml`                         |
-| `config/tmux`                     | `~/.config/tmux`                                  |
-| `config/lazygit`                  | `~/.config/lazygit`                               |
-| `config/karabiner/karabiner.json` | `~/.config/karabiner/karabiner.json` (macOS のみ) |
+| Source                               | Target                                            |
+| ------------------------------------ | ------------------------------------------------- |
+| `config/ghostty`                     | `~/.config/ghostty`                               |
+| `config/nvim`                        | `~/.config/nvim`                                  |
+| `config/starship/starship.toml`      | `~/.config/starship.toml`                         |
+| `config/tmux`                        | `~/.config/tmux`                                  |
+| `config/lazygit`                     | `~/.config/lazygit`                               |
+| `config/zsh-abbr/user-abbreviations` | `~/.config/zsh-abbr/user-abbreviations`           |
+| `config/karabiner/karabiner.json`    | `~/.config/karabiner/karabiner.json` (macOS only) |
 
-## 設定ファイル管理の方針
+Directories under `config/claude/skills/` and files under
+`config/claude/commands/` are linked entry-by-entry into `~/.claude/skills/`
+and `~/.claude/commands/`. The enumeration is based on the flake source, so
+**new entries are not linked until they are `git add`ed**.
 
-アプリケーション設定を Nix モジュール（`programs.*`）で管理するか、シンボリンクで管理するかの判断基準：
+> **Backup files**: `config/zsh/`, `config/bash/`, `config/git/`, and
+> `config/jj/` are not linked anywhere. They are kept as backups for non-Nix
+> environments after the migration to home-manager modules; editing them has
+> no effect. The live configs are the home-manager modules
+> (`modules/home/programs/zsh.nix`, `modules/home/programs/bash.nix`,
+> `modules/home/git/`, `modules/home/jj/`). Sync the backups manually when
+> changing the modules.
 
-### Nix 管理が適切な条件
+### Adding a Symlink
 
-1. **動的な値の注入が必要** - `user.email`, `user.fullName` 等のプロファイル依存値
-2. **home-manager との統合が必要** - `home.sessionPath`, `home.sessionVariables`
-3. **他の Nix モジュールとの連携** - 例: `programs.delta` + `programs.git`
-4. **宣言的オプションで大部分を表現可能** - `extraConfig` が 50% 未満
+```nix
+# homeSymlinks - link directly under the home directory
+homeSymlinks = {
+  ".your-config" = "config/your-app/.your-config";
+};
 
-### シンボリンクが適切な条件
+# xdgSymlinks - link under ~/.config
+xdgSymlinks = {
+  "your-app" = "config/your-app";
+};
 
-1. **設定が複雑で extraConfig が大部分** - 50% 以上
-2. **ファイル分割・条件分岐がネイティブに可能** - `source`, `if-shell` 等
-3. **独自言語でシンタックスハイライトが重要** - Lua, tmux 設定等
-4. **home-manager との統合が不要** - 環境変数や PATH はシェルから継承
+# darwinXdgSymlinks - macOS-only links under ~/.config
+darwinXdgSymlinks = {
+  "your-macos-app" = "config/your-macos-app";
+};
+```
 
-### 現在の構成
+## Creating a New Profile
 
-| アプリ        | 管理方法     | 理由                                     |
-| ------------- | ------------ | ---------------------------------------- |
-| git, jj       | Nix          | `user.*` 注入、100% 宣言的               |
-| zsh, bash     | Nix          | `home.sessionPath` 統合が必須            |
-| ssh           | Nix          | ホスト設定など宣言的管理が適切           |
-| claude, codex | シンボリンク | 設定ファイルの直接編集が多い             |
-| tmux          | シンボリンク | 20% しか宣言的でない、ファイル分割が必要 |
-| neovim        | シンボリンク | Lua 言語、home-manager 統合不要          |
-| ghostty       | シンボリンク | home-manager 統合不要                    |
-| starship      | シンボリンク | home-manager 統合不要                    |
-| lazygit       | シンボリンク | home-manager 統合不要                    |
-| karabiner     | シンボリンク | JSON 設定、macOS のみ                    |
+### 1. Add the user definition
+
+Create a new profile under `users/` (three files plus the export):
+
+```nix
+# users/newprofile/info.nix - user info
+{
+  name = "username";
+  fullName = "Your Name";
+  email = "your@email.com";
+  home = "/Users/username"; # /home/username for Linux
+  dotfilesDir = "/Users/username/developments/dotfiles";
+}
+```
+
+```nix
+# users/newprofile/home.nix - home-manager overrides (may be empty)
+{ ... }:
+{ }
+```
+
+```nix
+# users/newprofile/darwin.nix - Darwin-specific overrides (may be empty)
+{ ... }:
+{ }
+```
+
+```nix
+# users/newprofile/default.nix - profile export
+{
+  info = import ./info.nix;
+  home = ./home.nix;
+  darwin = ./darwin.nix;
+}
+```
+
+### 2. Register it in flake.nix
+
+```nix
+# macOS
+darwinConfigurations = {
+  kohdice = mkSystem "darwin" { system = darwinSystem; user = "kohdice"; };
+  work = mkSystem "darwin" { system = darwinSystem; user = "work"; };
+  newprofile = mkSystem "darwin" { system = darwinSystem; user = "newprofile"; };
+};
+
+# Linux
+homeConfigurations = {
+  kohdice = mkSystem "linux" { system = "x86_64-linux"; user = "kohdice"; };
+  work = mkSystem "linux" { system = "x86_64-linux"; user = "work"; };
+  newprofile = mkSystem "linux" { system = "x86_64-linux"; user = "newprofile"; };
+};
+```
+
+### 3. Add matching apps (optional)
+
+Add `build-newprofile` / `switch-newprofile` entries to `lib/apps.nix`,
+following the existing `build-work` / `switch-work` definitions.

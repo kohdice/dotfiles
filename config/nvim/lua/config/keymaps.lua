@@ -23,28 +23,10 @@ end
 keymap.set("n", "<Leader>o", "o<Esc>^Da", { desc = "Insert line below without continuation", silent = true })
 keymap.set("n", "<Leader>O", "O<Esc>^Da", { desc = "Insert line above without continuation", silent = true })
 
-local window_management_mappings = {
-  { "n", "te", ":tabedit<CR>", { desc = "Open new tab", silent = true } },
-  -- { "n", "<Tab>", ":tabnext<CR>", { desc = "Next tab", silent = true } },
-  -- { "n", "<S-Tab>", ":tabprev<CR>", { desc = "Previous tab", silent = true } },
-  { "n", "tn", ":tabnext<CR>", { desc = "Next tab", silent = true } },
-  { "n", "tp", ":tabprev<CR>", { desc = "Previous tab", silent = true } },
-  { "n", "tc", ":tabclose<CR>", { desc = "Close tab", silent = true } },
-  { "n", "ss", ":split<CR>", { desc = "Split window horizontally", silent = true } },
-  { "n", "sv", ":vsplit<CR>", { desc = "Split window vertically", silent = true } },
-  { "n", "sh", "<C-w>h", { desc = "Move to left window", silent = true } },
-  { "n", "sk", "<C-w>k", { desc = "Move to upper window", silent = true } },
-  { "n", "sj", "<C-w>j", { desc = "Move to lower window", silent = true } },
-  { "n", "sl", "<C-w>l", { desc = "Move to right window", silent = true } },
-  { "n", "<C-w><left>", "<C-w><", { desc = "Decrease window width", silent = true } },
-  { "n", "<C-w><right>", "<C-w>>", { desc = "Increase window width", silent = true } },
-  { "n", "<C-w><up>", "<C-w>+", { desc = "Increase window height", silent = true } },
-  { "n", "<C-w><down>", "<C-w>-", { desc = "Decrease window height", silent = true } },
-}
-
-for _, mapping in ipairs(window_management_mappings) do
-  keymap.set(mapping[1], mapping[2], mapping[3], mapping[4])
-end
+keymap.set("n", "<C-w><left>", "<C-w><", { desc = "Decrease window width", silent = true })
+keymap.set("n", "<C-w><right>", "<C-w>>", { desc = "Increase window width", silent = true })
+keymap.set("n", "<C-w><up>", "<C-w>+", { desc = "Increase window height", silent = true })
+keymap.set("n", "<C-w><down>", "<C-w>-", { desc = "Decrease window height", silent = true })
 
 keymap.set("n", "<C-j>", function()
   vim.diagnostic.jump({ count = 1 })

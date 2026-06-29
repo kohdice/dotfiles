@@ -5,7 +5,7 @@
     # LSP
     nil
 
-    # Formatter
-    nixpkgs-fmt
+    # Formatter (official RFC 166 style; matches treefmt's nixfmt in flake.nix)
+    nixfmt
   ];
 }

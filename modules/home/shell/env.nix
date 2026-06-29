@@ -1,10 +1,7 @@
-# Common environment variables shared between zsh and bash
+# Common environment variables shared between zsh and bash.
+# XDG base directories are not set here: home-manager already exports them
+# via `xdg.enable = true` (see modules/home/dotfiles.nix).
 {
-  XDG_CONFIG_HOME = "$HOME/.config";
-  XDG_CACHE_HOME = "$HOME/.cache";
-  XDG_DATA_HOME = "$HOME/.local/share";
-  XDG_STATE_HOME = "$HOME/.local/state";
-
   # Go
   GOPATH = "$HOME/go";
 }

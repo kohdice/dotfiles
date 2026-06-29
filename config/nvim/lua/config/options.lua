@@ -3,8 +3,6 @@ vim.g.mapleader = " " -- Set leader key to space
 vim.opt.number = true -- Enable line numbers
 vim.opt.relativenumber = true -- Enable relative line numbers
 vim.opt.title = true -- Show window title
-vim.opt.backup = false -- Disable backup files
-vim.opt.backupskip = { "/tmp/*", "/private/tmp/*" } -- Skip backup for temporary files
 vim.opt.shell = "zsh" -- Set default shell to Zsh
 
 -- Indentation Settings
@@ -28,16 +26,11 @@ vim.opt.splitkeep = "screen" -- Keep scroll position when splitting
 vim.opt.mouse = "a" -- Enable mouse support in all modes
 vim.opt.cursorline = true -- Highlight the current line
 
--- Clipboard & Completion Settings
+-- Clipboard Settings
 vim.opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus" -- Sync with system clipboard
-vim.opt.completeopt = "menu,menuone,noselect" -- Configure completion behavior
 
 -- Command Execution Settings
 vim.opt.inccommand = "split" -- Preview incremental substitution results in a split
-
--- Terminal Undercurl Support (for GUI)
-vim.cmd([[let &t_Cs = "\e[4:3m"]]) -- Enable undercurl for terminal
-vim.cmd([[let &t_Ce = "\e[4:0m"]]) -- Disable undercurl for terminal
 
 -- UI Enhancements
 vim.opt.fillchars = {
@@ -60,7 +53,7 @@ vim.opt.listchars = {
 vim.opt.signcolumn = "yes" -- Always show sign column to avoid text shifting
 
 -- Performance Optimizations
-vim.opt.timeoutlen = vim.g.vscode and 1000 or 300 -- Adjust timeout for key sequences
+vim.opt.timeoutlen = 300 -- Adjust timeout for key sequences
 vim.opt.updatetime = 200 -- Reduce time before triggering CursorHold event
 vim.opt.virtualedit = "block" -- Allow cursor to move past end of line in visual block mode
 vim.opt.wildmode = "longest:full,full" -- Configure command-line completion behavior

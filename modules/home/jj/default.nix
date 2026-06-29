@@ -1,8 +1,4 @@
-{
-  pkgs,
-  user,
-  ...
-}:
+{ user, ... }:
 
 {
   programs.jujutsu = {

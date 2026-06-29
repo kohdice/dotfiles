@@ -15,7 +15,16 @@ on:
   workflow_dispatch:
 jobs:
   check:
-    runs-on: ubuntu-latest
+    name: check (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-latest
+            system: x86_64-linux
+          # macOS is disabled until marksman builds successfully on aarch64-darwin.
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -28,4 +37,4 @@ jobs:
       - name: Check format
         run: nix fmt -- --ci
       - name: Flake check
-        run: nix flake check --all-systems --show-trace
+        run: nix flake check --system ${{ matrix.system }} --show-trace

@@ -68,7 +68,6 @@ return {
 
       -- Toggles
       map("n", "<leader>tb", gitsigns.toggle_current_line_blame, "Toggle blame line")
-      map("n", "<leader>td", gitsigns.toggle_deleted, "Toggle deleted")
       map("n", "<leader>tw", gitsigns.toggle_word_diff, "Toggle word diff")
 
       -- Text object

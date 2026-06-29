@@ -1,100 +1,57 @@
 # App definitions for `nix run .#<app>`
-{ nixpkgs, system }:
+{ inputs, system }:
 
 let
-  pkgs = nixpkgs.legacyPackages.${system};
+  pkgs = inputs.nixpkgs.legacyPackages.${system};
   isDarwin = pkgs.stdenv.isDarwin;
+
+  # Use the tools pinned by flake.lock instead of registry-resolved ones so
+  # the version applying the configuration matches the one that built it.
+  darwinRebuild = inputs.nix-darwin.packages.${system}.darwin-rebuild;
+  homeManager = inputs.home-manager.packages.${system}.home-manager;
+
+  # Reference the evaluated flake by store path so build/switch work from any
+  # working directory (a bare `.#` resolves against the caller's cwd).
+  flakeRef = "${inputs.self}";
+
+  buildScript =
+    profile:
+    if isDarwin then
+      "nix build ${flakeRef}#darwinConfigurations.${profile}.system"
+    else
+      "nix build ${flakeRef}#homeConfigurations.${profile}.activationPackage";
+
+  switchScript =
+    flake: profile:
+    if isDarwin then
+      "sudo ${darwinRebuild}/bin/darwin-rebuild switch --flake ${flake}#${profile}"
+    else
+      "${homeManager}/bin/home-manager switch --flake ${flake}#${profile}";
+
+  # `nix flake update` must run against the writable checkout, so the update
+  # apps require being invoked from the repository root and re-apply via the
+  # freshly updated local flake instead of the store copy. writeShellApplication
+  # sets errexit, so a failed update aborts before switching.
+  updateScript = profile: ''
+    if [ ! -f flake.nix ]; then
+      echo "error: run this from the dotfiles repository root (flake.nix not found)" >&2
+      exit 1
+    fi
+    nix flake update
+    ${switchScript "." profile}
+  '';
+
+  mkApp = name: description: text: {
+    type = "app";
+    program = pkgs.lib.getExe (pkgs.writeShellApplication { inherit name text; });
+    meta.description = description;
+  };
 in
 {
-  # Build configuration (default: kohdice)
-  build = {
-    type = "app";
-    program = toString (
-      pkgs.writeShellScript "build" (
-        if isDarwin then
-          ''
-            nix build .#darwinConfigurations.kohdice.system
-          ''
-        else
-          ''
-            nix build .#homeConfigurations.kohdice.activationPackage
-          ''
-      )
-    );
-    meta.description = "Build kohdice profile";
-  };
-
-  # Build configuration (work)
-  build-work = {
-    type = "app";
-    program = toString (
-      pkgs.writeShellScript "build-work" (
-        if isDarwin then
-          ''
-            nix build .#darwinConfigurations.work.system
-          ''
-        else
-          ''
-            nix build .#homeConfigurations.work.activationPackage
-          ''
-      )
-    );
-    meta.description = "Build work profile";
-  };
-
-  # Apply configuration (default: kohdice)
-  switch = {
-    type = "app";
-    program = toString (
-      pkgs.writeShellScript "switch" (
-        if isDarwin then
-          ''
-            sudo nix run nix-darwin -- switch --flake .#kohdice
-          ''
-        else
-          ''
-            nix run nixpkgs#home-manager -- switch --flake .#kohdice
-          ''
-      )
-    );
-    meta.description = "Apply kohdice profile";
-  };
-
-  # Apply configuration (work)
-  switch-work = {
-    type = "app";
-    program = toString (
-      pkgs.writeShellScript "switch-work" (
-        if isDarwin then
-          ''
-            sudo nix run nix-darwin -- switch --flake .#work
-          ''
-        else
-          ''
-            nix run nixpkgs#home-manager -- switch --flake .#work
-          ''
-      )
-    );
-    meta.description = "Apply work profile";
-  };
-
-  # Update all inputs and apply
-  update = {
-    type = "app";
-    program = toString (
-      pkgs.writeShellScript "update" (
-        if isDarwin then
-          ''
-            nix flake update
-            sudo nix run nix-darwin -- switch --flake .#kohdice
-          ''
-        else
-          ''
-            nix flake update
-            nix run nixpkgs#home-manager -- switch --flake .#kohdice
-          ''
-      )
-    );
-    meta.description = "Update all inputs and apply";
-  };
+  build = mkApp "build" "Build kohdice profile" (buildScript "kohdice");
+  build-work = mkApp "build-work" "Build work profile" (buildScript "work");
+  switch = mkApp "switch" "Apply kohdice profile" (switchScript flakeRef "kohdice");
+  switch-work = mkApp "switch-work" "Apply work profile" (switchScript flakeRef "work");
+  update = mkApp "update" "Update all inputs and apply kohdice profile" (updateScript "kohdice");
+  update-work = mkApp "update-work" "Update all inputs and apply work profile" (updateScript "work");
 }

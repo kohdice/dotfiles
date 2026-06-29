@@ -226,7 +226,8 @@
   "effortLevel": "high",
   "plansDirectory": "./.plans",
   "showThinkingSummaries": true,
+  "theme": "dark",
+  "editorMode": "vim",
   "skipAutoPermissionPrompt": true,
-  "allwaysThinkingEnabled": "true",
-  "editorMode": "vim"
+  "alwaysThinkingEnabled": true
 }

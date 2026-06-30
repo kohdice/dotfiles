@@ -6,4 +6,5 @@
 
 [
   (import ./llm-agents.nix inputs)
+  (import ./podman.nix)
 ]

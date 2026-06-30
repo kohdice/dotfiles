@@ -1,0 +1,4 @@
+interface:
+  display_name: "GH Review PR"
+  short_description: "Review GitHub PRs with gh safely"
+  default_prompt: "Use $gh-review-pr to review this GitHub pull request URL."

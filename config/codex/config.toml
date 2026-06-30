@@ -16,6 +16,36 @@ skills = true
 max_threads = 6
 max_depth = 2
 
+[agents.pr-review-bug-logic-convention]
+description = "Read-only PR reviewer for bugs, logic, edge cases, and repository convention violations."
+config_file = "./agents/pr-review-bug-logic-convention.toml"
+nickname_candidates = ["Logic Review", "Bug Review", "Convention Review"]
+
+[agents.pr-review-error-handling]
+description = "Read-only PR reviewer for swallowed errors, unsafe fallbacks, retries, rollback, and cleanup."
+config_file = "./agents/pr-review-error-handling.toml"
+nickname_candidates = ["Error Review", "Failure Review", "Fallback Review"]
+
+[agents.pr-review-type-design-invariants]
+description = "Read-only PR reviewer for type design, data modeling, invariants, and ownership boundaries."
+config_file = "./agents/pr-review-type-design-invariants.toml"
+nickname_candidates = ["Type Review", "Design Review", "Invariant Review"]
+
+[agents.pr-review-security-data-compatibility]
+description = "Read-only PR reviewer for security, authorization, privacy, data loss, migrations, and compatibility."
+config_file = "./agents/pr-review-security-data-compatibility.toml"
+nickname_candidates = ["Security Review", "Data Review", "Compatibility Review"]
+
+[agents.pr-review-test-coverage]
+description = "Read-only PR reviewer for missing or weak tests and assertions around behavior changes."
+config_file = "./agents/pr-review-test-coverage.toml"
+nickname_candidates = ["Test Review", "Coverage Review", "Assertion Review"]
+
+[agents.pr-review-comment-accuracy]
+description = "Read-only PR reviewer for stale, misleading, or inaccurate comments, docs, names, and examples."
+config_file = "./agents/pr-review-comment-accuracy.toml"
+nickname_candidates = ["Comment Review", "Docs Review", "Accuracy Review"]
+
 [tui]
 theme = "solarized-dark"
 status_line = [
@@ -31,15 +61,19 @@ status_line = [
 "gpt-5.5" = 4
 
 [[skills.config]]
-path = "~/.agents/skills/git-commit"
+path = "~/.agents/skills/git-commit/SKILL.md"
 enabled = true
 
 [[skills.config]]
-path = "~/.agents/skills/tdd"
+path = "~/.agents/skills/tdd/SKILL.md"
 enabled = true
 
 [[skills.config]]
-path = "~/.agents/skills/tdd-plan"
+path = "~/.agents/skills/tdd-plan/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/gh-review-pr/SKILL.md"
 enabled = true
 
 [mcp_servers.context7]

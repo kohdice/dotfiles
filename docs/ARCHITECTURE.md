@@ -48,15 +48,27 @@ Criteria for deciding whether an application config is managed as a Nix module
 
 All symlinks are defined in `modules/home/dotfiles.nix`.
 
+Agent-related files are split by runtime ownership:
+
+- `config/claude/` stores Claude Code-specific configuration, commands, and
+  Claude Code skills.
+- `config/codex/` stores Codex-specific runtime configuration and Codex custom
+  agent TOML files.
+- `config/agents/` stores runtime-neutral agent assets, such as shared guidance
+  and open agent skills, that can be linked into runtime-specific discovery
+  paths.
+
 ### Home directory (home.file)
 
-| Source                        | Target                    |
-| ----------------------------- | ------------------------- |
-| `config/claude/CLAUDE.md`     | `~/.claude/CLAUDE.md`     |
-| `config/claude/settings.json` | `~/.claude/settings.json` |
-| `config/claude/statusline.sh` | `~/.claude/statusline.sh` |
-| `config/codex/AGENTS.md`      | `~/.codex/AGENTS.md`      |
-| `config/codex/config.toml`    | `~/.codex/config.toml`    |
+| Source                          | Target                    |
+| ------------------------------- | ------------------------- |
+| `config/agents/AGENTS.md`       | `~/.codex/AGENTS.md`      |
+| `config/agents/skills/*`        | `~/.agents/skills/*`      |
+| `config/claude/CLAUDE.md`       | `~/.claude/CLAUDE.md`     |
+| `config/claude/settings.json`   | `~/.claude/settings.json` |
+| `config/claude/statusline.sh`   | `~/.claude/statusline.sh` |
+| `config/codex/agents/*`         | `~/.codex/agents/*`       |
+| `config/codex/config.toml`      | `~/.codex/config.toml`    |
 
 ### ~/.config (xdg.configFile)
 
@@ -72,8 +84,10 @@ All symlinks are defined in `modules/home/dotfiles.nix`.
 
 Directories under `config/claude/skills/` and files under
 `config/claude/commands/` are linked entry-by-entry into `~/.claude/skills/`
-and `~/.claude/commands/`. The enumeration is based on the flake source, so
-**new entries are not linked until they are `git add`ed**.
+and `~/.claude/commands/`. Directories under `config/agents/skills/` are linked
+entry-by-entry into `~/.agents/skills/`, and files under `config/codex/agents/`
+are linked entry-by-entry into `~/.codex/agents/`. The enumeration is based on
+the flake source, so **new entries are not linked until they are `git add`ed**.
 
 > **Backup files**: `config/zsh/`, `config/bash/`, `config/git/`, and
 > `config/jj/` are not linked anywhere. They are kept as backups for non-Nix

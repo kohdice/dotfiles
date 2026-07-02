@@ -46,6 +46,14 @@ let
     entryTypes = [ "directory" ];
   };
 
+  # Claude Code only discovers ~/.claude/skills, so shared skills are linked
+  # into both Claude Code and open-agent discovery paths.
+  sharedSkillClaudeSymlinks = mkDirEntrySymlinks {
+    targetDir = ".claude/skills";
+    sourceRelPath = "config/agents/skills";
+    entryTypes = [ "directory" ];
+  };
+
   claudeCommandSymlinks = mkDirEntrySymlinks {
     targetDir = ".claude/commands";
     sourceRelPath = "config/claude/commands";
@@ -58,7 +66,7 @@ let
     entryTypes = [ "regular" ];
   };
 
-  codexSkillSymlinks = mkDirEntrySymlinks {
+  agentsSkillSymlinks = mkDirEntrySymlinks {
     targetDir = ".agents/skills";
     sourceRelPath = "config/agents/skills";
     entryTypes = [ "directory" ];
@@ -72,10 +80,11 @@ let
     ".codex/AGENTS.md" = "config/agents/AGENTS.md";
     ".codex/config.toml" = "config/codex/config.toml";
   }
-  // claudeSkillSymlinks
+  // sharedSkillClaudeSymlinks
+  // claudeSkillSymlinks # Claude-specific skills win on name collision.
   // claudeCommandSymlinks
   // codexAgentSymlinks
-  // codexSkillSymlinks;
+  // agentsSkillSymlinks;
 
   # xdg.configFile symlinks (target -> source path in config/)
   xdgSymlinks = {

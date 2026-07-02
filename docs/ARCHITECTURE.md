@@ -44,6 +44,43 @@ Criteria for deciding whether an application config is managed as a Nix module
 | lazygit       | Symlink | no home-manager integration                 |
 | karabiner     | Symlink | JSON config, macOS only                     |
 
+## GUI Application Policy: Homebrew Cask vs nixpkgs
+
+Criteria for deciding whether a macOS GUI application is installed from
+nixpkgs or Homebrew Cask.
+
+### Prefer nixpkgs when
+
+1. **The package supports Darwin and works normally** - use nixpkgs first when
+   the package is available and not broken on macOS.
+2. **The application is cross-platform** - put shared GUI applications in
+   `modules/home/packages.nix`.
+3. **The application is macOS-only but works from nixpkgs** - put macOS-only
+   nixpkgs applications in `modules/darwin/packages.nix`.
+
+### Prefer Homebrew Cask when
+
+1. **The package is missing from nixpkgs** - use Cask when nixpkgs does not
+   provide the application.
+2. **The Darwin package is broken or unsuitable** - use Cask when the nixpkgs
+   package does not work well on macOS.
+3. **The application needs vendor-style updates** - use Cask for applications
+   where the vendor distribution is the expected macOS installation path.
+
+### Prefer profile-specific casks when
+
+1. **The application belongs to only one profile** - put profile-only GUI
+   applications in `users/<name>/darwin.nix` under `homebrew.casks`.
+
+### Current Layout
+
+| Location                      | Current applications                                                                                      |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `modules/darwin/homebrew.nix` | azookey, chatgpt, claude, coteditor, devtoys, ghostty, google-chrome, karabiner-elements, scroll-reverser |
+| `modules/darwin/packages.nix` | container, numi, raycast, vlc-bin                                                                         |
+| `modules/home/packages.nix`   | slack, zoom-us, podman-desktop                                                                            |
+| `users/<name>/darwin.nix`     | kohdice: discord / work: elasticvue, docker-desktop, tableplus                                            |
+
 ## Symlinks
 
 All symlinks are defined in `modules/home/dotfiles.nix`.
@@ -57,18 +94,21 @@ Agent-related files are split by runtime ownership:
 - `config/agents/` stores runtime-neutral agent assets, such as shared guidance
   and open agent skills, that can be linked into runtime-specific discovery
   paths.
+- Shared skills under `config/agents/skills/` are linked into both
+  `~/.agents/skills/` and `~/.claude/skills/` because Claude Code does not
+  discover `~/.agents/skills/`.
 
 ### Home directory (home.file)
 
-| Source                          | Target                    |
-| ------------------------------- | ------------------------- |
-| `config/agents/AGENTS.md`       | `~/.codex/AGENTS.md`      |
-| `config/agents/skills/*`        | `~/.agents/skills/*`      |
-| `config/claude/CLAUDE.md`       | `~/.claude/CLAUDE.md`     |
-| `config/claude/settings.json`   | `~/.claude/settings.json` |
-| `config/claude/statusline.sh`   | `~/.claude/statusline.sh` |
-| `config/codex/agents/*`         | `~/.codex/agents/*`       |
-| `config/codex/config.toml`      | `~/.codex/config.toml`    |
+| Source                        | Target                                        |
+| ----------------------------- | --------------------------------------------- |
+| `config/agents/AGENTS.md`     | `~/.codex/AGENTS.md`                          |
+| `config/agents/skills/*`      | `~/.agents/skills/*` and `~/.claude/skills/*` |
+| `config/claude/CLAUDE.md`     | `~/.claude/CLAUDE.md`                         |
+| `config/claude/settings.json` | `~/.claude/settings.json`                     |
+| `config/claude/statusline.sh` | `~/.claude/statusline.sh`                     |
+| `config/codex/agents/*`       | `~/.codex/agents/*`                           |
+| `config/codex/config.toml`    | `~/.codex/config.toml`                        |
 
 ### ~/.config (xdg.configFile)
 
@@ -82,12 +122,15 @@ Agent-related files are split by runtime ownership:
 | `config/zsh-abbr/user-abbreviations` | `~/.config/zsh-abbr/user-abbreviations`           |
 | `config/karabiner/karabiner.json`    | `~/.config/karabiner/karabiner.json` (macOS only) |
 
-Directories under `config/claude/skills/` and files under
-`config/claude/commands/` are linked entry-by-entry into `~/.claude/skills/`
-and `~/.claude/commands/`. Directories under `config/agents/skills/` are linked
-entry-by-entry into `~/.agents/skills/`, and files under `config/codex/agents/`
-are linked entry-by-entry into `~/.codex/agents/`. The enumeration is based on
-the flake source, so **new entries are not linked until they are `git add`ed**.
+Directories under `config/agents/skills/` are linked entry-by-entry into both
+`~/.agents/skills/` and `~/.claude/skills/`. Directories under
+`config/claude/skills/` are linked entry-by-entry into `~/.claude/skills/`
+after the shared skill links, so a Claude Code-specific skill wins when it has
+the same name as a shared skill. Files under `config/claude/commands/` are
+linked entry-by-entry into `~/.claude/commands/`, and files under
+`config/codex/agents/` are linked entry-by-entry into `~/.codex/agents/`. The
+enumeration is based on the flake source, so **new entries are not linked until
+they are `git add`ed**.
 
 > **Backup files**: `config/zsh/`, `config/bash/`, `config/git/`, and
 > `config/jj/` are not linked anywhere. They are kept as backups for non-Nix

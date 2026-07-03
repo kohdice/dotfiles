@@ -155,14 +155,15 @@
     "security-guidance@claude-plugins-official": true,
     "explanatory-output-style@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "context7@claude-plugins-official": true
+    "context7@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true
   },
   "language": "Japanese",
   "sandbox": {
     "enabled": true,
     "failIfUnavailable": true,
     "autoAllowBashIfSandboxed": true,
-    "allowUnsandboxedCommands": false,
+    "allowUnsandboxedCommands": true,
     "network": {
       "allowedDomains": [
         "127.0.0.1",
@@ -223,11 +224,11 @@
     },
     "excludedCommands": ["codex", "gh", "git"]
   },
+  "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "plansDirectory": "./.plans",
   "showThinkingSummaries": true,
   "theme": "dark",
   "editorMode": "vim",
-  "skipAutoPermissionPrompt": true,
-  "alwaysThinkingEnabled": true
+  "skipAutoPermissionPrompt": true
 }

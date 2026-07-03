@@ -89,6 +89,7 @@ let
   # xdg.configFile symlinks (target -> source path in config/)
   xdgSymlinks = {
     "ghostty" = "config/ghostty";
+    "herdr/config.toml" = "config/herdr/config.toml";
     "nvim" = "config/nvim";
     "starship.toml" = "config/starship/starship.toml";
     "tmux" = "config/tmux";

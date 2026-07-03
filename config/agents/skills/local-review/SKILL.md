@@ -19,12 +19,13 @@ Review local code by **orchestrating specialized read-only reviewers** over a ca
 
 1. **Resolve the scope** from the user's ask:
 
-   | Ask                                   | Scope        | File list                                                             |
-   | ------------------------------------- | ------------ | --------------------------------------------------------------------- |
-   | (default) "review my changes"         | working diff | `git diff HEAD --name-only` + untracked from `git status --porcelain` |
-   | "review this branch against `<base>`" | branch diff  | `git diff <base>...HEAD --name-only`                                  |
-   | a specific path is named              | path         | files under that path                                                 |
-   | "audit the whole codebase"            | all          | all source files, chunked per `references/review-lenses.md`           |
+   | Ask                                   | Scope        | File list                                                               |
+   | ------------------------------------- | ------------ | ----------------------------------------------------------------------- |
+   | (default) "review my changes"         | working diff | `git diff HEAD --name-only` + untracked from `git status --porcelain`   |
+   | "review this branch against `<base>`" | branch diff  | `git diff <base>...HEAD --name-only`                                    |
+   | "review my unpushed commits"          | branch diff  | `git diff @{upstream}...HEAD --name-only` (no upstream: ask for a base) |
+   | a specific path is named              | path         | files under that path                                                   |
+   | "audit the whole codebase"            | all          | all source files, chunked per `references/review-lenses.md`             |
 
    If the working diff is empty and no other scope was named, tell the user and stop.
 
@@ -41,6 +42,7 @@ Review local code by **orchestrating specialized read-only reviewers** over a ca
 - Test suites (`go test`, `cargo test`, `zig build test`, `nix flake check`, …)
 - Builds and formatters that write files (`cargo build`, `zig fmt` without `--check`, `gofmt -w`, …)
 - Anything that mutates git state (add, commit, stash, checkout, worktree)
+- Interpreters or headless runtimes launched to "verify" a finding (`nvim --headless`, `python`, `node`, …) — they write logs and caches; verify findings by reading code
 
 ## Red flags (watch for rationalizations)
 

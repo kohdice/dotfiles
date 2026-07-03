@@ -1,6 +1,6 @@
 ---
 name: tdd-plan
-description: "This skill should be used when the user asks to create an implementation plan, design a development plan, or prepare a TDD plan for a feature. Triggers on phrases like: 'plan to implement X', 'create a plan for X', 'design a development plan', 'prepare a TDD plan', 'make a plan', or any request that involves creating a structured plan file in .plans/ for later TDD execution. Do NOT trigger when the user says 'go' or asks to implement the next test — that is handled by the tdd skill."
+description: "This skill should be used when the user asks to plan the TDD implementation of application code — a new feature, a behavior change, or a bug fix with automatically testable behavior. Triggers on phrases like: 'plan to implement <feature>', 'create an implementation plan for <feature>', 'prepare a TDD plan', 'design a development plan for <feature>'. Do NOT use for planning work with no testable application behavior: writing README or documentation, configuration/CI/infrastructure changes, or repository housekeeping. Do NOT use when the user says 'go' or asks to implement the next test — that is handled by the tdd skill."
 ---
 
 # TDD Plan
@@ -8,6 +8,16 @@ description: "This skill should be used when the user asks to create an implemen
 ## Overview
 
 Create structured implementation plans for TDD-driven development. Analyze the user's requirements and the existing codebase, then produce a plan file in `.plans/` containing ordered test cases ready for execution by the tdd skill. Always end by telling the user the exact plan filename that was created so they can continue with `go` in the same session or `/tdd <filename>` later.
+
+## When NOT to Use This Skill
+
+This skill plans application code changes with automatically testable behavior. Do not create a plan when the request is:
+
+- Writing or restructuring documentation (README, docs/, comments)
+- Configuration, CI/CD, or infrastructure changes
+- Any task where no test case can fail before the change and pass after it
+
+If the request has no testable application behavior, state that a TDD plan does not apply, suggest handling the task directly, and stop without creating `.plans/` or any plan file.
 
 ## Plan Creation Workflow
 
@@ -18,6 +28,7 @@ Execute these steps in order when creating a plan.
 1. Read the user's request to understand the desired feature or change
 2. If the request is ambiguous, ask targeted questions (3–7 items covering scope, tech stack, and non-functional requirements) before proceeding. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `.plans/` directory or any plan / questions file — no filesystem side effects
 3. Identify the scope: new feature, extension of existing feature, bug fix, or refactor
+4. If no testable application behavior can be identified, do not proceed: explain that TDD planning does not apply and stop without filesystem side effects
 
 ### Step 2: Analyze the Codebase
 
@@ -91,7 +102,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 ## Quality Checklist
 
-Before presenting the plan to the user, verify:
+Before presenting the plan to the user, verify (for a pure-refactor plan consisting only of `Refactor:` items, test-related checks apply to any characterization tests added to pin current behavior):
 
 1. Every test case is small enough to implement in a single Red-Green cycle
 2. Test names are descriptive and follow the project's naming conventions

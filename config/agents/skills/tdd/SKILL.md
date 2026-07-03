@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: 'This skill should be used when developing features following Kent Beck''s Test-Driven Development (TDD) and Tidy First principles. Triggers when the user says "go" after creating a TDD plan in the same session, invokes `/tdd` with a plan filename from `.plans/`, asks to implement the next test from an existing plan, or requests plan-driven execution. If `/tdd` is invoked without a filename and there is no current-session plan, ask which plan in `.plans/` to use. Do NOT use this skill when the user is asking to create a new TDD plan — that is handled by the tdd-plan skill.'
+description: 'This skill should be used when executing an existing TDD plan from `.plans/` using Kent Beck''s Red-Green-Refactor and Tidy First discipline. Triggers when the user says "go" after a TDD plan was created in the same session, invokes `/tdd` (with or without a plan filename), or asks to implement the next test from an existing plan. Do NOT use this skill when the user is asking to create a new TDD plan — that is handled by the tdd-plan skill.'
 ---
 
 # TDD (Test-Driven Development)
@@ -13,7 +13,7 @@ Guide development following Kent Beck's TDD and Tidy First principles. Follow an
 
 ### Plan Location
 
-Plans are stored in the `.plans/` directory. The file name is chosen dynamically at creation time (e.g., `sequence-parser.md`, `mermaid-renderer.md`). Never place plan files at the project root.
+Plans are stored in the `.plans/` directory (created by the tdd-plan skill). Resolve bare filenames relative to `.plans/`.
 
 ### Which Plan File to Use
 
@@ -27,24 +27,32 @@ Resolve bare filenames such as `watch-refresh.md` relative to `.plans/`, and acc
 
 ### Plan Format
 
-Each test case in the plan uses a checkbox to track progress:
+Each plan item uses a checkbox to track progress. Plans contain two item types:
 
 ```markdown
 - [ ] Test: description of what to test
 - [x] Test: already completed test
+- [ ] Refactor: structural change that prepares for the next test
 ```
 
-### Finding the Next Test
+### Finding the Next Item
 
 1. Resolve the plan using the precedence rules above
 2. Scan for the first unchecked item (`- [ ]`)
-3. That item is the next test to implement
+3. If it is a `Test:` item, implement it through the Red-Green-Refactor cycle below
+4. If it is a `Refactor:` item, run all tests to confirm they pass, apply the structural change without altering behavior, run all tests again to confirm identical results, then mark it `[x]` and proceed to the next item
+
+### When the Plan Is Complete
+
+If no unchecked item remains, do not invent new work. Report that all plan items are complete, summarize the final state, and suggest either committing the finished work or creating a new plan with the tdd-plan skill.
 
 ## TDD Cycle: Red, Green, Refactor
 
 Execute each test through three distinct phases. In this skill, "run all tests" means the project's complete test suite, not just the file currently being edited. Run the full suite at every checkpoint. If the suite is prohibitively slow, state the scoped subset you are running and why.
 
 ### Phase 1: Red (Write a Failing Test)
+
+Before writing the new test, run all tests once. If the suite is already failing, stop and report the failures instead of building on a broken baseline.
 
 1. Write one test that defines a small increment of functionality
 2. Use descriptive test names (e.g., `test "parses short option clusters"`)
@@ -69,7 +77,7 @@ Execute each test through three distinct phases. In this skill, "run all tests" 
 
 - **Skip entirely** when the Green code has no visible duplication, names already express intent, and each method has a single responsibility. Phase 3 is optional per cycle, not mandatory — report it as skipped in the final turn summary (e.g., "Phase 3 skipped: code already meets the bar") rather than inventing trivial refactors.
 - **"Clean enough" = stop** when all three hold: no duplication across the code just written, names express intent, methods have single responsibility. Do not chase subjective polish beyond this bar.
-- Refactor does not update plan checkboxes. Plan items track behavioral increments; record structural decisions in commit messages or a separate log, not in the plan file.
+- Ad-hoc Phase 3 refactoring does not update plan checkboxes — record such structural decisions in commit messages or a separate log, not in the plan file. Only planned `- [ ] Refactor:` items get marked `[x]`, as described in Finding the Next Item.
 
 ### Standalone Refactor (No Red/Green This Turn)
 
@@ -135,24 +143,13 @@ When fixing a defect, follow this specific order:
 
 ## Complete Workflow Example
 
-When the user says bare `go` right after planning:
+Resolve the plan per the precedence rules (bare `go` → most recent current-session plan; `/tdd <file>` → that file in `.plans/`), then:
 
-1. Open the most recent plan file created in the current session to find the next unmarked test
-2. Write a simple failing test for that item (Red)
+1. Open the resolved plan file to find the next unmarked item (handle a `Refactor:` item as described in Finding the Next Item)
+2. For a `Test:` item, write a simple failing test (Red)
 3. Run all tests to confirm the new test fails
 4. Implement the bare minimum to make it pass (Green)
 5. Run all tests to confirm they all pass
 6. Mark the item as `[x]` in the plan
 7. Make any necessary structural changes (Tidy First), running tests after each
-8. Report what was done and what the next unmarked test is
-
-When the user says `/tdd watch-refresh.md`:
-
-1. Open `.plans/watch-refresh.md` to find the next unmarked test
-2. Write a simple failing test for that item (Red)
-3. Run all tests to confirm the new test fails
-4. Implement the bare minimum to make it pass (Green)
-5. Run all tests to confirm they all pass
-6. Mark the item as `[x]` in the plan
-7. Make any necessary structural changes (Tidy First), running tests after each
-8. Report what was done and what the next unmarked test is
+8. Report what was done and what the next unmarked item is

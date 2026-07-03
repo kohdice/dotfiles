@@ -36,6 +36,7 @@
     # AI tools
     claude-code
     codex
+    herdr
 
     # Build tools
     gnumake

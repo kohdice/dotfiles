@@ -6,6 +6,7 @@ inputs: final: prev: {
     claude-code
     coderabbit-cli
     codex
+    herdr
     opencode
     ;
 }

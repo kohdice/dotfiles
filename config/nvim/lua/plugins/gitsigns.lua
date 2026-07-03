@@ -14,11 +14,12 @@ return {
       local gitsigns = require("gitsigns")
 
       local function map(mode, l, r, desc)
-        vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc })
+        vim.keymap.set(mode, l, r, { buf = bufnr, desc = desc })
       end
 
-      -- Navigation
-      map("n", "]c", function()
+      -- Navigation (]h/[h avoids shadowing the global ]c/[c class motions
+      -- from treesitter-textobjects; buffer-local maps win otherwise)
+      map("n", "]h", function()
         if vim.wo.diff then
           vim.cmd.normal({ "]c", bang = true })
         else
@@ -26,7 +27,7 @@ return {
         end
       end, "Next git hunk")
 
-      map("n", "[c", function()
+      map("n", "[h", function()
         if vim.wo.diff then
           vim.cmd.normal({ "[c", bang = true })
         else

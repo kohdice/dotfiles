@@ -60,6 +60,12 @@ let
     entryTypes = [ "regular" ];
   };
 
+  claudeAgentSymlinks = mkDirEntrySymlinks {
+    targetDir = ".claude/agents";
+    sourceRelPath = "config/claude/agents";
+    entryTypes = [ "regular" ];
+  };
+
   codexAgentSymlinks = mkDirEntrySymlinks {
     targetDir = ".codex/agents";
     sourceRelPath = "config/codex/agents";
@@ -83,6 +89,7 @@ let
   // sharedSkillClaudeSymlinks
   // claudeSkillSymlinks # Claude-specific skills win on name collision.
   // claudeCommandSymlinks
+  // claudeAgentSymlinks
   // codexAgentSymlinks
   // agentsSkillSymlinks;
 

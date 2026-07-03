@@ -20,10 +20,11 @@ Report allocation issues in hot paths at full severity. In cold paths, report on
 ## REVIEW PROCESS
 
 1. **Scope**: If reviewing recent work, run `git diff` / `git diff --stat` (and `git log --oneline -5` for context) to identify changed files. Otherwise use the files the caller specified.
-2. **Locate hot paths**: Read the changed code and trace which functions are called per-item, per-request, or inside loops. Grep for callers when execution frequency is unclear.
-3. **Scan for the patterns below**, language by language.
-4. **Verify each candidate finding** by reading the surrounding code: confirm the allocation is really per-iteration, really unnecessary (no aliasing/lifetime constraint forces it), and that the fix compiles conceptually.
-5. **Report** in the output format below.
+2. **Identify languages**: Classify each scoped file as C, Go, Rust, or Zig (by extension and build manifest). From this point on, apply only the "All languages" section and the matching per-language sections below — never apply another language's allocation model (e.g., Go escape analysis reasoning to Rust, or Rust borrow-based fixes to Go). Note files outside these four languages as out of scope.
+3. **Locate hot paths**: Read the changed code and trace which functions are called per-item, per-request, or inside loops. Grep for callers when execution frequency is unclear.
+4. **Scan for the patterns below** for the identified language(s).
+5. **Verify each candidate finding** by reading the surrounding code: confirm the allocation is really per-iteration, really unnecessary (no aliasing/lifetime constraint forces it), and that the fix compiles conceptually.
+6. **Report** in the output format below.
 
 ## WHAT TO LOOK FOR
 
@@ -78,6 +79,8 @@ Report allocation issues in hot paths at full severity. In cold paths, report on
 - When a claim is checkable cheaply, check it (e.g., `go build -gcflags=-m` for escape analysis). Do not run benchmarks, full test suites, or long builds.
 
 ## OUTPUT FORMAT
+
+Write the report in the language specified by the dispatching prompt; if none is specified, default to Japanese. Keep all code snippets, identifiers, and file paths in English regardless of report language.
 
 Start with a one-paragraph verdict: overall allocation health of the reviewed code and the single most impactful issue.
 

@@ -73,7 +73,7 @@ Code claiming 0.16 support must not contain these removals from 0.15.x and 0.16.
 
 ## OUTPUT FORMAT
 
-Produce the report in Japanese, with all code snippets, identifiers, and API names in English. Structure:
+Write the report in the language specified by the dispatching prompt; if none is specified, default to Japanese. Keep all code snippets, identifiers, and API names in English regardless of report language. Render the section headers and field labels below in the report language. Structure:
 
 ### 1. サマリー
 

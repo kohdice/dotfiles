@@ -47,7 +47,7 @@ PR_NUMBER="$(gh pr view "$PR" --json number --jq .number)"
 gh api "repos/${OWNER_REPO}/pulls/${PR_NUMBER}/reviews" --method POST --input - <<'JSON'
 {
   "event": "REQUEST_CHANGES",
-  "body": "Requesting changes: 1 blocker, 1 nit. Lenses run: bug-logic-convention, error-handling.",
+  "body": "Requesting changes: 1 blocker, 1 nit. Lenses run: correctness, error-handling.",
   "comments": [
     {
       "path": "src/example.rs",
@@ -81,7 +81,7 @@ JSON
 
 ## Anchoring Rules
 
-- Anchor to a changed line on the new side whenever possible.
+- Anchor to a changed line on the new side whenever possible. When the hunk header's line count disagrees with the visible body, ignore the header math and count the actual `+`/context lines of the new side.
 - For file-wide concerns, anchor to the nearest relevant changed declaration or hunk and say the issue is broader than that line.
 - If an inline submission fails with a line error, re-check the hunk with `gh pr diff "$PR" --patch`; if the issue is still valid but cannot be anchored, submit it in the review body.
 

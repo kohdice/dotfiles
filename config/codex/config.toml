@@ -73,7 +73,11 @@ path = "~/.agents/skills/tdd-plan/SKILL.md"
 enabled = true
 
 [[skills.config]]
-path = "~/.agents/skills/gh-review-pr/SKILL.md"
+path = "~/.agents/skills/pr-review/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/local-review/SKILL.md"
 enabled = true
 
 [mcp_servers.context7]

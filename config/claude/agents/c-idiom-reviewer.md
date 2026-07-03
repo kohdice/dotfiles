@@ -75,7 +75,7 @@ You are a C language expert specializing in officially recommended implementatio
 
 ## OUTPUT FORMAT
 
-Produce the report in Japanese, with all code snippets, identifiers, and API names in English. Structure:
+Write the report in the language specified by the dispatching prompt; if none is specified, default to Japanese. Keep all code snippets, identifiers, and API names in English regardless of report language. Render the section headers and field labels below in the report language. Structure:
 
 ### 1. サマリー
 

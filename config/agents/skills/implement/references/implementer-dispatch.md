@@ -6,14 +6,14 @@ Detailed material for SKILL.md workflow steps 4–6. Defines which knowledge ski
 
 Each dispatch names the skills the sub-agent must read before writing code. Select per batch, not per plan — a batch that only touches a parser does not need `architecture-patterns`.
 
-| Skill                                                   | When to assign                                                                                                                                                                                                                                                |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tdd`                                                   | Always. It is the implementation discipline, not a knowledge catalog.                                                                                                                                                                                         |
-| `c-idioms` / `go-idioms` / `rust-idioms` / `zig-idioms` | Always — the one matching the batch's target language. Its Step 0 resolves the project's version baseline.                                                                                                                                                    |
-| `simplicity-patterns`                                   | Always. Whether an abstraction is justified is a question every implementation faces.                                                                                                                                                                         |
-| `comment-patterns`                                      | Always. Every batch writes comments or edits code that carries them; the skill decides which comments earn their keep and which to omit.                                                                                                                      |
-| `performance-patterns`                                  | When the batch touches hot code per performance-patterns' "Hot path first" definition: loop bodies, per-item/per-request/per-frame functions, recursive calls, code called from other hot code. Also read its `references/<lang>.md` for the target language. |
-| `architecture-patterns`                                 | When the batch adds a module/package/crate, moves code across layer boundaries, or decides where new code lives.                                                                                                                                              |
+| Skill                                                   | When to assign                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tdd`                                                   | Always. It is the implementation discipline, not a knowledge catalog.                                                                                                                                                                                                                                                                                                                                                                                          |
+| `c-idioms` / `go-idioms` / `rust-idioms` / `zig-idioms` | Always — the one matching the batch's target language. Its Step 0 resolves the project's version baseline.                                                                                                                                                                                                                                                                                                                                                     |
+| `simplicity-patterns`                                   | Always. Whether an abstraction is justified is a question every implementation faces.                                                                                                                                                                                                                                                                                                                                                                          |
+| `comment-patterns`                                      | Always. Every batch writes comments or edits code that carries them; the skill decides which comments earn their keep and which to omit.                                                                                                                                                                                                                                                                                                                       |
+| `performance-patterns`                                  | When the batch touches hot code: loop bodies, per-item/per-request/per-frame functions, recursive calls, code called from other hot code. This list restates performance-patterns' "Hot path first" definition and is authoritative for this selection — do not read that skill's body to decide; when borderline, assign it (the read cost lands in the sub-agent's context, not the parent's). Also read its `references/<lang>.md` for the target language. |
+| `architecture-patterns`                                 | When the batch adds a module/package/crate, moves code across layer boundaries, or decides where new code lives.                                                                                                                                                                                                                                                                                                                                               |
 
 Skill paths resolve as `$SKILLS_DIR/<name>/SKILL.md` (SKILLS_DIR from SKILL.md "Skill locations"). List the paths explicitly in the dispatch prompt — the sub-agent must not guess locations.
 
@@ -22,7 +22,7 @@ Files outside C/Go/Rust/Zig (a build script, a fixture) may be edited as the ite
 ## Batching rules
 
 - **Default: one plan item per dispatch.** Fresh context per increment is the normal mode.
-- **Up to three consecutive `Test:` items** may share one dispatch when all are small, touch the same file or area, and none depends on a design decision the previous one has not made yet. Inside the sub-agent each item is still its own Red-Green-Refactor cycle.
+- **Up to three consecutive `Test:` items** may share one dispatch when all are small, touch the same file or area, and none depends on a design decision the previous one has not made yet. A decision made by an earlier item in the same batch counts as made, since cycles run in order inside the sub-agent. Inside the sub-agent each item is still its own Red-Green-Refactor cycle.
 - **`Refactor:` items always dispatch alone.** Keeping structural changes in their own dispatch preserves the Tidy First separation in the parent's records.
 - Never batch across a `Refactor:` item, and never batch items the plan ordered apart.
 
@@ -46,18 +46,19 @@ You are an implementer sub-agent executing TDD plan item(s) in the repository at
 - Full test suite command: <SUITE_COMMAND> (this is what "run all tests" means at every tdd checkpoint)
 - Plan goal: <GOAL section pasted verbatim>
 - Plan context: <CONTEXT section pasted verbatim>
-- Completed so far: <count> item(s) already green
+- Completed so far: <count> item(s) already green<; optionally add context the next implementer needs, e.g. "the batch-1 implementation already generalizes over all whitespace">
 - Assigned item(s), in order:
   <exact plan item text, one per line>
+- Open design questions, escalated to the user and still undecided (do not resolve these, and do not propose discovered_tests for them): <list, or "none">
 - Current state: full suite green (verified by the parent just before this dispatch)
 
 ## Hard constraints
 - Implement ONLY the assigned item(s): one Red-Green-Refactor cycle per `Test:` item; a `Refactor:` item changes structure with test results identical before and after.
-- Run the full suite (<SUITE_COMMAND>) at every checkpoint the tdd skill defines. Do not substitute a narrower test scope.
+- Run the full suite (<SUITE_COMMAND>) at every checkpoint the tdd skill defines. Do not substitute a narrower test scope; the command is a minimum scope, so equivalent-or-stricter variants (e.g. a cache-busting flag) are acceptable, and suite.command must echo what you actually ran.
 - If a new test passes without any production change, distinguish the two cases per the tdd skill: if the test does not exercise what it claims, fix the test until it fails for the right reason; only if the behavior genuinely already exists, do not force an artificial failure — report it with red_confirmed=false and explain in notes (the parent marks the item).
 - Do NOT write to the plan file or anything under .plans/.
 - Do NOT commit, push, stash, branch, or otherwise change git state.
-- Do NOT add behavior beyond the assigned item(s). Record behavior the feature still needs as discovered_tests entries instead of implementing it.
+- Do NOT add behavior beyond the assigned item(s). Record behavior the feature still needs as discovered_tests entries instead of implementing it. Behavior your implementation happens to satisfy but no test pins is also a valid discovered_tests entry (expect red_confirmed=false when it is dispatched). A discovered_tests entry must be a decidable, implementable test behavior stated as input → expected output, containing nothing but the plan-item line itself (rationale or commentary goes in notes); an entry containing "or", "decide", or an unchosen alternative is a design question and goes into notes for the parent to escalate, never into discovered_tests.
 - If an item cannot be completed (ambiguous, contradicts existing behavior, requires unplanned work), stop and return status "blocked" with the reason. Do not improvise around it.
 
 ## Return (structured result only)
@@ -107,7 +108,7 @@ Return a single JSON object matching the result schema below — no diffs, no fi
 Field notes:
 
 - `cycles[].refactor` is `"applied: <one-line what>"` or `"skipped: <one-line why>"` — mirroring the tdd skill's rule that Phase 3 is skippable when the code already meets the bar.
-- `discovered_tests` entries are full plan-item lines (e.g. `- [ ] Test: rejects duplicate keys with an error`), ready for the parent to append.
+- `discovered_tests` entries are full plan-item lines (e.g. `- [ ] Test: rejects duplicate keys with an error`), ready for the parent to append — exactly the plan-item line, with no trailing commentary or rationale (that belongs in `notes`). Entries must name decidable, implementable behaviors; open design questions travel in `notes` instead. The parent deduplicates against existing plan items before appending (by tested behavior, not wording).
 - On `status: "blocked"`, `cycles` covers whatever was completed before the block, `notes` carries the reason, and `suite.result` is `"not_run"` when the block happened before any suite run.
 
 When dispatching via tooling that supports a response schema, pass the schema so the return is validated rather than parsed. Otherwise the schema travels inside the prompt itself, as the template's Return section shows.
@@ -123,7 +124,7 @@ A `blocked` result is not a failure: relay the reason and ask the user how to pr
 
 ## Inline fallback
 
-Use inline mode only when dispatch is genuinely unavailable: the runtime exposes no sub-agent tooling, or this skill is itself already running inside a sub-agent.
+Use inline mode only when dispatch is genuinely unavailable: no dispatch tooling is exposed, or a dispatch attempt fails. Nesting (running as a sub-agent) is a common cause of unavailability, not a trigger by itself — when dispatch tooling works in a nested context, stay in delegated mode.
 
 - Implement in the parent, following the tdd skill directly (its plan-management sections apply again, since parent and implementer are now the same context).
 - Read the same knowledge skills selected by the table above before writing code — the context cost is accepted, not skipped.

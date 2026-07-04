@@ -15,7 +15,7 @@ The named agents live in `config/claude/agents/` and are loaded in Claude Code s
 | comment      | `comment-reviewer`                                                                      | `comment-patterns`                                                                | Comment content value and accuracy: restating/journal/banner noise, echo doc comments missing the real contract, stale or misleading comments, dead TODOs, missing why-comments on demonstrably non-obvious logic                                                                                              | Advisory by default; High only for a misleading comment the code contradicts      |
 | correctness  | — (generic read-only sub-agent)                                                         | — (no knowledge skill yet)                                                        | Logic errors, off-by-one, edge cases, broken control flow, swallowed errors. For files outside the four languages (docs, configs): internal contradictions, broken references to files/agents/settings, invalid or inconsistent configuration — judged by reading, never by running validators or interpreters | High = a path that produces wrong results or silently drops an error              |
 
-**Knowledge skills** hold each lens's full checklist (principles, pattern catalog, accepted/not-flagged criteria). They live in `config/agents/skills/` and are linked into `~/.claude/skills/` (Claude Code) and `~/.agents/skills/` (other runtimes). The named agents preload their knowledge skill via frontmatter, so dispatch prompts for them need not restate it. When a lens runs **without** its named agent — a generic sub-agent, or the inline fallback — read the knowledge skill's `SKILL.md` first and apply its catalog and accepted criteria as the checklist; the Focus column above is only a selection summary, not the checklist.
+**Knowledge skills** hold each lens's full checklist (principles, pattern catalog, accepted/not-flagged criteria). They live in `config/agents/skills/` and are linked into `~/.claude/skills/` (Claude Code) and `~/.agents/skills/` (other runtimes). The named agents preload their knowledge skill via frontmatter, so dispatch prompts for them need not restate it. When a lens runs **without** its named agent — a generic sub-agent, or the inline fallback — read the knowledge skill's `SKILL.md` first and apply its catalog and accepted criteria as the checklist; the Focus column above is only a selection summary, not the checklist. Exception: `correctness` has no knowledge skill, so its Focus cell is deliberately written out in full and serves as its complete checklist.
 
 Severity below High is lens-independent: Medium = misbehavior under a plausible condition; Low = a minor robustness gap or an issue unlikely to fire in practice.
 
@@ -48,17 +48,17 @@ You are a read-only reviewer applying the <LENS> lens to local code (not a GitHu
 
 ## Hard constraints
 - READ-ONLY: no file edits, no git writes, no worktrees or branches.
-- Do NOT run tests, builds, or anything that writes files. Always allowed: reading and searching files, and the read-only git commands this scope needs (git diff, git status, git show, git log). On top of that, the ONLY other commands allowed are the read-only checks your own agent definition lists (e.g. go vet, gofmt -l, cargo clippy --no-deps, zig fmt --check); a generic sub-agent has no such definition, so it gets no extra commands. Never launch interpreters, REPLs, or headless runtimes (nvim --headless, python, node, ...) "just to verify" a finding — even when they look read-only, they write logs and caches. Verify findings by reading the code, not by executing it.
+- Do NOT run tests, builds, or anything that writes files. Always allowed: reading and searching files, and the read-only git commands this scope needs (git diff, git status, git show, git log). On top of that, the ONLY other commands allowed are the read-only checks your own agent definition lists, and only those that write nothing into the repository (e.g. go vet, gofmt -l, zig fmt --check); a check that generates files — build artifacts, caches, lockfiles, e.g. cargo clippy writing target/ and possibly Cargo.lock — does not count as read-only, so skip it and verify by reading. A generic sub-agent has no agent definition, so it gets no extra commands. Never launch interpreters, REPLs, or headless runtimes (nvim --headless, python, node, ...) "just to verify" a finding — even when they look read-only, they write logs and caches. Verify findings by reading the code, not by executing it.
 - Stay within your lens; do not duplicate other lenses' concerns.
 - Reading files outside the scope (elsewhere in the repo, installed dependency/plugin sources) and consulting upstream documentation to verify a finding is fine — via read-only doc tools (WebFetch, MCP doc servers), never via shell network commands like curl; findings themselves must point only at in-scope files.
 
 ## Return (findings only)
-Return a JSON object matching the findings schema: {"summary": "...", "findings": [{path, line, severity, lens, body, fix?}]}.
+Return ONLY a JSON object matching the findings schema: {"summary": "...", "findings": [{path, line, severity, lens, body, fix?}]}. No prose before or after the JSON.
 Use an empty findings array when the scope is clean — do not invent findings.
 Write body, fix, and summary in the report language; keep code in English.
 ```
 
-The named reviewer agents define their own report formats and default output language in their system prompts; this dispatch prompt overrides both so the parent can merge results mechanically.
+The named reviewer agents define their own report formats and default output language in their system prompts; this dispatch prompt overrides both so the parent can merge results mechanically. The same override applies to generic sub-agents: an agent type's own role description (e.g. Explore describing itself as a search agent) does not narrow this contract — the dispatch prompt defines the job. When the parent knows of environment-specific command restrictions (a denied command form and its workaround, e.g. a permission rule rejecting `git -C`), transcribe them into the constraints block so sub-agents do not rediscover them.
 
 ## Findings schema
 
@@ -91,17 +91,18 @@ The named reviewer agents define their own report formats and default output lan
 
 A whole codebase does not fit one agent's context; chunk it and log coverage. A large `path` scope may be chunked the same way when the surface warrants it (Scale to scope); when you do, report chunks covered/dropped exactly as for `all` scope.
 
-- **Units**: Go → one chunk per package; Rust → per crate (per top-level module for a large crate); Zig → per `build.zig` module or top-level directory; C → per directory or library boundary.
+- **Units**: Go → one chunk per package; Rust → per crate (per top-level module for a large crate); Zig → per `build.zig` module or top-level directory; C → per directory or library boundary. Files outside the four languages form per-directory `correctness`-only chunks, reported in coverage like any other chunk.
 - **Per-chunk lenses**: `idiom`, `performance`, `simplicity`, `comment`, `correctness` run per chunk.
 - **Global lens**: `architecture` runs once per language over that language's full file set — dependency direction and cycles are invisible inside a single chunk.
 - **Waves**: keep roughly 8–10 concurrent sub-agents; process remaining chunks in successive waves.
+- **Lower bound** (applies to the per-chunk lenses only): chunking exists to fit context, not to multiply dispatches. When several chunks together fit comfortably in one agent's context (a tiny codebase), give one sub-agent per lens the combined chunks instead of one per `(lens, chunk)` pair — coverage is still reported chunk by chunk. `architecture` may share such a combined dispatch, but it must still receive each language's full file set and judge each language as a whole.
 - **No silent caps**: if any chunk is skipped (size, time), list it in the report as not covered.
 
 ## Synthesis (parent only)
 
 1. Wait for every dispatched lens (or finish the inline single-pass for every selected lens).
 2. Flatten all findings into one list; drop findings not grounded in the actual code — re-read the cited lines for every finding you keep (verification is by reading, never by executing).
-3. Dedup by `(path, line)`: merge bodies, note contributing lenses, keep the highest severity.
+3. Merge findings by root cause, not by position — `(path, line)` equality is only the first approximation, and two findings share a root cause exactly when a single fix resolves both (two failure modes of one expression: same cause; two problems on one line needing different fixes: separate causes). Findings on different-but-nearby lines that share one root cause (a doc comment and the loop it describes, an unwired file flagged at two lines) become one entry listing every contributing lens and anchor line; findings on the same line with unrelated root causes stay separate entries. When the single-fix test and these examples disagree (a comment contradicted by two independent bugs, so no single fix clears it), the single-fix test wins — the examples illustrate the test, they do not extend it. The merged entry's severity is the highest one that its lens's severity notes actually justify — re-judge against the catalog rather than blindly taking the max (an advisory-by-default lens's High counts only when its "High only for ..." condition holds).
 4. Group by severity: High → Medium → Low. Each entry: `path:line`, lens, body, and the proposed fix if one was returned.
 5. Write one report in the conversation language (code in English): a one-paragraph overall assessment first, then the grouped findings, then coverage (lenses run / skipped with reasons; chunks covered / dropped for `all` scope; whether the run was multi-agent or single-pass).
 6. Propose fixes only as recommendations — this skill never applies them.

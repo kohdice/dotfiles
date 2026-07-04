@@ -13,21 +13,21 @@ Review local code by **orchestrating specialized read-only reviewers** over a ca
 - **One report**: The parent synthesizes all findings into exactly one report. Sub-agents return findings only.
 - **Named agents preferred, inline fallback**: When the named reviewer agents are loaded (Claude Code links `config/claude/agents/` into `~/.claude/agents`), dispatch them in parallel. When they are not loaded (e.g. a Codex session), run the same selected lenses inline in the parent, single-pass — reading each lens's knowledge skill first (see `references/review-lenses.md`) — and say so in the report.
 - **Scale to scope**: A three-line diff does not need seven agents; a whole-codebase audit needs chunking. Select lenses and chunking by the actual surface (see `references/review-lenses.md`).
-- **No CI work**: Do not run tests, builds, or formatters. Reviewers may run only the read-only checks their own definitions allow (e.g. `go vet`, `gofmt -l`, `cargo clippy --no-deps`, `zig fmt --check`).
+- **No CI work**: Do not run tests, builds, or formatters. Reviewers may run only the read-only checks their own definitions allow, and only when the check writes nothing into the repository (e.g. `go vet`, `gofmt -l`, `zig fmt --check`). A check that generates files — build artifacts, caches, lockfiles — is not read-only even if it never touches source: `cargo clippy` compiles and writes `target/` (and may create `Cargo.lock`), so skip it and verify by reading instead.
 
 ## Workflow
 
 1. **Resolve the scope** from the user's ask:
 
-   | Ask                                   | Scope        | File list                                                               |
-   | ------------------------------------- | ------------ | ----------------------------------------------------------------------- |
-   | (default) "review my changes"         | working diff | `git diff HEAD --name-only` + untracked from `git status --porcelain`   |
-   | "review this branch against `<base>`" | branch diff  | `git diff <base>...HEAD --name-only`                                    |
-   | "review my unpushed commits"          | branch diff  | `git diff @{upstream}...HEAD --name-only` (no upstream: ask for a base) |
-   | a specific path is named              | path         | files under that path                                                   |
-   | "audit the whole codebase"            | all          | all source files, chunked per `references/review-lenses.md`             |
+   | Ask                                   | Scope        | File list                                                                                                                   |
+   | ------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------- |
+   | (default) "review my changes"         | working diff | `git diff HEAD --name-only` + untracked from `git status --porcelain`                                                       |
+   | "review this branch against `<base>`" | branch diff  | `git diff <base>...HEAD --name-only`                                                                                        |
+   | "review my unpushed commits"          | branch diff  | `git diff @{upstream}...HEAD --name-only` (no upstream: ask for a base)                                                     |
+   | a specific path is named              | path         | files under that path                                                                                                       |
+   | "audit the whole codebase"            | all          | all tracked files — source, configs, manifests, docs; not generated or vendored — chunked per `references/review-lenses.md` |
 
-   If the working diff is empty and no other scope was named, tell the user and stop.
+   If the working diff is empty — both commands in the working-diff row above return nothing — and no other scope was named, tell the user and stop.
 
 2. **Detect languages**: Classify the in-scope files by extension (`.c`/`.h` → C, `.go` → Go, `.rs` → Rust, `.zig` → Zig). Files outside these four languages get only the generic `correctness` lens.
 

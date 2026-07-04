@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: 'This skill should be used when executing an existing TDD plan from `.plans/` using Kent Beck''s Red-Green-Refactor and Tidy First discipline. Triggers when the user says "go" after a TDD plan was created in the same session, invokes `/tdd` (with or without a plan filename), or asks to implement the next test from an existing plan. Do NOT use this skill when the user is asking to create a new TDD plan — that is handled by the tdd-plan skill.'
+description: 'This skill should be used only when the user explicitly invokes `/tdd` (with or without a plan filename) to execute a TDD plan from `.plans/` inline in the current context, or when the implement skill falls back to inline execution because sub-agent dispatch is unavailable. It defines Kent Beck''s Red-Green-Refactor and Tidy First discipline, and serves as the discipline reference that the implement skill''s implementer sub-agents read before writing code. Do NOT use this skill when the user says bare "go" or asks to implement a feature or plan — the implement skill owns those and dispatches sub-agents that read this skill. Do NOT use when the user is asking to create a new TDD plan — that is handled by the tdd-plan skill.'
 ---
 
 # TDD (Test-Driven Development)

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement"
+  short_description: "TDD implementation via delegated sub-agents"
+  default_prompt: "Use $implement to implement this feature with TDD."

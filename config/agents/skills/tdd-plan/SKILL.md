@@ -46,12 +46,15 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - Start with the simplest case (e.g., empty input, zero-length, nil/null)
 - Progress to basic valid cases (single element, minimal input)
 - Then handle increasingly complex cases (multiple elements, combinations)
-- Address edge cases and error conditions last
+- Address edge cases and error conditions last — only those the requested behavior actually requires, not speculative ones
 - Each test should build on the confidence established by previous tests
+- This simple-to-complex progression is the default heuristic, not a hard rule — when a different order clearly teaches more about the problem sooner (Kent Beck's criterion: the next test is the one you learn the most from and are confident you can make pass), prefer that order
 
 **Granularity:**
 
 - One behavior per test — each test validates exactly one thing
+- Test observable behavior through the public API — never implementation details (private functions, internal call order, interactions with mocks). Implementation-coupled tests break under legitimate refactoring, violating the Tidy First invariant that structural changes keep test results identical
+- Plan only new or changed behavior — do not include tests for behavior already covered by existing passing tests (discovered in Step 2). Such a test can never fail in the Red phase, so it adds no information and violates the rule that every test must fail before the change
 - A test name must clearly describe what is being verified
 - Follow the target project's existing test naming convention, discovered in Step 2 (e.g., Zig inline tests `test "parses empty sequence diagram"`, Rust `#[test] fn parses_empty_sequence_diagram`, Go `TestParsesEmptySequenceDiagram`)
 
@@ -60,6 +63,11 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - When refactoring or reorganizing code is needed before or during implementation, include it as a separate plan item marked with `Refactor:` instead of `Test:`
 - Structural items must not change behavior — they prepare the codebase for the next behavioral change
 - Placement: put a `Refactor:` item immediately before the first `Test:` item that depends on that structural change. Consecutive `Refactor:` items may be grouped together only when they all gate the same next behavioral test — this group goes right before that test, not at the top of the Test Cases list. Do not interleave structural items with unrelated behavioral tests
+
+**Bug fixes:**
+
+- When the scope identified in Step 1 is a bug fix, the first two plan items must follow the tdd skill's Defect Fix Workflow: (1) `Test:` an API-level test that demonstrates the defect from the caller's perspective, then (2) `Test:` the smallest test that replicates the root cause
+- Add further `Test:` items only if the fix also requires new behavior beyond making these two tests pass
 
 ### Step 4: Write the Plan File
 
@@ -94,6 +102,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 ### Plan File Rules
 
 - All test items use `- [ ] Test:` prefix with a clear description
+- A `Test:` description states the scenario (input or situation) and the expected observable outcome — it must not prescribe implementation strategy (data structures, algorithms, internal organization). Design decisions belong to the Green and Refactor phases of the executing tdd skill
 - All structural-change items use `- [ ] Refactor:` prefix
 - Items are listed in implementation order — each item may depend on previous items being complete
 - Do not mix behavioral and structural changes in a single item
@@ -108,7 +117,8 @@ Before presenting the plan to the user, verify (for a pure-refactor plan consist
 2. Test names are descriptive and follow the project's naming conventions
 3. The ordering progresses from simple to complex
 4. Structural changes are separated from behavioral changes
-5. Edge cases and error conditions are covered
+5. Edge cases and error conditions required by the requested behavior are covered — no speculative tests beyond the requirement
 6. The plan references specific files, types, and functions from the codebase
 7. No test case implicitly depends on unplanned work
-8. The final reply includes the exact created plan filename and `.plans/` path
+8. Every `Test:` item states scenario and expected observable outcome without prescribing implementation, and none duplicates behavior already covered by existing passing tests
+9. The final reply includes the exact created plan filename and `.plans/` path

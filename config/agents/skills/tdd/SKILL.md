@@ -42,6 +42,16 @@ Each plan item uses a checkbox to track progress. Plans contain two item types:
 3. If it is a `Test:` item, implement it through the Red-Green-Refactor cycle below
 4. If it is a `Refactor:` item, run all tests to confirm they pass, apply the structural change without altering behavior, run all tests again to confirm identical results, then mark it `[x]` and proceed to the next item
 
+### Discovered Tests (Keep the Plan a Living List)
+
+While implementing, you may discover behavior that needs a test but is not in the plan — an edge case, an error path, a missing increment. Do not implement it immediately, and do not silently drop it:
+
+1. Append it to the plan as a new unchecked `- [ ] Test:` item at the appropriate position (usually right after the current item)
+2. Continue the current Red-Green-Refactor cycle without expanding its scope
+3. Mention the appended item in the turn summary
+
+A discovered item must describe observable application behavior required by the feature under development. Do not append speculative tests unrelated to the requested behavior.
+
 ### When the Plan Is Complete
 
 If no unchecked item remains, do not invent new work. Report that all plan items are complete, summarize the final state, and suggest either committing the finished work or creating a new plan with the tdd-plan skill.
@@ -58,10 +68,11 @@ Before writing the new test, run all tests once. If the suite is already failing
 2. Use descriptive test names (e.g., `test "parses short option clusters"`)
 3. Run all tests to confirm the new test fails
 4. Verify the failure message is clear and informative
+5. If the new test passes without any production code change, stop — that is a signal, not a success. Either the behavior already exists (report this, mark the item `[x]`, and move on) or the test does not exercise what it claims to (fix the test until it fails for the right reason). Never write production code for a test that never failed
 
 ### Phase 2: Green (Make It Pass)
 
-1. Write the minimum code to make the failing test pass
+1. Write the minimum code to make the failing test pass, using Kent Beck's Green strategies: **Obvious Implementation** when the real code is trivially clear, **Fake It** (return a constant, generalize in a later cycle) when it is not, and **Triangulation** (generalize only when a second example demands it) when the right abstraction is uncertain
 2. Do not add extra functionality beyond what the test requires
 3. Run all tests to confirm they all pass
 4. Mark the test as complete in the plan (`- [ ]` to `- [x]`)

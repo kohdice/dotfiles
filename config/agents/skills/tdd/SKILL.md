@@ -7,7 +7,7 @@ description: 'This skill should be used only when the user explicitly invokes `/
 
 ## Overview
 
-Guide development following Kent Beck's TDD and Tidy First principles. Follow an explicit plan file whenever the user provides one. When the user says bare `go` immediately after creating a plan in the same session, continue from that newly created plan. When the user invokes `/tdd <plan-file>` or otherwise supplies a filename, use that plan instead.
+Guide development following Kent Beck's TDD and Tidy First principles. Follow an explicit plan file whenever the user provides one. Bare `go` does not trigger this skill (the implement skill owns it); however, when this skill is already executing as the implement skill's inline fallback and the user said bare `go` right after creating a plan in the same session, continue from that newly created plan. When the user invokes `/tdd <plan-file>` or otherwise supplies a filename, use that plan instead. User-facing questions and reports follow the ambient conversation language conventions (e.g., CLAUDE.md); this skill's English examples do not override them.
 
 ## Plan Management
 
@@ -20,8 +20,8 @@ Plans are stored in the `.plans/` directory (created by the tdd-plan skill). Res
 Use this precedence order:
 
 1. If the user provides a plan filename or path, use it.
-2. If the user says bare `go` and a plan was created in the current session, use that most recent current-session plan.
-3. If `/tdd` is invoked without a filename and there is no current-session plan, ask the user which existing plan in `.plans/` to use. List the available plan files so the user can choose by name.
+2. If the user said bare `go` (reaching this skill via the implement skill's inline fallback) and a plan was created in the current session, use that most recent current-session plan.
+3. If `/tdd` is invoked without a filename and there is no current-session plan, ask the user which existing plan in `.plans/` to use. List, at minimum, each plan file's name together with its title line (reading the plan files for this is a sanctioned read-only step; adding further read-only context such as remaining-item counts is welcome) so the user can choose by name. While waiting for the answer, any read-only inspection is fine; make no writes and no state-changing runs.
 
 Resolve bare filenames such as `watch-refresh.md` relative to `.plans/`, and accept explicit paths such as `.plans/watch-refresh.md`.
 
@@ -40,7 +40,7 @@ Each plan item uses a checkbox to track progress. Plans contain two item types:
 1. Resolve the plan using the precedence rules above
 2. Scan for the first unchecked item (`- [ ]`)
 3. If it is a `Test:` item, implement it through the Red-Green-Refactor cycle below
-4. If it is a `Refactor:` item, run all tests to confirm they pass, apply the structural change without altering behavior, run all tests again to confirm identical results, then mark it `[x]` and proceed to the next item
+4. If it is a `Refactor:` item, run all tests to confirm they pass (a cached pass is acceptable for this before-run — see the TDD Cycle section), apply the structural change without altering behavior, run all tests again to confirm identical results — identical meaning the same set of test names with all of them passing (see Structural Changes) — then mark it `[x]` and proceed to the next item
 
 ### Discovered Tests (Keep the Plan a Living List)
 
@@ -58,7 +58,7 @@ If no unchecked item remains, do not invent new work. Report that all plan items
 
 ## TDD Cycle: Red, Green, Refactor
 
-Execute each test through three distinct phases. In this skill, "run all tests" means the project's complete test suite, not just the file currently being edited. Run the full suite at every checkpoint. If the suite is prohibitively slow, state the scoped subset you are running and why.
+Execute each test through three distinct phases. In this skill, "run all tests" means the project's complete test suite, not just the file currently being edited. Run the full suite at every checkpoint. If the suite is prohibitively slow, state the scoped subset you are running and why. A cached passing result (e.g., Go's `(cached)`) is acceptable only for runs that confirm an unchanged state, such as the baseline before Red or before a `Refactor:` item; any run whose purpose is to observe the effect of a change just made — the Red confirmation, the Green pass, the post-refactor check — must actually execute the tests (e.g., `go test -count=1`).
 
 ### Phase 1: Red (Write a Failing Test)
 
@@ -67,13 +67,13 @@ Before writing the new test, run all tests once. If the suite is already failing
 1. Write one test that defines a small increment of functionality
 2. Use descriptive test names (e.g., `test "parses short option clusters"`)
 3. Run all tests to confirm the new test fails
-4. Verify the failure message is clear and informative
-5. If the new test passes without any production code change, stop — that is a signal, not a success. Either the behavior already exists (report this, mark the item `[x]`, and move on) or the test does not exercise what it claims to (fix the test until it fails for the right reason). Never write production code for a test that never failed
+4. Verify the failure message is clear and informative. In a compiled language, a compile/build error caused by the not-yet-implemented symbol IS a valid Red failure — do not write production stubs just to turn it into an assertion failure
+5. If the new test passes without any production code change, stop — that is a signal, not a success. Either the behavior already exists (report this, mark the item `[x]`, and move on) or the test does not exercise what it claims to (fix the test until it fails for the right reason). To decide which, inspect the production code path the test exercises: if it genuinely implements the planned behavior, the behavior already exists; if the assertions do not reach or do not constrain that path, the test is at fault. Never write production code for a test that never failed
 
 ### Phase 2: Green (Make It Pass)
 
 1. Write the minimum code to make the failing test pass, using Kent Beck's Green strategies: **Obvious Implementation** when the real code is trivially clear, **Fake It** (return a constant, generalize in a later cycle) when it is not, and **Triangulation** (generalize only when a second example demands it) when the right abstraction is uncertain
-2. Do not add extra functionality beyond what the test requires
+2. Do not add extra functionality beyond what the test requires. This applies to API signatures too: choose the minimal signature the current test demands, even when a later plan item will predictably force a change (e.g., adding an error return) — signature churn between cycles is an expected cost of the discipline, not a defect to pre-empt
 3. Run all tests to confirm they all pass
 4. Mark the test as complete in the plan (`- [ ]` to `- [x]`)
 
@@ -105,7 +105,7 @@ Separate all changes into two distinct types. Never mix them.
 - Moving code to a different location
 - Reorganizing imports
 
-To validate: run all tests before AND after. Results must be identical.
+To validate: run all tests before AND after, capturing test names on both runs (e.g., verbose or list output) so the sets can be compared. Results must be identical, meaning the same set of test names with all of them passing — a run that passes because tests were accidentally deleted is not identical. Tests are the only required gate for a structural change; compiler/linter warnings need to be resolved by commit time (see Commit Discipline), not at every refactor step, though running such checks early is welcome.
 
 ### Behavioral Changes (new or modified functionality)
 

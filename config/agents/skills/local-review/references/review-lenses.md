@@ -20,7 +20,7 @@ Severity below High is lens-independent: Medium = misbehavior under a plausible 
 
 ## Lens selection
 
-- **working diff / branch diff / path**: dispatch `correctness` + one idiom lens per language present + the three cross-language lenses. Drop `performance` when nothing in scope is hot-path shaped (no loops, parsers, handlers); drop `architecture` when no files moved and no imports changed; note every dropped lens in the report.
+- **working diff / branch diff / path**: dispatch `correctness` + one idiom lens per language present + the three cross-language lenses. Drop `performance` when nothing in scope is hot code per performance-patterns' "Hot path first" definition (loop bodies, per-item/per-request/per-frame functions, recursive calls, code called from other hot code); drop `architecture` when no files moved and no imports changed; note every dropped lens in the report. Added files count as import changes (their entire import block is new) and are judged hot by the same definition as modified files; when unsure whether a drop condition holds, run the lens.
 - **all (audit)**: dispatch every lens, chunked as described below.
 - Files outside C/Go/Rust/Zig get only `correctness`. This rule wins over the per-scope lists above: the idiom and cross-language lenses apply only to files in those four languages, so when every in-scope file is outside them, dispatch `correctness` alone and list the other lenses as skipped.
 - `correctness` has no named agent in any runtime. In multi-agent mode, dispatch it to a generic read-only sub-agent (prefer a read-only agent type such as Explore when available; otherwise a general-purpose type) with the dispatch contract below — the run still counts as multi-agent. In inline-fallback mode it runs inline like every other lens.
@@ -38,7 +38,7 @@ You are a read-only reviewer applying the <LENS> lens to local code (not a GitHu
 - Scope: <working diff | diff vs <BASE> | path <PATH> | whole-codebase chunk <CHUNK>>
 - Files in scope: <file list>
 - Language(s): <detected languages for these files>
-- Diff (when scope is a diff): git diff HEAD -- <files>  /  git diff <BASE>...HEAD -- <files>. For path or chunk scope, read the files directly.
+- Diff (when scope is a diff): git diff HEAD -- <files>  /  git diff <BASE>...HEAD -- <files>. For path or chunk scope, read the files directly. Untracked files in a diff scope have no diff to render — read them directly.
 - Report language: <conversation language>. Keep all code snippets, identifiers, and paths in English.
 
 ## Lens

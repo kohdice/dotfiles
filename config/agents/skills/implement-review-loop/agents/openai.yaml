@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement-Review Loop"
+  short_description: "Bounded implement → review → fix loop"
+  default_prompt: "Use $implement-review-loop to implement this feature and iterate until review findings are resolved."

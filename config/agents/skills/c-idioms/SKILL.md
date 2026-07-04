@@ -12,12 +12,26 @@ Authority sources: the C23 standard ISO/IEC 9899:2024 (working drafts N3096/N322
 Before writing or recommending any C code:
 
 1. Determine the target standard: grep build files (Makefile, CMakeLists.txt, meson.build, build.zig, compile_flags.txt, .clang-format/.clang-tidy) for `-std=` flags (`c23`, `c2x`, `gnu23`, `gnu2x`, `c17`, `c11`, ...) or `C_STANDARD 23`.
-2. If no explicit standard is declared, treat the compiler default as the floor and prefer conservative choices; suggest pinning `-std=` as a low-priority improvement.
+2. If no explicit standard is declared, treat the compiler default as the floor and write to a conservative subset — assume C99 as the concrete floor unless there is evidence of older toolchains. Suggesting to pin `-std=` as a low-priority improvement is **mandatory output in your response**, exactly like the baseline statement in step 4. In this branch the baseline self-check (see Standard-conformance hygiene) runs with the project's flags as-is, plus one compile at the assumed floor (e.g. `-std=c99 -pedantic`) when a compiler is available.
 3. Note compiler reality: near-complete C23 support requires GCC 14+ / Clang 18+ (older compilers accept `-std=c2x`); MSVC support is partial. Mention this when recommending migration.
+4. **State the resolved baseline and its source in your response** (e.g. "target: C17, from `Makefile: -std=c17`") before emitting any code or findings. If it came from a compiler-default fallback (step 2), say so. This statement is mandatory output, not an internal step — silent resolution is non-compliance.
 
 Hard rules derived from the baseline:
 
-- **Never use a language or library feature introduced after the project's target standard.** When an item below is desirable but standard-gated, present it as an option labeled with the required C version — do not silently use it.
+- **Never use a language or library feature introduced after the project's target standard.** Option labeling for standard-gated items — the trigger is observable, not aesthetic: any occurrence in delivered code of an in-baseline counterpart listed in the trigger table below, when the replacement's version sits above the baseline. Label the gated replacement as an option tagged with its required C version — **once per catalog entry per file**, as a comment at the first affected site, plus a one-line mention in the response. Do not repeat the label at every occurrence; do not silently use the gated feature; do not omit the label entirely when a counterpart pattern appears.
+
+**Trigger table for option labeling** (authoritative extension of the rule above; counterpart-hood is decided by effect, not surface form — a morphologically different equivalent still counts):
+
+| In-baseline counterpart in delivered code                                                                                                                                                                                             | Gated replacement                             | Version |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ------- |
+| `{0}` initializer, or `memset(&x, 0, sizeof x)` used for zero-initialization                                                                                                                                                          | empty initializer `{}`                        | C23     |
+| a guard detecting overflow of an addition, subtraction, or multiplication that `ckd_*` could subsume (`a > INT_MAX - b`, pre-multiplication caps, wrapping casts) — min/clamp expressions and pure domain range checks do NOT trigger | `<stdckdint.h>` `ckd_add`/`ckd_sub`/`ckd_mul` | C23     |
+| any object-like `#define` or enum constant expanding to an integer/float/string literal and used outside the preprocessor — array bounds and loop bounds DO trigger; function-like macros and conditional-compilation flags do NOT    | `constexpr` object definition                 | C23     |
+| `NULL` in sentinel/varargs contexts only — ordinary null checks do NOT trigger                                                                                                                                                        | `nullptr`                                     | C23     |
+| hand-rolled popcount/clz/ctz loop, or `__builtin_popcount` family                                                                                                                                                                     | `<stdbit.h>` functions                        | C23     |
+| `memset` wiping secrets                                                                                                                                                                                                               | `memset_explicit`                             | C23     |
+| `_Noreturn` / `noreturn` macro / `<stdnoreturn.h>`                                                                                                                                                                                    | `[[noreturn]]` attribute                      | C23     |
+
 - If the project targets C17 or older, C23-only items are migration options, not violations; removed-construct findings still apply relative to the targeted standard.
 - When recommending a change in review, always cite the C standard version that removed, deprecated, or introduced the construct so it can be checked against the project's `-std=` flag.
 
@@ -46,20 +60,20 @@ When asked to update this skill after a new standard is published:
 
 ## Removed constructs (hard errors or changed semantics)
 
-Each entry is tagged with the standard that removed or changed it:
+Each entry is tagged with the standard that removed or changed it. **Ripple rule for all catalog replacements (this section and the next)**: when the official replacement is not drop-in — different signature, arity, or observable behavior — state the minimal required ripple alongside it: which call sites must change and what the behavioral delta is. Entries below carry a "(not drop-in: ...)" note where this applies.
 
 - **K&R (identifier-list) function definitions and non-prototype declarations** (removed in C23): `int f(a, b) int a, b; {...}` no longer compiles; every function must have a full prototype
 - **Empty parentheses semantics changed** (C23): `void f()` now means `void f(void)` (no arguments), not "unspecified arguments". Flag call sites that relied on the old semantics to pass arguments
 - **Trigraphs** (removed in C23): `??=` etc. no longer translate
 - **`ATOMIC_VAR_INIT`** (deprecated in C17, removed in C23) → direct initialization of the atomic object
 - **`realloc(ptr, 0)`** (undefined behavior since C23; was implementation-defined) → use `free` explicitly, or guard the zero-size case
-- **`gets`** (removed in C11) → `fgets`
+- **`gets`** (removed in C11) → `fgets` (not drop-in: callers must supply the buffer size, and `fgets` retains the trailing `'\n'` — strip it where `gets` semantics were relied on)
 - **Implicit `int` and implicit function declarations** (removed in C99, still tolerated by lax compiler flags): flag any occurrence
 - **Two's complement mandated** (C23): sign-magnitude/ones'-complement fallback code paths are dead code
 
 ## Obsolescent constructs with official replacements
 
-All replacements below are C23 unless noted:
+Version default for this section, citable verbatim in reviews: each construct below became **obsolescent in C23** and each replacement was **introduced in C23**, unless a different version is noted on the entry:
 
 - **`_Noreturn`, `<stdnoreturn.h>`, `noreturn` macro** (obsolescent) → `[[noreturn]]` attribute
 - **`<stdbool.h>`**: `bool`/`true`/`false` are keywords now; the header and `__bool_true_false_are_defined` are obsolescent → drop the include, use the keywords. Same for `_Bool` → `bool`
@@ -91,3 +105,31 @@ All replacements below are C23 unless noted:
 - Feature-test discipline: code using optional features guards with the standard macros (`__STDC_NO_ATOMICS__`, `__STDC_NO_THREADS__`, `__STDC_NO_VLA__`, `__STDC_VERSION_STDCKDINT_H__` etc.), not compiler-name checks, where portability is intended
 - No reliance on undefined behavior that C23 newly clarifies or that reviewers commonly miss: signed shift into the sign bit is still UB, `realloc` size 0 (see Removed constructs), modifying string literals
 - The C standard has no official style guide for naming/formatting — do not report naming or brace style as violations; if asked, label such feedback as community convention (e.g., project-local .clang-format)
+- **Baseline self-check before delivering C code** (applies to generated files AND to replacement snippets presented in reviews): verify the code matches the resolved baseline, and report which check was run. The authoritative check is compiling with the project's exact `-std=` flags — use it whenever a compiler is available and the deliverable is a complete file. Otherwise (no compiler, or snippet-only deliverable) fall back to scanning the **code itself — comments and strings are exempt** — for above-baseline constructs; on a pre-C23 baseline: `nullptr`, `constexpr`, `typeof`, `[[...]]` attributes, `<stdckdint.h>`, `<stdbit.h>`, `#embed`, empty initializer `{}`, `%b`/`%wN` format specifiers. Scan hits are candidates for contextual confirmation, not automatic violations; in particular, version-labeled option mentions in comments (mandated by the hard rules above) are expected and are non-findings. When the baseline equals the catalog coverage version (currently C23), no catalog construct sits above the baseline and the scan is vacuous — state that explicitly instead of improvising scan content.
+- **Review-only deliverables**: the self-check applies to the replacement snippets you present — scan them against the resolved baseline. Compiling the _reviewed_ file with the project's flags to confirm findings is optional, never required: the version-tagged catalog is authoritative for removed/obsolescent status. If you do verify by compiling and the project-declared compiler is unavailable, substitute the nearest equivalent with the same `-std=` flag and disclose the substitution in the review.
+
+## Review output contract (review-mode deliverables only)
+
+A review report contains these sections, in this order — the mandatory statements defined elsewhere in this skill live in fixed slots so they cannot be dropped:
+
+1. **Baseline header**: the resolved standard and its source (the Step 0 item 4 statement), plus the compiler-reality note when migration is being recommended.
+2. **Findings**, grouped into severity tiers. Default severity = catalog section membership; an entry's own severity note (e.g. `NULL` → `nullptr`: Medium only in varargs/sentinel contexts, otherwise Low) overrides the section default.
+   - **Critical** — removed constructs relative to the baseline (build breakers or newly undefined behavior)
+   - **High** — obsolescent constructs with official replacements
+   - **Medium/Low** — modern facilities to prefer (optional modernization). Tie-break within this tier: Medium when the legacy form carries a correctness, portability, or security cost (hand-rolled bit loops, untyped constant macros, non-reentrant time functions); Low when purely cosmetic (`{0}` vs `{}`, spelling variants)
+     Each finding states: file:line, the construct, its version tag (removed/deprecated/introduced in X — copy it from the catalog), the concrete replacement, and the ripple note when the replacement is not drop-in.
+3. **Non-findings**: what was deliberately not reported and why — at minimum the naming/formatting exclusion from the hygiene section when style-adjacent items are present in the reviewed code.
+4. **Baseline self-check statement**: which check was run, per the hygiene section.
+
+Headings may be worded and localized freely; the section order, tier definitions, and per-finding fields are fixed.
+
+## Generation output contract (code-writing deliverables)
+
+When delivering written or modified C code, the response carries these statements in fixed slots, so no mandatory output depends on executor discipline:
+
+1. **Baseline statement** (the Step 0 item 4 statement) — before any code is emitted.
+2. **Pin suggestion** — only when Step 0 item 2's compiler-default fallback branch was taken.
+3. **Option-label mentions** — one line per triggered trigger-table row. When the baseline equals or exceeds the replacement's version for every row, the labeling rule is vacuous: no labels, no mention required.
+4. **Self-check statement** — which check was run (authoritative compile, or scan fallback), per the hygiene section.
+
+In-file artifacts stay as the rules define them (option-label comment at the first affected site). Wording and language are free; the presence and order of the slots are fixed.

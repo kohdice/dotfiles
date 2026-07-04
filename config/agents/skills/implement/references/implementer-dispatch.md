@@ -11,6 +11,7 @@ Each dispatch names the skills the sub-agent must read before writing code. Sele
 | `tdd`                                                   | Always. It is the implementation discipline, not a knowledge catalog.                                                                                                                                                                                         |
 | `c-idioms` / `go-idioms` / `rust-idioms` / `zig-idioms` | Always — the one matching the batch's target language. Its Step 0 resolves the project's version baseline.                                                                                                                                                    |
 | `simplicity-patterns`                                   | Always. Whether an abstraction is justified is a question every implementation faces.                                                                                                                                                                         |
+| `comment-patterns`                                      | Always. Every batch writes comments or edits code that carries them; the skill decides which comments earn their keep and which to omit.                                                                                                                      |
 | `performance-patterns`                                  | When the batch touches hot code per performance-patterns' "Hot path first" definition: loop bodies, per-item/per-request/per-frame functions, recursive calls, code called from other hot code. Also read its `references/<lang>.md` for the target language. |
 | `architecture-patterns`                                 | When the batch adds a module/package/crate, moves code across layer boundaries, or decides where new code lives.                                                                                                                                              |
 
@@ -36,6 +37,7 @@ You are an implementer sub-agent executing TDD plan item(s) in the repository at
 - <SKILLS_DIR>/tdd/SKILL.md — the implementation discipline (Red-Green-Refactor phases, Green strategies, Tidy First). Ignore its plan-management sections: the parent owns the plan file.
 - <SKILLS_DIR>/<idiom skill>/SKILL.md — run its Step 0 to resolve the project's language baseline; generated code must respect it.
 - <SKILLS_DIR>/simplicity-patterns/SKILL.md — introduce no abstraction that does not earn its keep.
+- <SKILLS_DIR>/comment-patterns/SKILL.md — write only comments that carry what the code cannot say; never restate the code.
 <when assigned: - <SKILLS_DIR>/performance-patterns/SKILL.md and its references/<lang>.md — avoid the known cost patterns in hot paths.>
 <when assigned: - <SKILLS_DIR>/architecture-patterns/SKILL.md — place new code per the Dependency Rule and the project's declared layout.>
 

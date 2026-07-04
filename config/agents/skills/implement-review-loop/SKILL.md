@@ -53,7 +53,7 @@ Resolve `SKILLS_DIR` once, per the implement skill's "Skill locations" section. 
 
 4. **Fix**: For each blocking finding, dispatch **one** fix sub-agent, sequentially (concurrent edits break the all-tests-green invariant). The dispatch adapts the contract in `implementer-dispatch.md`:
    - The assigned item is the finding — path, line, severity, lens, body, and proposed fix, pasted verbatim from the review report.
-   - Knowledge skills: `tdd` + the idiom skill for the file's language + `simplicity-patterns`, plus the finding lens's own knowledge skill when it has one (`performance-patterns`, `architecture-patterns`).
+   - Knowledge skills: `tdd` + the idiom skill for the file's language + `simplicity-patterns` + `comment-patterns`, plus the finding lens's own knowledge skill when it has one (`performance-patterns`, `architecture-patterns`; a `comment` finding's skill is already loaded).
    - Cycle discipline: a `correctness` finding is treated as a `Test:` item — write a failing test that reproduces the defect when feasible, then fix. Findings from the other lenses are treated as `Refactor:` items — structure or idiom changes with test results identical before and after.
    - Hard constraints, result schema, and the recovery policy (one follow-up fix dispatch on parent-verified suite failure, then stop) apply unchanged from `implementer-dispatch.md`.
    - After each fix dispatch, the parent re-runs the full suite before dispatching the next.

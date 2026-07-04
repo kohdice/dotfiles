@@ -11,7 +11,7 @@ Review local code by **orchestrating specialized read-only reviewers** over a ca
 
 - **Read-only everywhere**: Neither the parent nor any sub-agent edits files, writes git state, or posts anywhere.
 - **One report**: The parent synthesizes all findings into exactly one report. Sub-agents return findings only.
-- **Named agents preferred, inline fallback**: When the named reviewer agents are loaded (Claude Code links `config/claude/agents/` into `~/.claude/agents`), dispatch them in parallel. When they are not loaded (e.g. a Codex session), run the same selected lenses inline in the parent, single-pass, and say so in the report.
+- **Named agents preferred, inline fallback**: When the named reviewer agents are loaded (Claude Code links `config/claude/agents/` into `~/.claude/agents`), dispatch them in parallel. When they are not loaded (e.g. a Codex session), run the same selected lenses inline in the parent, single-pass — reading each lens's knowledge skill first (see `references/review-lenses.md`) — and say so in the report.
 - **Scale to scope**: A three-line diff does not need seven agents; a whole-codebase audit needs chunking. Select lenses and chunking by the actual surface (see `references/review-lenses.md`).
 - **No CI work**: Do not run tests, builds, or formatters. Reviewers may run only the read-only checks their own definitions allow (e.g. `go vet`, `gofmt -l`, `cargo clippy --no-deps`, `zig fmt --check`).
 

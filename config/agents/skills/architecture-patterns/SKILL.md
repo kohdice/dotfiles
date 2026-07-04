@@ -7,6 +7,8 @@ description: This skill should be used when writing or reviewing code whose stru
 
 The goal is structure that holds: responsibilities separated into the right units, dependencies pointing only in allowed directions, and layout that follows the ecosystem's official guidance. Every convention-based claim must trace to a citable source.
 
+This skill defines judgment criteria only; the report format belongs to the calling context (agent instructions, review skill, user request). When no format is given, state for each finding: the location, the violated rule, its source, and a fix direction. Severity labels and ordering are the executor's choice.
+
 ## Core principles
 
 ### The Dependency Rule
@@ -19,11 +21,11 @@ A module/package/crate should have one reason to change. Parsing, business rules
 
 ### The project's declared architecture wins
 
-Before judging or placing anything, discover what architecture the project claims (README, ARCHITECTURE.md, docs/, ADRs, directory names like `domain/`, `adapters/`, `internal/`). Violations of the project's own declared rules outrank everything else. Do not impose an architecture the project never adopted.
+Before judging or placing anything, discover what architecture the project claims (README, ARCHITECTURE.md, docs/, ADRs, directory names like `domain/`, `adapters/`, `internal/`). When none of those exist, package/crate/module doc comments that assign an architectural role — naming a layer or position such as core rules, storage, transport ("Package billing holds the core invoicing rules", "storage for X") — count as the project's declaration; judge against them. A comment that merely describes functionality ("counts lines and words") assigns no role and declares nothing. Violations of the project's own declared rules outrank everything else. Do not impose an architecture the project never adopted.
 
 ### Official guidance over personal taste
 
-A convention-based claim is only valid with a named source — e.g., go.dev "Organizing a Go module", the Google Go Style Guide, Effective Go, the Rust API Guidelines, The Cargo Book, Zig's build system documentation. Without a source it is an opinion: omit it or mark it explicitly as such.
+A convention-based claim is only valid with a named source — e.g., go.dev "Organizing a Go module", the Google Go Style Guide, Effective Go, the Rust API Guidelines, The Cargo Book, Zig's build system documentation. Without a source it is an opinion: omit it or mark it explicitly as such. Every source this skill itself names qualifies — including the books and pattern literature behind the Dependency Rule (Cockburn's hexagonal architecture, Martin's Clean Architecture); cite them as given, no further authority needed. For dependencies the catalog does not list (e.g. whether serde counts as a framework), judge by the project's own declaration; when the declaration doesn't settle it, treat the claim as opinion.
 
 ## Pattern catalog
 
@@ -80,7 +82,7 @@ Sources: standard practice per project conventions (e.g., LKML/kernel style, GNO
 
 ## Accepted structure (do not flag; do not over-build when writing)
 
-- Small programs where formal layering would be over-engineering — do not demand hexagonal architecture from a 500-line CLI, and do not scaffold layers into one; absence of layers is not a defect unless the project claims them
+- Small programs where formal layering would be over-engineering — do not demand hexagonal architecture from a 500-line CLI (the figure is illustrative, not a threshold; judge by whether layers would pay for themselves), and do not scaffold layers into one; absence of layers is not a defect unless the project claims them. This size exemption waives only _missing_ structure: dependency edges that already point the wrong way (core importing infra, infrastructure types in core signatures, cycles) and catalog violations with evidence remain defects at any size
 - Deviations the project documents deliberately (an ADR or README note saying why) — acknowledge, don't relitigate
 - Conventions you cannot source — no "commonly people do X" without a citable document
 - What the compiler already enforces (Go import cycles, Rust orphan rule) — flag only the workarounds that smuggle violations past it

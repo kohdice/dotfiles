@@ -11,8 +11,9 @@ description: This skill should be used when writing, modifying, refactoring, or 
 
 Cost = (cost per execution) × (execution count). Before optimizing or flagging anything, establish how often the code runs:
 
-- **Hot**: loop bodies, per-item/per-request/per-frame functions, recursive calls, code called from other hot code.
+- **Hot**: code whose call context multiplies its executions — functions run per-request, per-item, or per-frame; recursive calls; code called (directly or transitively) from other hot code; loop bodies iterating over input-sized or unbounded data. Hotness is judged by call context (callers, the stated requirement, the data a loop walks), not code shape alone: containing a loop does not by itself make a leaf utility hot.
 - **Cold**: initialization, configuration loading, error paths, CLI argument parsing, test code.
+- **De-minimis**: a single leaf function with no known hot caller and no throughput or latency mention in the requirement is treated as cold until evidence appears.
 
 Apply this catalog at full strength in hot paths. In cold paths, fix only egregious waste (e.g., O(n²) growth); never sacrifice clarity for micro-optimizations in code that runs once.
 

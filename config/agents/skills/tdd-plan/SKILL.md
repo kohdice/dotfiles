@@ -26,15 +26,16 @@ Execute these steps in order when creating a plan.
 ### Step 1: Clarify Requirements
 
 1. Read the user's request to understand the desired feature or change
-2. If the request is ambiguous, ask targeted questions (3–7 items covering scope, tech stack, and non-functional requirements) before proceeding. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `.plans/` directory or any plan / questions file — no filesystem side effects
-3. Identify the scope: new feature, extension of existing feature, bug fix, or refactor
-4. If no testable application behavior can be identified, do not proceed: explain that TDD planning does not apply and stop without filesystem side effects
+2. Apply the ambiguity threshold: the request is ambiguous only if a decision that produces an observable behavior difference is still unsettled after consulting both the request and the codebase. Conventions already encoded in the code — existing function semantics, pinned tests, naming — implicitly resolve otherwise-open points: adopt the interpretation they pin down and record it in the plan's Context section (Step 4). These resolvers transfer at package/module scope: a convention established by sibling APIs settles the same question for new code in that unit unless the request contradicts it. The public API surface (name, signature, ownership/mutation, return shape) counts as observable behavior under this threshold — convention-resolvable when the codebase exhibits a consistent pattern, otherwise one of the questions; internal organization (data structures, algorithms) is never a question topic and belongs to the executing tdd skill's Green/Refactor phases. Reading the code early for this check is expected and does not replace the full Step 2 analysis. This threshold is the canonical definition; the implement skill's step 1 restates it and defers here
+3. If the request is ambiguous under that threshold, ask targeted questions before proceeding — 3–7 items covering only the unsettled points (scope, tech stack, and non-functional requirements insofar as the codebase does not settle them), one question per independent observable-behavior decision, with sub-conditions of the same decision folded into that question rather than split out (two points belong to the same decision when one is meaningless until the other is answered). A low-stakes API-surface element such as the function name may be proposed as a default inside a related question instead of consuming its own item. Each question may cite the codebase evidence showing why the point is unsettled. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `.plans/` directory or any plan / questions file — no filesystem side effects
+4. Identify the scope: new feature, extension of existing feature, bug fix, or refactor
+5. If no testable application behavior can be identified, do not proceed: explain that TDD planning does not apply and stop without filesystem side effects
 
 ### Step 2: Analyze the Codebase
 
 1. Identify the modules, files, and types relevant to the requested change
 2. Read the existing source code to understand current structure and patterns
-3. Read the existing tests to understand testing conventions and coverage
+3. Read the existing tests to understand testing conventions and coverage. Running the existing test suite to confirm the assumed-green baseline is permitted but optional; planning never modifies source or test files
 4. Note any dependencies, interfaces, or constraints that the plan must respect
 
 ### Step 3: Design Test Cases
@@ -87,7 +88,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 ## Context
 
-<Brief description of relevant existing code, modules, and patterns>
+<Brief description of relevant existing code, modules, and patterns, plus any interpretation adopted under the Step 1 ambiguity threshold>
 
 ## Test Cases
 
@@ -102,7 +103,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 ### Plan File Rules
 
 - All test items use `- [ ] Test:` prefix with a clear description
-- A `Test:` description states the scenario (input or situation) and the expected observable outcome — it must not prescribe implementation strategy (data structures, algorithms, internal organization). Design decisions belong to the Green and Refactor phases of the executing tdd skill
+- A `Test:` description states the scenario (input or situation) and the expected observable outcome — it must not prescribe implementation strategy (data structures, algorithms, internal organization). Design decisions belong to the Green and Refactor phases of the executing tdd skill. A convention-following test name inside the description is required naming, not implementation prescription — e.g., `- [ ] Test: TestCountWordsEmpty — empty string yields an empty map`. Likewise a public-API-visible type named there (the returned map) states observable outcome; the ban covers internal data structures and algorithms only
 - All structural-change items use `- [ ] Refactor:` prefix
 - Items are listed in implementation order — each item may depend on previous items being complete
 - Do not mix behavioral and structural changes in a single item

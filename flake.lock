@@ -218,22 +218,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-nixos-render-docs": {
-      "locked": {
-        "lastModified": 1782948114,
-        "narHash": "sha256-AXmz9ho4Lud5CsbrZsuSVwpQZ4o5FgZ1chxBn5cJ8+0=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "9e92285f211dad236540fd617d7e30e0b99bc0e1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "9e92285f211dad236540fd617d7e30e0b99bc0e1",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
@@ -242,7 +226,6 @@
         "nix-homebrew": "nix-homebrew",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-nixos-render-docs": "nixpkgs-nixos-render-docs",
         "treefmt-nix": "treefmt-nix"
       }
     },

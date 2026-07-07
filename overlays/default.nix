@@ -5,7 +5,5 @@
 { inputs }:
 
 [
-  # TODO: Remove this overlay after nix-darwin#1819 or an equivalent fix lands.
-  (import ./nixos-render-docs.nix inputs)
   (import ./llm-agents.nix inputs)
 ]

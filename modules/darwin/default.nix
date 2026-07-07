@@ -3,6 +3,8 @@
 {
   imports = [
     ./homebrew.nix
+    # TODO: Remove this workaround after nix-darwin#1819 or an equivalent fix lands.
+    ./nix-darwin-workarounds.nix
     ./packages.nix
     ./system.nix
   ];

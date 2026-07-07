@@ -9,6 +9,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
+    # TODO: Remove this pin after nix-darwin#1819 or an equivalent fix lands.
+    nixpkgs-nixos-render-docs.url = "github:NixOS/nixpkgs/9e92285f211dad236540fd617d7e30e0b99bc0e1";
+
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";

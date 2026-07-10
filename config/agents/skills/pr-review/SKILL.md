@@ -49,7 +49,7 @@ Do not use when:
    WORKTREE="$(bash "$SKILL_DIR/scripts/pr-worktree.sh" setup "$PR" | tail -n1)"
    ```
 
-3. **Fan out the review**: Dispatch read-only reviewer sub-agents in parallel, one per lens, each pointed at `$WORKTREE` and `$PR`. See `references/review-lenses.md` for the lens catalog (including the per-runtime named agents), the dispatch contract, and the findings schema. Hard constraints on every sub-agent (state them in each dispatch):
+3. **Fan out the review**: Dispatch read-only reviewer sub-agents in parallel, one per lens, each pointed at `$WORKTREE` and `$PR`. See `references/review-lenses.md` for the lens catalog (including named agents), the dispatch contract, and the findings schema. Hard constraints on every sub-agent (state them in each dispatch):
    - **Read-only**: no file edits, no worktree create/remove, no push.
    - **No GitHub writes**: no `gh pr review` / `gh pr comment` / `gh api` writes. Read-only gh (`gh pr diff`, `gh pr view`) is fine.
    - **No CI work**: do not run tests, formatters, linters, or builds.
@@ -93,7 +93,7 @@ Only when CI is known to be failing or absent, tell the user and decide case by 
 
 ### Reference Files
 
-- **`references/review-lenses.md`** — The lens catalog with per-runtime named agents, the read-only sub-agent dispatch contract, the findings schema, and the parent's synthesis/verdict rules.
+- **`references/review-lenses.md`** — The lens catalog with named agents, the read-only sub-agent dispatch contract, the findings schema, and the parent's synthesis/verdict rules.
 - **`references/gh-review-commands.md`** — Concrete `gh` / `gh api` commands for submitting a review with inline comments, the self-approval guardrails, and common error fixes.
 - **`agents/openai.yaml`** — UI metadata for this skill only.
 

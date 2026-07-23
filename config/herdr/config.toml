@@ -14,4 +14,3 @@ auto_switch = false
 
 [ui]
 prompt_new_tab_name = false
-shoe_agent_labels_on_pane_borders = true

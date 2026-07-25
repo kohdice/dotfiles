@@ -1,6 +1,6 @@
 approval_policy = "on-request"
 hide_agent_reasoning = true
-model = "gpt-5.5"
+model = "gpt-5.6-sol"
 # model_context_window = 1000000
 # model_auto_compact_token_limit = 950000
 model_reasoning_effort = "xhigh"
@@ -115,6 +115,7 @@ status_line = [
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
+"gpt-5.6-sol" = 4
 
 [[skills.config]]
 path = "~/.agents/skills/architecture-patterns"

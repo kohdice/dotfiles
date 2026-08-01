@@ -24,7 +24,9 @@ jobs:
           - name: Linux
             os: ubuntu-latest
             system: x86_64-linux
-            # macOS is disabled until marksman builds successfully on aarch64-darwin.
+          - name: macOS
+            os: macos-latest
+            system: aarch64-darwin
     steps:
       - name: Checkout
         uses: actions/checkout@v6

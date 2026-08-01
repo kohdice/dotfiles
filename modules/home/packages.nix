@@ -27,6 +27,7 @@
     devcontainer
     podman
     podman-desktop
+    shellcheck
     typos
 
     # Communication

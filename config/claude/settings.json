@@ -215,6 +215,7 @@
       "git"
     ]
   },
+  "syntaxHighlightingDisabled": false,
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "plansDirectory": "./.plans",

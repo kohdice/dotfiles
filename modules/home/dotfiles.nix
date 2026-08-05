@@ -22,8 +22,8 @@ let
   };
 
   # Enumerate each matching entry under `sourceRelPath` and map it to a
-  # per-entry symlink under `targetDir`, so plugin-installed siblings can
-  # coexist in the same ~/.claude target. Discovery uses the flake source
+  # per-entry symlink under `targetDir`, so locally installed siblings can
+  # coexist in the same target directory. Discovery uses the flake source
   # in the Nix store; the symlink itself still points at the live checkout.
   mkDirEntrySymlinks =
     {
@@ -32,7 +32,8 @@ let
       entryTypes,
     }:
     let
-      entries = builtins.readDir (flakeSource + "/${sourceRelPath}");
+      sourcePath = flakeSource + "/${sourceRelPath}";
+      entries = if builtins.pathExists sourcePath then builtins.readDir sourcePath else { };
       names = builtins.attrNames (lib.filterAttrs (_: type: builtins.elem type entryTypes) entries);
     in
     lib.listToAttrs (
@@ -45,10 +46,36 @@ let
     entryTypes = [ "directory" ];
   };
 
+  # Claude Code only discovers ~/.claude/skills, so shared skills are linked
+  # into both Claude Code and open-agent discovery paths.
+  sharedSkillClaudeSymlinks = mkDirEntrySymlinks {
+    targetDir = ".claude/skills";
+    sourceRelPath = "config/agents/skills";
+    entryTypes = [ "directory" ];
+  };
+
   claudeCommandSymlinks = mkDirEntrySymlinks {
     targetDir = ".claude/commands";
     sourceRelPath = "config/claude/commands";
     entryTypes = [ "regular" ];
+  };
+
+  claudeAgentSymlinks = mkDirEntrySymlinks {
+    targetDir = ".claude/agents";
+    sourceRelPath = "config/claude/agents";
+    entryTypes = [ "regular" ];
+  };
+
+  codexAgentSymlinks = mkDirEntrySymlinks {
+    targetDir = ".codex/agents";
+    sourceRelPath = "config/codex/agents";
+    entryTypes = [ "regular" ];
+  };
+
+  agentsSkillSymlinks = mkDirEntrySymlinks {
+    targetDir = ".agents/skills";
+    sourceRelPath = "config/agents/skills";
+    entryTypes = [ "directory" ];
   };
 
   # home.file symlinks (target -> source path in config/)
@@ -56,15 +83,20 @@ let
     ".claude/CLAUDE.md" = "config/claude/CLAUDE.md";
     ".claude/settings.json" = "config/claude/settings.json";
     ".claude/statusline.sh" = "config/claude/statusline.sh";
-    ".codex/AGENTS.md" = "config/codex/AGENTS.md";
+    ".codex/AGENTS.md" = "config/agents/AGENTS.md";
     ".codex/config.toml" = "config/codex/config.toml";
   }
-  // claudeSkillSymlinks
-  // claudeCommandSymlinks;
+  // sharedSkillClaudeSymlinks
+  // claudeSkillSymlinks # Claude-specific skills win on name collision.
+  // claudeCommandSymlinks
+  // claudeAgentSymlinks
+  // codexAgentSymlinks
+  // agentsSkillSymlinks;
 
   # xdg.configFile symlinks (target -> source path in config/)
   xdgSymlinks = {
     "ghostty" = "config/ghostty";
+    "herdr/config.toml" = "config/herdr/config.toml";
     "nvim" = "config/nvim";
     "starship.toml" = "config/starship/starship.toml";
     "tmux" = "config/tmux";

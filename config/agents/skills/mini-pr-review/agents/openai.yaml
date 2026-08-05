@@ -1,0 +1,6 @@
+interface:
+  display_name: "Mini PR Review"
+  short_description: "Review one GitHub PR without subagents"
+  default_prompt: "Use $mini-pr-review to review a GitHub PR URL or number."
+policy:
+  allow_implicit_invocation: false

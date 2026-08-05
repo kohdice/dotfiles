@@ -27,6 +27,7 @@
     devcontainer
     podman
     podman-desktop
+    shellcheck
     typos
 
     # Communication
@@ -34,8 +35,10 @@
     zoom-us
 
     # AI tools
+    agent-browser
     claude-code
     codex
+    herdr
 
     # Build tools
     gnumake

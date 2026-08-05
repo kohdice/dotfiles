@@ -7,10 +7,7 @@
     bun
     deno
 
-    # TypeScript
-    typescript
-
-    # LSP
+    # TypeScript 7 native compiler and LSP
     typescript-go
 
     # Formatter

@@ -68,6 +68,7 @@ if isDarwin then
             imports = [
               ../modules/home
               userConfig.home
+              inputs.nix-index-database.homeModules.nix-index
             ];
           };
         };

@@ -24,16 +24,14 @@ jobs:
           - name: Linux
             os: ubuntu-latest
             system: x86_64-linux
-          # macOS is disabled until marksman builds successfully on aarch64-darwin.
+          - name: macOS
+            os: macos-latest
+            system: aarch64-darwin
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@c5a866b6ab867e88becbed4467b93592bce69f8a # v21
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
-        with:
-          use-flakehub: false
+        uses: NixOS/nix-installer-action@62c1943b776c509394b550f3f983adc14e9212d6 # v1.0.0
       - name: Check format
         run: nix fmt -- --ci
       - name: Flake check

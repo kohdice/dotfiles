@@ -1,0 +1,16 @@
+onboarding = false
+
+[update]
+channel = "stable"
+version_check = true
+manifest_check = true
+
+# [keys]
+# prefix = "ctrl+g"
+
+[theme]
+name = "solarized"
+auto_switch = false
+
+[ui]
+prompt_new_tab_name = false

@@ -1,6 +1,6 @@
 approval_policy = "on-request"
 hide_agent_reasoning = true
-model = "gpt-5.5"
+model = "gpt-5.6-sol"
 # model_context_window = 1000000
 # model_auto_compact_token_limit = 950000
 model_reasoning_effort = "xhigh"
@@ -16,6 +16,92 @@ skills = true
 max_threads = 6
 max_depth = 2
 
+[agents.architecture-reviewer]
+description = "Read-only architecture reviewer for module boundaries, dependency direction, and ecosystem layout conventions."
+config_file = "./agents/architecture-reviewer.toml"
+nickname_candidates = [
+    "Architecture Review",
+    "Structure Review",
+    "Dependency Review",
+]
+
+[agents.c-idiom-reviewer]
+description = "Read-only C idiom reviewer for target-standard compliance, removed constructs, and official C23 migration guidance."
+config_file = "./agents/c-idiom-reviewer.toml"
+nickname_candidates = ["C Review", "C Idiom Review", "C Migration Review"]
+
+[agents.comment-reviewer]
+description = "Read-only source-comment reviewer for comment value, accuracy, stale prose, and missing why-comments."
+config_file = "./agents/comment-reviewer.toml"
+nickname_candidates = [
+    "Comment Review",
+    "Comment Quality Review",
+    "Docs Review",
+]
+
+[agents.go-idiom-reviewer]
+description = "Read-only Go idiom reviewer for go.mod-gated official style, modern APIs, and deprecated patterns."
+config_file = "./agents/go-idiom-reviewer.toml"
+nickname_candidates = ["Go Review", "Go Idiom Review", "Go Modernize Review"]
+
+[agents.performance-reviewer]
+description = "Read-only performance reviewer for avoidable runtime cost in hot paths across C, Go, Rust, and Zig."
+config_file = "./agents/performance-reviewer.toml"
+nickname_candidates = [
+    "Performance Review",
+    "Runtime Review",
+    "Hot Path Review",
+]
+
+[agents.pr-review-bug-logic-convention]
+description = "Read-only PR reviewer for bugs, logic, edge cases, and repository convention violations."
+config_file = "./agents/pr-review-bug-logic-convention.toml"
+nickname_candidates = ["Logic Review", "Bug Review", "Convention Review"]
+
+[agents.pr-review-error-handling]
+description = "Read-only PR reviewer for swallowed errors, unsafe fallbacks, retries, rollback, and cleanup."
+config_file = "./agents/pr-review-error-handling.toml"
+nickname_candidates = ["Error Review", "Failure Review", "Fallback Review"]
+
+[agents.pr-review-type-design-invariants]
+description = "Read-only PR reviewer for type design, data modeling, invariants, and ownership boundaries."
+config_file = "./agents/pr-review-type-design-invariants.toml"
+nickname_candidates = ["Type Review", "Design Review", "Invariant Review"]
+
+[agents.pr-review-security-data-compatibility]
+description = "Read-only PR reviewer for security, authorization, privacy, data loss, migrations, and compatibility."
+config_file = "./agents/pr-review-security-data-compatibility.toml"
+nickname_candidates = ["Security Review", "Data Review", "Compatibility Review"]
+
+[agents.pr-review-test-coverage]
+description = "Read-only PR reviewer for missing or weak tests and assertions around behavior changes."
+config_file = "./agents/pr-review-test-coverage.toml"
+nickname_candidates = ["Test Review", "Coverage Review", "Assertion Review"]
+
+[agents.pr-review-comment-accuracy]
+description = "Read-only PR reviewer for stale, misleading, or inaccurate comments, docs, names, and examples."
+config_file = "./agents/pr-review-comment-accuracy.toml"
+nickname_candidates = ["Comment Review", "Docs Review", "Accuracy Review"]
+
+[agents.rust-idiom-reviewer]
+description = "Read-only Rust idiom reviewer for edition/MSRV-gated official style, modern APIs, and deprecated patterns."
+config_file = "./agents/rust-idiom-reviewer.toml"
+nickname_candidates = [
+    "Rust Review",
+    "Rust Idiom Review",
+    "Rust Modernize Review",
+]
+
+[agents.simplicity-reviewer]
+description = "Read-only simplicity reviewer for needless wrappers, speculative abstractions, and structural clutter."
+config_file = "./agents/simplicity-reviewer.toml"
+nickname_candidates = ["Simplicity Review", "YAGNI Review", "Clutter Review"]
+
+[agents.zig-idiom-reviewer]
+description = "Read-only Zig idiom reviewer for minimum_zig_version-gated official style, std.Io migration, and removed APIs."
+config_file = "./agents/zig-idiom-reviewer.toml"
+nickname_candidates = ["Zig Review", "Zig Idiom Review", "Zig Migration Review"]
+
 [tui]
 theme = "solarized-dark"
 status_line = [
@@ -29,9 +115,70 @@ status_line = [
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
+"gpt-5.6-sol" = 4
+
+[[skills.config]]
+path = "~/.agents/skills/architecture-patterns"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/c-idioms"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/comment-patterns"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/empirical-prompt-tuning"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/extract-glossary"
+enabled = true
 
 [[skills.config]]
 path = "~/.agents/skills/git-commit"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/go-idioms"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/implement"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/implement-review-loop"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/local-review"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/mini-pr-review"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/nvim-config-review"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/performance-patterns"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/pr-review"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/rust-idioms"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/simplicity-patterns"
 enabled = true
 
 [[skills.config]]
@@ -40,6 +187,10 @@ enabled = true
 
 [[skills.config]]
 path = "~/.agents/skills/tdd-plan"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/zig-idioms"
 enabled = true
 
 [mcp_servers.context7]

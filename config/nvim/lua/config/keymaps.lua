@@ -1,19 +1,23 @@
 local keymap = vim.keymap
 local filepath = require("utils.filepath")
 
+-- Kept one level down under <Leader>m* instead of directly under <Leader>:
+-- <Leader>c was both a complete mapping and the prefix of <leader>cf/cs/cS/ch,
+-- so it shadowed those motions and cost a 'timeoutlen' wait. <Leader>m* is
+-- otherwise used only by marp (mw/ms/me/mt), which does not collide here.
 local register_safe_mappings = {
   { "n", "x", '"_x', { desc = "Delete without copying", silent = true } },
-  { "n", "<Leader>p", '"0p', { desc = "Paste from yank register", silent = true } },
-  { "n", "<Leader>P", '"0P', { desc = "Paste before from yank register", silent = true } },
-  { "v", "<Leader>p", '"0p', { desc = "Paste from yank register (visual)", silent = true } },
-  { "n", "<Leader>c", '"_c', { desc = "Change without copying", silent = true } },
-  { "n", "<Leader>C", '"_C', { desc = "Change to end without copying", silent = true } },
-  { "v", "<Leader>c", '"_c', { desc = "Change without copying (visual)", silent = true } },
-  { "v", "<Leader>C", '"_C', { desc = "Change to end without copying (visual)", silent = true } },
-  { "n", "<Leader>d", '"_d', { desc = "Delete without copying", silent = true } },
-  { "n", "<Leader>D", '"_D', { desc = "Delete to end without copying", silent = true } },
-  { "v", "<Leader>d", '"_d', { desc = "Delete without copying (visual)", silent = true } },
-  { "v", "<Leader>D", '"_D', { desc = "Delete to end without copying (visual)", silent = true } },
+  { "n", "<Leader>mp", '"0p', { desc = "Paste from yank register", silent = true } },
+  { "n", "<Leader>mP", '"0P', { desc = "Paste before from yank register", silent = true } },
+  { "v", "<Leader>mp", '"0p', { desc = "Paste from yank register (visual)", silent = true } },
+  { "n", "<Leader>mc", '"_c', { desc = "Change without copying", silent = true } },
+  { "n", "<Leader>mC", '"_C', { desc = "Change to end without copying", silent = true } },
+  { "v", "<Leader>mc", '"_c', { desc = "Change without copying (visual)", silent = true } },
+  { "v", "<Leader>mC", '"_C', { desc = "Change to end without copying (visual)", silent = true } },
+  { "n", "<Leader>md", '"_d', { desc = "Delete without copying", silent = true } },
+  { "n", "<Leader>mD", '"_D', { desc = "Delete to end without copying", silent = true } },
+  { "v", "<Leader>md", '"_d', { desc = "Delete without copying (visual)", silent = true } },
+  { "v", "<Leader>mD", '"_D', { desc = "Delete to end without copying (visual)", silent = true } },
 }
 
 for _, mapping in ipairs(register_safe_mappings) do
@@ -67,7 +71,7 @@ keymap.set("v", "<A-j>", ":move '>+1<CR>gv=gv", { desc = "Move selection down", 
 keymap.set("v", "<A-k>", ":move '<-2<CR>gv=gv", { desc = "Move selection up", silent = true })
 
 keymap.set({ "i", "n", "s" }, "<Esc>", function()
-  vim.cmd("nohlsearch")
+  vim.cmd.nohlsearch()
   return vim.api.nvim_replace_termcodes("<Esc>", true, false, true)
 end, { desc = "Escape and Clear hlsearch", expr = true, silent = true })
 

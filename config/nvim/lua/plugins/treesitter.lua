@@ -45,43 +45,31 @@ return {
       }
       require("nvim-treesitter").install(ensure)
 
-      -- Enable highlighting via built-in API with large file guard
+      -- Scratch-like buffers never hold source worth parsing. Deny-list rather
+      -- than allow-list: diffview gives its revision buffers buftype=nowrite,
+      -- and those must highlight like the file they are diffed against
+      local skip_buftypes = {
+        nofile = true,
+        prompt = true,
+        quickfix = true,
+        terminal = true,
+      }
+
+      -- Enable highlighting via the built-in API. The parser/large-file guard
+      -- is shared with after/indent/<ft>.lua so both make the same decision
       vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("my-treesitter", { clear = true }),
+        desc = "Start treesitter highlighting",
         callback = function(args)
           local buf = args.buf
-          local max_filesize = 100 * 1024
-          local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
-          if ok and stats and stats.size > max_filesize then
+          if skip_buftypes[vim.bo[buf].buftype] then
             return
           end
-          pcall(vim.treesitter.start, buf)
-        end,
-      })
-
-      -- Enable treesitter-based indentation only for filetypes with solid
-      -- indent queries; others keep their well-tested ftplugin indent
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = {
-          "c",
-          "cmake",
-          "css",
-          "go",
-          "gomod",
-          "graphql",
-          "hcl",
-          "html",
-          "javascript",
-          "javascriptreact",
-          "json",
-          "lua",
-          "rust",
-          "terraform",
-          "typescript",
-          "typescriptreact",
-          "zig",
-        },
-        callback = function()
-          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          local lang = require("utils.treesitter").usable_lang(buf)
+          if not lang then
+            return
+          end
+          pcall(vim.treesitter.start, buf, lang)
         end,
       })
     end,
@@ -91,6 +79,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
     branch = "main",
+    event = { "BufReadPost", "BufNewFile" },
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     config = function()
       require("nvim-treesitter-textobjects").setup({
@@ -135,6 +124,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter-context",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
+    event = { "BufReadPost", "BufNewFile" },
     opts = {},
   },
 

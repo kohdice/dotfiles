@@ -49,12 +49,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
       nmap("<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", "Switch Source/Header (C/C++)")
     end
 
-    if client:supports_method("textDocument/inlayHint") then
+    -- bufnr is required, not optional: for a capability the server registered
+    -- dynamically, supports_method() consults the registration for that buffer
+    -- and falls back to the *current* buffer when it is omitted. LspAttach also
+    -- fires for background buffers (:badd, quickfix loads), where the current
+    -- buffer is a different one entirely
+    if client:supports_method("textDocument/inlayHint", bufnr) then
       vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
     end
 
     -- Document highlighting (cleaned up by the LspDetach autocmd below)
-    if client:supports_method("textDocument/documentHighlight") then
+    if client:supports_method("textDocument/documentHighlight", bufnr) then
       -- The callback runs once per attaching client; clear per buffer so a
       -- second capable client does not stack duplicate autocmds
       vim.api.nvim_clear_autocmds({ group = highlight_group, buffer = bufnr })
@@ -90,7 +95,7 @@ vim.api.nvim_create_autocmd("LspDetach", {
     -- attached_buffers only after this event), so skip it explicitly: another
     -- capable client may still need the highlight autocmds
     for _, client in ipairs(vim.lsp.get_clients({ bufnr = args.buf })) do
-      if client.id ~= args.data.client_id and client:supports_method("textDocument/documentHighlight") then
+      if client.id ~= args.data.client_id and client:supports_method("textDocument/documentHighlight", args.buf) then
         return
       end
     end

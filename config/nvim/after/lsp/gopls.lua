@@ -1,7 +1,10 @@
 return {
   settings = {
     gopls = {
-      gofumpt = true,
+      -- gofumpt is deliberately not enabled: saving goes through conform
+      -- (go = { "goimports", "gofmt" }), never gopls' formatting, so enabling
+      -- it here would only make gopls-originated edits (organizeImports and
+      -- friends) gofumpt-styled and mix two styles inside one file
       codelenses = {
         gc_details = false,
         test = true,

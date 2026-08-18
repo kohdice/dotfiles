@@ -61,16 +61,3 @@ vim.opt.smoothscroll = true -- Enable smooth scrolling
 
 -- Floating Window Borders (Neovim 0.11+)
 vim.o.winborder = "rounded" -- Add rounded borders to all floating windows
-
--- Diagnostic Display
-vim.diagnostic.config({
-  virtual_text = {
-    source = "if_many",
-    prefix = "●",
-  },
-  float = {
-    source = "if_many",
-    border = "rounded",
-  },
-  severity_sort = true,
-})

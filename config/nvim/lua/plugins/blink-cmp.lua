@@ -2,6 +2,10 @@ return {
   "saghen/blink.cmp",
   -- Use a release tag to download prebuilt fuzzy matcher binaries
   version = "1.*",
+  -- Must be start-loaded: blink's bundled plugin/blink-cmp.lua registers its
+  -- completion capabilities into vim.lsp.config("*"), which has to happen
+  -- before config/lsp.lua enables the servers
+  lazy = false,
   dependencies = {
     "rafamadriz/friendly-snippets",
     "folke/lazydev.nvim",

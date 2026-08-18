@@ -1,3 +1,7 @@
+-- This config targets Neovim 0.12+; individual options are not annotated with
+-- the release that introduced them (lua/config/lsp.lua relies on vim.keymap.set's
+-- 0.12-only "buf" option, so nothing here works on an older version anyway).
+
 -- General Settings
 vim.g.mapleader = " " -- Set leader key to space
 vim.opt.number = true -- Enable line numbers
@@ -16,7 +20,7 @@ vim.opt.ignorecase = true -- Case-insensitive searching unless capital letter is
 vim.opt.smartcase = true -- Override ignorecase when search contains uppercase letters
 
 -- Interface Settings
-vim.opt.cmdheight = 0 -- Hide command line when not in use (Neovim 0.8+ required)
+vim.opt.cmdheight = 0 -- Hide command line when not in use
 vim.opt.laststatus = 3 -- Use a global statusline
 vim.opt.scrolloff = 10 -- Keep 10 lines above/below cursor when scrolling
 vim.opt.wrap = false -- Disable line wrapping
@@ -59,5 +63,5 @@ vim.opt.virtualedit = "block" -- Allow cursor to move past end of line in visual
 vim.opt.wildmode = "longest:full,full" -- Configure command-line completion behavior
 vim.opt.smoothscroll = true -- Enable smooth scrolling
 
--- Floating Window Borders (Neovim 0.11+)
+-- Floating Window Borders
 vim.o.winborder = "rounded" -- Add rounded borders to all floating windows

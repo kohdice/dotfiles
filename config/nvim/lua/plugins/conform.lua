@@ -7,7 +7,10 @@ return {
       {
         "<leader>cf",
         function()
-          require("conform").format({ async = true, lsp_format = "fallback" })
+          -- lsp_format is deliberately not passed here: caller opts are kept
+          -- as-is by conform, which would override every per-filetype
+          -- lsp_format. It lives in default_format_opts instead.
+          require("conform").format({ async = true })
         end,
         mode = { "n", "v" },
         desc = "[C]ode [F]ormat with conform.nvim",
@@ -46,10 +49,21 @@ return {
           toml = { "taplo" },
           yaml = { "yamlfmt" },
           zig = { "zigfmt" },
-          ["_"] = { "trim_newlines" },
+          -- Catch-all for filetypes with no entry above. "fallback" would
+          -- never fire for them: trim_newlines needs no external command, so
+          -- conform always counts a formatter as available. "prefer" hands
+          -- them to the LSP when one supports formatting (js/ts via tsgo, ...)
+          -- and falls back to trim_newlines when none does.
+          ["_"] = { "trim_newlines", lsp_format = "prefer" },
+        },
+        -- Merged after the per-filetype opts above, which therefore win.
+        -- Passing lsp_format from the caller (format_on_save or the keymap)
+        -- instead would take precedence over every filetype entry, because
+        -- conform only fills in opts the caller left unset.
+        default_format_opts = {
+          lsp_format = "fallback",
         },
         format_on_save = {
-          lsp_format = "fallback",
           timeout_ms = 500,
         },
         log_level = vim.log.levels.ERROR,

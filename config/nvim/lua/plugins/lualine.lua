@@ -53,7 +53,6 @@ return {
       lualine_y = {},
       lualine_z = {},
     }
-    opts.extensions = { "fugitive" }
     return opts
   end,
 }

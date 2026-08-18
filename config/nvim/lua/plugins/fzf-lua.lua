@@ -28,7 +28,9 @@ return {
   opts = {
     files = {
       git_icons = true,
-      find_opts = [[-type f -not -path '*/\.git/*' -printf '%P\n']],
+      -- Last-resort provider (fd -> rg -> find), so keep it POSIX: -printf is a
+      -- GNU extension that makes BSD find on macOS fail outright
+      find_opts = [[-type f \! -path '*/.git/*']],
       rg_opts = "--color=never --files --hidden --follow -g '!.git'",
       fd_opts = "--color=never --type f --hidden --follow --exclude .git",
     },

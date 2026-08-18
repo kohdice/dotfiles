@@ -35,7 +35,6 @@ return {
         end
       end, "Previous git hunk")
 
-      -- Actions
       map("n", "<leader>hs", gitsigns.stage_hunk, "Stage hunk")
       map("n", "<leader>hr", gitsigns.reset_hunk, "Reset hunk")
 
@@ -67,11 +66,9 @@ return {
       end, "Quickfix all hunks")
       map("n", "<leader>hq", gitsigns.setqflist, "Quickfix buffer hunks")
 
-      -- Toggles
       map("n", "<leader>tb", gitsigns.toggle_current_line_blame, "Toggle blame line")
       map("n", "<leader>tw", gitsigns.toggle_word_diff, "Toggle word diff")
 
-      -- Text object
       map({ "o", "x" }, "ih", gitsigns.select_hunk, "Select hunk")
     end,
   },

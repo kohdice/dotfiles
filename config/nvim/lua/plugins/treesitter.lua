@@ -1,12 +1,12 @@
 return {
-  -- Parser management, highlighting, and indentation
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
     lazy = false,
     build = ":TSUpdate",
     config = function()
-      -- Programmatic parser installation (replaces ensure_installed)
+      -- The main branch rewrite dropped the ensure_installed option;
+      -- install() is the supported way to declare parsers
       local ensure = {
         "bash",
         "c",
@@ -63,7 +63,6 @@ return {
     end,
   },
 
-  -- Textobjects
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
     branch = "main",
@@ -114,7 +113,6 @@ return {
     end,
   },
 
-  -- Context display
   {
     "nvim-treesitter/nvim-treesitter-context",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -122,7 +120,6 @@ return {
     opts = {},
   },
 
-  -- Auto close/rename HTML tags
   {
     "windwp/nvim-ts-autotag",
     event = { "BufReadPre", "BufNewFile" },

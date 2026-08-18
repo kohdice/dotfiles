@@ -44,7 +44,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     nmap("gK", vim.lsp.buf.signature_help, "Signature Documentation")
 
-    -- C/C++ specific keymaps
     if client.name == "clangd" then
       nmap("<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", "Switch Source/Header (C/C++)")
     end
@@ -105,7 +104,6 @@ vim.api.nvim_create_autocmd("LspDetach", {
   desc = "LSP: clean up document-highlight autocmds",
 })
 
--- Enable servers
 local servers = {
   "clangd",
   "cssls",

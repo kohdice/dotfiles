@@ -1,9 +1,9 @@
 ---
 name: go-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing Go code — implementing features in .go files, "Go で実装して", "この Go コードを直して", or auditing Go for idiom modernization. It defines the mandatory procedure for resolving the project's go directive from go.mod, plus a version-tagged catalog of modern idioms and std APIs (Go 1.18–1.26), deprecated APIs, and std-absorbed dependencies, so that generated code and review recommendations never exceed the project's declared Go version.
+description: This skill should be used when writing, modifying, refactoring, or reviewing Go code — implementing features in .go files, "Go で実装して", "この Go コードを直して", or auditing Go for idiom modernization. It defines the mandatory procedure for resolving the project's go directive from go.mod, plus a version-tagged catalog of modern idioms and std APIs (Go 1.18 through the stated catalog coverage version), deprecated APIs, and std-absorbed dependencies, so that generated code and review recommendations never exceed the project's declared Go version.
 ---
 
-# Go Idioms (go-directive-aware, up to Go 1.26)
+# Go Idioms (go-directive-aware, up to the stated catalog coverage version)
 
 Authority sources: the Go release notes (go.dev/doc/go1.NN), the Go blog (go.dev/blog), Effective Go, the Go Doc Comments guide (go.dev/doc/comment), the Go wiki Code Review Comments, gofmt, and the official `go vet` / `go fix` analyzers. Do not invent recommendations: every idiom below traces to one of these sources.
 
@@ -36,7 +36,7 @@ Where to surface these decisions (fixed, not left to judgment):
 
 Verification sources, in order of authority:
 
-1. Release notes: https://go.dev/doc/go1.26 (and go1.NN for older versions — exact introduction versions)
+1. Release notes: https://go.dev/doc/go1.NN — substitute the version in question, starting from the coverage version (exact introduction versions)
 2. API deprecations: https://pkg.go.dev/ (Deprecated: markers in package docs)
 3. Announcements: https://go.dev/blog/ (context for changes)
 
@@ -48,6 +48,7 @@ When asked to update this skill after a new stable release:
 2. Add newly introduced idioms to the catalog with their introducing version; add newly std-absorbed dependencies; add newly deprecated APIs.
 3. Remove nothing that older `go` directives may still need — the catalog is version-tagged precisely so old and new baselines coexist.
 4. Bump the coverage version at the top of "Catalog coverage and verification".
+5. **Floor raise** (only when both hold: SKILL.md is approaching ~300 lines, AND the floor-end entries were introduced at versions that virtually no maintained module still declares in its `go` directive): raise the catalog floor instead of deleting. Move entries introduced below the new floor — version tags intact — to `references/archive.md`, bump the floor version wherever it is stated in this file, and amend the unlisted-API verification rule so the archive is consulted for below-floor introduction versions before fetching release notes. This keeps rule 3 satisfied: nothing is removed from the skill's knowledge, only demoted out of the always-loaded window.
 
 ## Dependencies absorbed by std
 
@@ -57,7 +58,7 @@ Flag these dependencies when the `go` directive allows the std replacement:
 - `github.com/pkg/errors` → `fmt.Errorf` with `%w`, `errors.Is/As/Join` (1.13/1.20)
 - Simple third-party routers → `net/http.ServeMux` method + wildcard patterns (1.22), when only basic routing is used
 
-## Modern idiom catalog (Go 1.18 → 1.26)
+## Modern idiom catalog (Go 1.18 → catalog coverage version)
 
 Prefer these over older equivalents, subject to the version rules above. Entries conditioned on intent ("where X matters", "for X needs") are questions to the author in review — flag them as review-and-decide items, not definite findings — and in generated code apply them only when the intent is stated or observable:
 

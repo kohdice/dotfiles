@@ -1,6 +1,6 @@
 ---
 name: rust-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing Rust code — implementing features in .rs files, "Rust で実装して", "この Rust コードを直して", or auditing Rust for modernization. It defines the mandatory procedure for resolving the project's edition and MSRV from Cargo.toml, plus a version-tagged catalog of modern idioms (Rust 1.65–1.95, 2024 Edition), so that generated code and review recommendations never exceed the project's declared rust-version or edition.
+description: This skill should be used when writing, modifying, refactoring, or reviewing Rust code — implementing features in .rs files, "Rust で実装して", "この Rust コードを直して", or auditing Rust for modernization. It defines the mandatory procedure for resolving the project's edition and MSRV from Cargo.toml, plus a version-tagged catalog of modern idioms (Rust 1.65–1.97, 2024 Edition), so that generated code and review recommendations never exceed the project's declared rust-version or edition.
 ---
 
 # Rust Idioms (edition- and MSRV-aware)
@@ -24,7 +24,7 @@ Hard rules derived from the baseline:
 
 ## Catalog coverage and verification
 
-**Catalog coverage version: Rust 1.95.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
+**Catalog coverage version: Rust 1.97.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
 
 - **Staleness guard**: the resolved MSRV or installed toolchain (`rustc --version`) is newer than the coverage version above. (In a read-only review or when the toolchain cannot be invoked, judge staleness on the resolved MSRV alone — do not block on `rustc --version`.) The catalog is out of date for this project. Do both: (a) check the release notes for everything stabilized between the coverage version and the actual version, and follow those newer official recommendations now; (b) tell the user this skill's catalog needs updating to the new version (see Maintenance below).
 - A feature or its stabilizing version is **not listed here** AND is **boundary-relevant** — plausibly stabilized at or after the catalog floor (1.65) or near the resolved MSRV: never trust memory for stabilization versions; verify before gating on it. Long-established std APIs that clearly predate the catalog floor (e.g. `map_or`, `min`, `parse`, `checked_*`) need no verification.
@@ -68,6 +68,7 @@ Flag these dependencies (severity: `[recommend]` when the replacement is within 
 - `lazy_static` / `once_cell` → `std::sync::OnceLock` (1.70; not drop-in — initialization moves to `get_or_init` at the access site) / `std::sync::LazyLock` (1.80; drop-in for `Lazy`). State the migration cost in the finding.
 - `cfg-if` → `cfg_select!` macro (1.95); within-baseline fallback: keep `cfg-if`, or expand to plain `#[cfg]` attributes
 - `async-trait` → native `async fn` in traits where dyn-compatibility is not required (1.75)
+- `assert_matches` crate → std `assert_matches!` / `debug_assert_matches!` (1.96)
 
 ## 2024 Edition semantics
 
@@ -80,7 +81,7 @@ These apply only when `edition = "2024"`:
 - **Temporary lifetimes**: `if let` and tail-expression temporary scopes changed — do not write code relying on old drop timing (e.g. lock guards in `if let` conditions).
 - **Prelude**: `Future` and `IntoFuture` are in the prelude — do not import them redundantly.
 
-## Modern idiom catalog (Rust 1.65 → 1.95)
+## Modern idiom catalog (Rust 1.65 → 1.97)
 
 Prefer these over older equivalents, subject to the MSRV/edition rules above:
 
@@ -95,6 +96,9 @@ Prefer these over older equivalents, subject to the MSRV/edition rules above:
 - `cfg_select!` instead of `cfg-if` or long `#[cfg]` if-else towers (1.95)
 - `Vec::push_mut` / `insert_mut` when code pushes then immediately re-borrows via `last_mut().unwrap()` (1.95)
 - Atomic `update` / `try_update` instead of manual `compare_exchange` loops for simple read-modify-write (1.95)
+- `assert_matches!` / `debug_assert_matches!` instead of `assert!(matches!(...))` when asserting on a pattern (1.96)
+- `core::range` Copy-able range types (`Range`, `RangeFrom`, `RangeInclusive`, `RangeToInclusive`) when storing a range in a `Copy` type, instead of splitting into separate start/end fields (1.96); note: range syntax (`a..b`) still produces the legacy `core::ops` types, so conversion is explicit — do not flag ordinary use of `core::ops` ranges
+- Integer bit-query methods `bit_width`, `highest_one`, `lowest_one`, `isolate_highest_one`, `isolate_lowest_one` (also on `NonZero`) instead of manual `leading_zeros`/`trailing_zeros` arithmetic (1.97)
 - Do NOT use `core::hint::cold_path` or other perf hints unless profiling-driven intent is already evident
 
 ## Official style and API guidelines

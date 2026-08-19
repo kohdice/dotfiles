@@ -1,7 +1,3 @@
--- This config targets Neovim 0.12+; individual options are not annotated with
--- the release that introduced them (lua/config/lsp.lua relies on vim.keymap.set's
--- 0.12-only "buf" option, so nothing here works on an older version anyway).
-
 vim.g.mapleader = " "
 vim.opt.number = true
 vim.opt.relativenumber = true

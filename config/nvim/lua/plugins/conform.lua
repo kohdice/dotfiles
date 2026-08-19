@@ -7,9 +7,8 @@ return {
       {
         "<leader>cf",
         function()
-          -- lsp_format is deliberately not passed here: caller opts are kept
-          -- as-is by conform, which would override every per-filetype
-          -- lsp_format. It lives in default_format_opts instead.
+          -- No lsp_format here: caller opts would override every per-filetype
+          -- one. See default_format_opts below.
           require("conform").format({ async = true })
         end,
         mode = { "n", "v" },
@@ -49,17 +48,12 @@ return {
           toml = { "taplo" },
           yaml = { "yamlfmt" },
           zig = { "zigfmt" },
-          -- Catch-all for filetypes with no entry above. "fallback" would
-          -- never fire for them: trim_newlines needs no external command, so
-          -- conform always counts a formatter as available. "prefer" hands
-          -- them to the LSP when one supports formatting (js/ts via tsgo, ...)
-          -- and falls back to trim_newlines when none does.
+          -- Catch-all. "prefer" over "fallback": trim_newlines always counts as
+          -- available, so "fallback" would never reach the LSP (js/ts via tsgo).
           ["_"] = { "trim_newlines", lsp_format = "prefer" },
         },
-        -- Merged after the per-filetype opts above, which therefore win.
-        -- Passing lsp_format from the caller (format_on_save or the keymap)
-        -- instead would take precedence over every filetype entry, because
-        -- conform only fills in opts the caller left unset.
+        -- Here rather than at the call sites: caller opts outrank the
+        -- per-filetype lsp_format above, these do not.
         default_format_opts = {
           lsp_format = "fallback",
         },

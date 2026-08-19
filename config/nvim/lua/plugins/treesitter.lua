@@ -81,9 +81,8 @@ return {
       end
 
       -- ]c/[c shadow the built-in diff-mode jump-to-change, so fall back to it
-      -- in diff windows. Normal mode only, like the gitsigns ]h/[h maps:
-      -- vim.cmd.normal() runs a self-contained command, so it cannot feed the
-      -- motion to a pending operator or extend the visual selection
+      -- in diff windows. Normal mode only: vim.cmd.normal() cannot feed a
+      -- pending operator or extend a selection
       local class_map = function(lhs, fn, desc)
         vim.keymap.set("n", lhs, function()
           if vim.wo.diff then

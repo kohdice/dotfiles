@@ -1,10 +1,7 @@
 local keymap = vim.keymap
 local filepath = require("utils.filepath")
 
--- Kept one level down under <Leader>m* instead of directly under <Leader>:
--- <Leader>c was both a complete mapping and the prefix of <leader>cf/cs/cS/ch,
--- so it shadowed those motions and cost a 'timeoutlen' wait. <Leader>m* is
--- otherwise used only by marp (mw/ms/me/mt), which does not collide here.
+-- <Leader>c* is taken (conform, trouble, lsp), so these live under <Leader>m*.
 local register_safe_mappings = {
   { "n", "x", '"_x', { desc = "Delete without copying", silent = true } },
   { "n", "<Leader>mp", '"0p', { desc = "Paste from yank register", silent = true } },

@@ -26,10 +26,8 @@ return {
     },
     { "<leader>st", "<cmd>TodoFzfLua<cr>", desc = "Todo" },
     {
-      -- Not :TodoFzfLua keywords=... — plugin/todo.vim defines the command as
-      -- `lua require("todo-comments.fzf").todo() <args>`, appending <args>
-      -- outside the call parentheses. The filter then parses as a separate
-      -- global assignment, no error is raised, and todo() still receives nil
+      -- Not :TodoFzfLua keywords=... — the command appends <args> outside the
+      -- call parentheses, so the filter is silently dropped instead of erroring
       "<leader>sT",
       function()
         require("todo-comments.fzf").todo({ keywords = { "TODO", "FIX", "FIXME" } })

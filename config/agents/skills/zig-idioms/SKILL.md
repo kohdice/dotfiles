@@ -1,11 +1,11 @@
 ---
 name: zig-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing Zig code — implementing features in .zig files, "Zig で実装して", "この Zig コードを直して", or auditing Zig for 0.16.0 migration. It defines the mandatory procedure for resolving the project's minimum_zig_version from build.zig.zon, plus a version-tagged catalog of the std.Io interface migration, removed language features and std APIs (0.15.x–0.16.0), build system conventions, and the official style guide, so that generated code and review recommendations never exceed the project's declared Zig version.
+description: This skill should be used when writing, modifying, refactoring, or reviewing Zig code — implementing features in .zig files, "Zig で実装して", "この Zig コードを直して", or auditing Zig for migration to a newer version. It defines the mandatory procedure for resolving the project's minimum_zig_version from build.zig.zon, plus a version-tagged catalog of the std.Io interface migration, removed language features and std APIs (0.15.x through the stated catalog coverage version), build system conventions, and the official style guide, so that generated code and review recommendations never exceed the project's declared Zig version.
 ---
 
-# Zig Idioms (version-aware, up to Zig 0.16.0)
+# Zig Idioms (version-aware, up to the stated catalog coverage version)
 
-Authority sources: the official release notes (ziglang.org/download/0.16.0/release-notes.html and 0.15.1), the Zig Language Reference, the std library documentation, the Zig Style Guide, and `zig fmt` defaults. Do not invent recommendations: every idiom below traces to one of these sources. Zig 0.16.0 was released 2026-04-13; its headline change is "I/O as an Interface" (`std.Io`).
+Authority sources: the official release notes for the covered versions (ziglang.org/download/<version>/release-notes.html), the Zig Language Reference, the std library documentation, the Zig Style Guide, and `zig fmt` defaults. Do not invent recommendations: every idiom below traces to one of these sources. Zig 0.16.0 was released 2026-04-13; its headline change is "I/O as an Interface" (`std.Io`).
 
 ## Step 0: Resolve the project baseline (ALWAYS first)
 
@@ -20,7 +20,7 @@ Hard rules derived from the baseline:
 
 - **Never use an API or language feature introduced strictly after the project's minimum_zig_version** (one introduced exactly at the minimum version is allowed). When an item below is desirable but version-gated, present it as an option labeled with the required Zig version — do not silently use it. When writing code, record the gated option as a brief source comment at the affected line and mention it, with the required version, in the summary to the user.
 - Unlike editioned languages, Zig removes APIs: when the installed compiler is newer than the declared minimum, code must stay within the intersection of the two — no APIs introduced after the declared minimum, and no APIs removed at or before the installed version. If a construct cannot satisfy both ends of the range, surface the conflict to the user (with the version that breaks each side) instead of silently picking one end. When no user answer is available (non-interactive run), surface the conflict in the deliverable, then proceed with the side the installed toolchain can verify — keeping the change reversible (reasoned comment on any `minimum_zig_version` edit) and stating in the summary how to undo it.
-- If the project targets a version older than 0.16.0, 0.16-only items are migration options (`[gated-option]`), not violations; removed-API findings still apply relative to the targeted version.
+- If the project targets a version older than the catalog coverage version, items introduced at newer versions are migration options (`[gated-option]`), not violations; removed-API findings still apply relative to the targeted version.
 - When recommending a change in review, always cite the Zig version that removed, deprecated, or introduced the API so it can be checked against `minimum_zig_version`.
 
 ## Catalog coverage and verification
@@ -34,8 +34,8 @@ Hard rules derived from the baseline:
 Verification sources, in order of preference:
 
 1. **Installed std sources (local, prefer this)**: run `zig env` to find `std_dir` (the output is ZON, not JSON — read the raw output rather than assuming a format), then Read/Grep there to confirm whether an API exists and what its current signature is
-2. Release notes: https://ziglang.org/download/0.16.0/release-notes.html and https://ziglang.org/download/0.15.1/release-notes.html (exact removal/introduction versions and official migration guidance)
-3. Zig Language Reference: https://ziglang.org/documentation/0.16.0/ (language rules)
+2. Release notes: https://ziglang.org/download/<version>/release-notes.html — one page per covered version, substituting the coverage version and, for older removals, the removing version (exact removal/introduction versions and official migration guidance)
+3. Zig Language Reference: https://ziglang.org/documentation/<version>/ — substitute the coverage version (language rules)
 
 **Verification fallback**: if a source is unreachable or a tool cannot be run for any reason (offline, sandboxed, restricted), try at most one alternate route, then stop and degrade: prefer a construct whose version is already catalog-listed; if none fits, state the recommendation with an explicit "unverified" label and the assumed Zig version. Never let unreachable sources block the deliverable or trigger repeated fetch attempts.
 
@@ -171,3 +171,4 @@ When asked to update this skill after a new Zig release:
    Every entry must carry an entry-level version tag and a state classifier (removed@version / deprecated-alias-remains); a section-level range is not a substitute — the review contract's citation rule depends on this.
 3. Remove nothing that older baselines may still need — the catalog is version-tagged precisely so old and new baselines coexist.
 4. Bump the coverage version at the top of "Catalog coverage and verification".
+5. **Floor raise** (only when both hold: SKILL.md is approaching ~300 lines, AND the floor-end entries target versions that virtually no maintained project still declares as `minimum_zig_version`): raise the catalog floor instead of deleting. Move entries whose state classifier predates the new floor — version tags and classifiers intact — to `references/archive.md`, bump the floor version wherever it is stated in this file, and amend the boundary-verification rule so the archive is consulted for below-floor API history before descending into std sources or release notes. This keeps rule 3 satisfied: nothing is removed from the skill's knowledge, only demoted out of the always-loaded window.

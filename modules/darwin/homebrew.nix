@@ -13,6 +13,11 @@
       upgrade = false;
     };
 
+    # Command-line applications (Formulae)
+    brews = [
+      "container"
+    ];
+
     # GUI applications (Cask)
     casks = [
       "azookey"

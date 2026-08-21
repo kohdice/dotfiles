@@ -34,7 +34,7 @@
     };
 
     signing = {
-      key = "~/.ssh/id_ed25519.pub";
+      key = "~/.ssh/id_ed25519_git_signing.pub";
       signByDefault = true;
       format = "ssh";
     };

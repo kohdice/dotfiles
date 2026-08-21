@@ -21,10 +21,7 @@
     # GUI applications (Cask)
     casks = [
       "azookey"
-      "chatgpt"
-      "claude"
       "coteditor"
-      "devtoys"
       "ghostty"
       "google-chrome"
       "karabiner-elements"

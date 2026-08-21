@@ -98,7 +98,6 @@ let
     "ghostty" = "config/ghostty";
     "herdr/config.toml" = "config/herdr/config.toml";
     "nvim" = "config/nvim";
-    "starship.toml" = "config/starship/starship.toml";
     "tmux" = "config/tmux";
     "lazygit" = "config/lazygit";
     "zsh-abbr/user-abbreviations" = "config/zsh-abbr/user-abbreviations";

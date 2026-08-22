@@ -205,8 +205,8 @@
         "/boot"
       ],
       "allowRead": [
-        "~/.ssh/id_ed25519",
-        "~/.ssh/id_ed25519.pub"
+        "~/.ssh/id_ed25519_github_auth.pub",
+        "~/.ssh/id_ed25519_git_signing.pub"
       ]
     },
     "excludedCommands": [

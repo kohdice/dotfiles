@@ -39,6 +39,39 @@ cd ~/developments/dotfiles
 nix run .#switch
 ```
 
+### SSH Keys
+
+After applying the profile for the first time, authenticate GitHub CLI and
+create separate keys for GitHub authentication and Git commit signing:
+
+```bash
+gh auth login \
+  --hostname github.com \
+  --web \
+  --git-protocol ssh \
+  --skip-ssh-key \
+  --scopes admin:public_key,admin:ssh_signing_key
+nix run .#setup-ssh-keys
+gh auth refresh \
+  --hostname github.com \
+  --remove-scopes admin:public_key,admin:ssh_signing_key
+```
+
+The setup supports macOS and Linux. It prompts for a key description and
+passphrases, registers both public keys with GitHub, and verifies authentication
+and signing. On macOS, it also stores the passphrases in Keychain. It requires
+an authenticated GitHub CLI session and does not run automatically from the
+switch or update apps. The temporary key-management scopes are removed after
+the setup completes.
+
+On Linux, Home Manager provides `ssh-agent`, and the setup adds both keys for
+the current login session. After a new login, add the keys again when needed:
+
+```bash
+ssh-add ~/.ssh/id_ed25519_github_auth
+ssh-add ~/.ssh/id_ed25519_git_signing
+```
+
 ## Daily Usage
 
 | Command                 | Description                     |
@@ -56,7 +89,7 @@ nix run .#switch
 ```
 dotfiles/
 ├── flake.nix              # Entry point
-├── lib/                   # Helper functions (mkSystem.nix, apps.nix)
+├── lib/                   # Helper functions and runnable setup applications
 ├── modules/
 │   ├── darwin/            # macOS system configuration
 │   ├── home/              # home-manager configuration (cross-platform)

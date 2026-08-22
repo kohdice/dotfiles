@@ -1,7 +1,7 @@
 { pkgs, lib, ... }:
 
 let
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in
 {
   programs.neovim = {

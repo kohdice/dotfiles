@@ -88,7 +88,7 @@ else
   # Linux configuration (home-manager standalone)
   inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {
-      inherit system;
+      localSystem = { inherit system; };
       config = nixpkgsConfig;
       overlays = overlays;
     };

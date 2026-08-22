@@ -8,7 +8,7 @@
 }:
 
 let
-  isDarwin = pkgs.stdenv.isDarwin;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
 
   # Flake source in /nix/store — safe to readDir under pure evaluation.
   # NOTE: it only contains git-tracked files, so new entries under the

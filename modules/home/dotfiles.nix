@@ -81,6 +81,9 @@ let
   # home.file symlinks (target -> source path in config/)
   homeSymlinks = {
     ".claude/CLAUDE.md" = "config/claude/CLAUDE.md";
+    # Linked as a whole directory: nothing else installs into ~/.claude/hooks,
+    # so new hooks need no line here and take effect without a rebuild.
+    ".claude/hooks" = "config/claude/hooks";
     ".claude/settings.json" = "config/claude/settings.json";
     ".claude/statusline.sh" = "config/claude/statusline.sh";
     ".codex/AGENTS.md" = "config/agents/AGENTS.md";

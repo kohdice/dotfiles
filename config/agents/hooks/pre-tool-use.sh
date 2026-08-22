@@ -2,8 +2,7 @@
 # PreToolUse hook: deny dangerous Bash commands before they run.
 #
 # Emits a "deny" permission decision when a rule matches. Safe commands
-# produce no output at all, so the allow/deny lists in settings.json keep
-# governing them as usual.
+# produce no output, so each agent's normal permission rules still apply.
 
 set -uo pipefail
 

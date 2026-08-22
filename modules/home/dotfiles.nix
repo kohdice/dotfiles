@@ -81,13 +81,12 @@ let
   # home.file symlinks (target -> source path in config/)
   homeSymlinks = {
     ".claude/CLAUDE.md" = "config/claude/CLAUDE.md";
-    # Linked as a whole directory: nothing else installs into ~/.claude/hooks,
-    # so new hooks need no line here and take effect without a rebuild.
-    ".claude/hooks" = "config/claude/hooks";
+    ".claude/hooks" = "config/agents/hooks";
     ".claude/settings.json" = "config/claude/settings.json";
     ".claude/statusline.sh" = "config/claude/statusline.sh";
     ".codex/AGENTS.md" = "config/agents/AGENTS.md";
     ".codex/config.toml" = "config/codex/config.toml";
+    ".codex/hooks" = "config/agents/hooks";
   }
   // sharedSkillClaudeSymlinks
   // claudeSkillSymlinks # Claude-specific skills win on name collision.

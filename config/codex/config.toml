@@ -8,9 +8,32 @@ personality = "pragmatic"
 
 [features]
 collaboration_modes = true
+hooks = true
 multi_agent = true
 search_tool = true
 skills = true
+
+[[hooks.PreToolUse]]
+matcher = "^Bash$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "~/.codex/hooks/pre-tool-use.sh"
+statusMessage = "Checking Bash command"
+
+[[hooks.PostToolUse]]
+matcher = "^(apply_patch|Edit|Write|MultiEdit)$"
+
+[[hooks.PostToolUse.hooks]]
+type = "command"
+command = "~/.codex/hooks/post-tool-use.sh"
+
+[[hooks.Stop]]
+
+[[hooks.Stop.hooks]]
+type = "command"
+command = "~/.codex/hooks/stop.sh"
+timeout = 600
 
 [agents]
 max_threads = 6

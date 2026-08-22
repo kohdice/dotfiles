@@ -4,32 +4,29 @@
 # Each edited file is resolved to its own project root via the build
 # manifest, so the tools run against the right project even when the
 # session touched several repositories. Exits 2 when a linter reports
-# issues, which hands the output back to Claude instead of stopping.
+# issues, which asks the active agent to continue and fix them.
 
 set -uo pipefail
 
 input=$(cat)
 
-# Set once this hook has already blocked, so honouring it avoids a loop.
-[ "$(jq -r '.stop_hook_active // false' <<<"$input")" = "true" ] && exit 0
+session_id=$(jq -r '.session_id // ""' <<<"$input")
+case $session_id in
+"" | *[!A-Za-z0-9._-]*) exit 0 ;;
+esac
 
-transcript=$(jq -r '.transcript_path // ""' <<<"$input")
-[ -f "$transcript" ] || exit 0
+state_file="${TMPDIR:-/tmp}/shared-agent-hooks/$session_id.edits"
 
-# Edit results carry filePath, Write/Edit tool calls carry file_path.
-# fromjson? skips lines that are truncated or not valid JSON.
-edited_files=$(jq -rR '
-  fromjson? // empty
-  | objects
-  | [ (.toolUseResult | objects | (.file_path // .filePath // empty)),
-      (.message | objects | .content | arrays | .[] | objects
-        | select(.type == "tool_use")
-        | select(.name == "Edit" or .name == "Write" or .name == "MultiEdit")
-        | .input | objects | (.file_path // .filePath // empty))
-    ]
-  | .[]
-' "$transcript" 2>/dev/null | sort -u)
+# Set once this hook has already continued the agent, avoiding a loop.
+if [ "$(jq -r '.stop_hook_active // false' <<<"$input")" = "true" ]; then
+  rm -f -- "$state_file"
+  exit 0
+fi
 
+[ -f "$state_file" ] || exit 0
+trap 'rm -f -- "$state_file"' EXIT
+
+edited_files=$(sort -u "$state_file")
 [ -n "$edited_files" ] || exit 0
 
 # find_project_root <dir> <marker> - walks up until <marker> is found.

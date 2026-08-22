@@ -7,6 +7,7 @@ pkgs.writeShellApplication {
     coreutils
     gawk
     gh
+    git
     jq
     openssh
   ];
@@ -82,6 +83,38 @@ pkgs.writeShellApplication {
 
       info "Registering the $key_type key with GitHub"
       gh ssh-key add "$public_key_file" --title "$title" --type "$key_type"
+    }
+
+    ensure_allowed_signer() {
+      local allowed_signers_file="$1"
+      local allowed_signers_new="$2"
+      local public_key_file="$3"
+      local principal
+      local public_key
+      local entry
+
+      principal="$(git config --global --get user.email)" ||
+        die "Git user.email is not configured; apply the Home Manager profile before running setup"
+      [ -n "$principal" ] || die "Git user.email must not be empty"
+
+      public_key="$(awk 'NF >= 2 { print $1 " " $2; exit }' "$public_key_file")"
+      [ -n "$public_key" ] || die "invalid public key: $public_key_file"
+      entry="$principal namespaces=\"git\" $public_key"
+
+      if [ -f "$allowed_signers_file" ] &&
+        awk -v entry="$entry" '$0 == entry { found = 1 } END { exit !found }' "$allowed_signers_file"; then
+        info "The Git signing key is already in the local allowed signers file"
+        return
+      fi
+
+      info "Adding the Git signing key to the local allowed signers file"
+      if [ -f "$allowed_signers_file" ]; then
+        awk -v entry="$entry" '{ print } END { print entry }' "$allowed_signers_file" >"$allowed_signers_new"
+      else
+        printf '%s\n' "$entry" >"$allowed_signers_new"
+      fi
+      chmod 644 "$allowed_signers_new"
+      mv -- "$allowed_signers_new" "$allowed_signers_file"
     }
 
     generate_key() {
@@ -172,13 +205,16 @@ pkgs.writeShellApplication {
     signing_key="$ssh_directory/$signing_key_name"
     signing_public_key="$signing_key.pub"
     signing_key_new="$signing_key.new"
+    allowed_signers_file="$ssh_directory/allowed_signers"
+    allowed_signers_new="$allowed_signers_file.new"
 
     cleanup() {
       rm -f -- \
         "$authentication_key_new" \
         "$authentication_key_new.pub" \
         "$signing_key_new" \
-        "$signing_key_new.pub"
+        "$signing_key_new.pub" \
+        "$allowed_signers_new"
     }
 
     trap cleanup EXIT
@@ -232,6 +268,11 @@ pkgs.writeShellApplication {
 
     chmod 600 "$authentication_key" "$signing_key"
     chmod 644 "$authentication_public_key" "$signing_public_key"
+
+    ensure_allowed_signer \
+      "$allowed_signers_file" \
+      "$allowed_signers_new" \
+      "$signing_public_key"
 
     if [ "$platform" = "macos" ]; then
       info "Adding keys to ssh-agent and macOS Keychain"

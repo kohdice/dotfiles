@@ -58,11 +58,12 @@ gh auth refresh \
 ```
 
 The setup supports macOS and Linux. It prompts for a key description and
-passphrases, registers both public keys with GitHub, and verifies authentication
-and signing. On macOS, it also stores the passphrases in Keychain. It requires
-an authenticated GitHub CLI session and does not run automatically from the
-switch or update apps. The temporary key-management scopes are removed after
-the setup completes.
+passphrases, registers both public keys with GitHub, adds the signing key to the
+local SSH allowed signers file, and verifies authentication and signing. On
+macOS, it also stores the passphrases in Keychain. It requires an authenticated
+GitHub CLI session and does not run automatically from the switch or update
+apps. The temporary key-management scopes are removed after the setup
+completes.
 
 On Linux, Home Manager provides `ssh-agent`, and the setup adds both keys for
 the current login session. After a new login, add the keys again when needed:

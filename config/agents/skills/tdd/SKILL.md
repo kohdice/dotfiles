@@ -32,25 +32,29 @@ Each plan item uses a checkbox to track progress. Plans contain two item types:
 ```markdown
 - [ ] Test: description of what to test
 - [x] Test: already completed test
+- [ ] Test (integration): resource-heavy test (containers, database, network) — see Test Tiers and Run Cost
 - [ ] Refactor: structural change that prepares for the next test
 ```
+
+Large plans may group items under `### Phase N: <milestone>` headings, each followed by an `After this phase:` line (created per the tdd-plan skill's phase-division rules). Headings are structure only — finding the next item still means scanning for the first unchecked checkbox across the whole file.
 
 ### Finding the Next Item
 
 1. Resolve the plan using the precedence rules above
 2. Scan for the first unchecked item (`- [ ]`)
-3. If it is a `Test:` item, implement it through the Red-Green-Refactor cycle below
+3. If it is a `Test:` or `Test (integration):` item, implement it through the Red-Green-Refactor cycle below (for `Test (integration):`, apply the Test Tiers and Run Cost rules)
 4. If it is a `Refactor:` item, run all tests to confirm they pass (a cached pass is acceptable for this before-run — see the TDD Cycle section), apply the structural change without altering behavior, run all tests again to confirm identical results — identical meaning the same set of test names with all of them passing (see Structural Changes) — then mark it `[x]` and proceed to the next item
+5. When marking an item `[x]` completes a phase (it is the last unchecked item before the next phase heading or the end of the list), report the phase as complete with its `After this phase:` outcome and suggest committing the phase as one logical unit (Commit Discipline applies; never commit uninvited)
 
 ### Discovered Tests (Keep the Plan a Living List)
 
 While implementing, you may discover behavior that needs a test but is not in the plan — an edge case, an error path, a missing increment. Do not implement it immediately, and do not silently drop it:
 
-1. Append it to the plan as a new unchecked `- [ ] Test:` item at the appropriate position (usually right after the current item)
+1. Append it to the plan as a new unchecked `- [ ] Test:` item at the appropriate position (usually right after the current item; in a phased plan, inside the current phase — it belongs to the behavior increment in progress)
 2. Continue the current Red-Green-Refactor cycle without expanding its scope
 3. Mention the appended item in the turn summary
 
-A discovered item must describe observable application behavior required by the feature under development. Do not append speculative tests unrelated to the requested behavior.
+A discovered item must describe observable application behavior required by the feature under development. Do not append speculative tests unrelated to the requested behavior. Never append a test that verifies a third-party library's or the standard library's own responsibility — test only this project's code (Kent Beck's rule: test third-party code only if you have reason to distrust it).
 
 ### When the Plan Is Complete
 
@@ -58,7 +62,16 @@ If no unchecked item remains, do not invent new work. Report that all plan items
 
 ## TDD Cycle: Red, Green, Refactor
 
-Execute each test through three distinct phases. In this skill, "run all tests" means the project's complete test suite, not just the file currently being edited. Run the full suite at every checkpoint. If the suite is prohibitively slow, state the scoped subset you are running and why. A cached passing result (e.g., Go's `(cached)`) is acceptable only for runs that confirm an unchanged state, such as the baseline before Red or before a `Refactor:` item; any run whose purpose is to observe the effect of a change just made — the Red confirmation, the Green pass, the post-refactor check — must actually execute the tests (e.g., `go test -count=1`).
+Execute each test through three distinct phases. In this skill, "run all tests" means the fast tier of the project's test suite (see Test Tiers and Run Cost below), not just the file currently being edited. Run that tier in full at every checkpoint. If even the fast tier is prohibitively slow, state the scoped subset you are running and why. A cached passing result (e.g., Go's `(cached)`) is acceptable only for runs that confirm an unchanged state, such as the baseline before Red or before a `Refactor:` item; any run whose purpose is to observe the effect of a change just made — the Red confirmation, the Green pass, the post-refactor check — must actually execute the tests (e.g., `go test -count=1`).
+
+### Test Tiers and Run Cost
+
+Split the suite into two tiers and run each at the right time:
+
+- **Fast tier** (unit tests: no containers, no network, no real external services): this is what "run all tests" means at every Red-Green-Refactor checkpoint.
+- **Slow tier** (integration/E2E tests using containers, databases, or the network — typically behind build tags, `-short` exclusions, or markers): run only when a plan item marked `Test (integration):` is itself the current item, when the plan is complete, or before a commit. Never run the slow tier as part of a routine checkpoint.
+
+Identify the project's tier mechanism (build tags, test markers, separate packages) during the first baseline run and state which tier each subsequent run covers. A `Test (integration):` plan item goes through the same Red-Green-Refactor cycle, but its Red and Green confirmation runs execute that integration test (plus the fast tier), not the whole slow tier.
 
 ### Phase 1: Red (Write a Failing Test)
 

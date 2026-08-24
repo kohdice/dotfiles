@@ -25,6 +25,7 @@ Files outside C/Go/Rust/Zig (a build script, a fixture) may be edited as the ite
 - **Up to three consecutive `Test:` items** may share one dispatch when all are small, touch the same file or area, and none depends on a design decision the previous one has not made yet. A decision made by an earlier item in the same batch counts as made, since cycles run in order inside the sub-agent. Inside the sub-agent each item is still its own Red-Green-Refactor cycle. Tie-breaker: batch when all preconditions clearly hold (it bounds dispatch cost); fall back to the one-item default whenever in doubt — both choices are compliant.
 - **`Refactor:` items always dispatch alone.** Keeping structural changes in their own dispatch preserves the Tidy First separation in the parent's records.
 - Never batch across a `Refactor:` item, and never batch items the plan ordered apart.
+- **Never batch across a phase boundary** (`### Phase N:` headings, when the plan has them). The phase's last batch triggers the parent's phase checkpoint (SKILL.md step 7) before the next phase starts.
 
 ## Dispatch contract (per implementer)
 

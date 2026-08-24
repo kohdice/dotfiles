@@ -56,6 +56,8 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - One behavior per test — each test validates exactly one thing
 - Test observable behavior through the public API — never implementation details (private functions, internal call order, interactions with mocks). Implementation-coupled tests break under legitimate refactoring, violating the Tidy First invariant that structural changes keep test results identical
 - Plan only new or changed behavior — do not include tests for behavior already covered by existing passing tests (discovered in Step 2). Such a test can never fail in the Red phase, so it adds no information and violates the rule that every test must fail before the change
+- Test only code this project owns. Do not plan tests that verify the responsibilities of third-party libraries, frameworks, or the standard library (e.g., that an ORM escapes SQL, that a JSON library parses JSON). Kent Beck's rule: test third-party code only if you have reason to distrust it
+- Prefer unit-level tests that run fast and in isolation. Plan a resource-heavy test (containers, real databases, network, end-to-end) only when the requested behavior cannot be verified any other way, keep such tests to the minimum count, place them last in the plan, and mark them `Test (integration):` so the executing skill can run them sparingly
 - A test name must clearly describe what is being verified
 - Follow the target project's existing test naming convention, discovered in Step 2 (e.g., Zig inline tests `test "parses empty sequence diagram"`, Rust `#[test] fn parses_empty_sequence_diagram`, Go `TestParsesEmptySequenceDiagram`)
 
@@ -64,6 +66,12 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - When refactoring or reorganizing code is needed before or during implementation, include it as a separate plan item marked with `Refactor:` instead of `Test:`
 - Structural items must not change behavior — they prepare the codebase for the next behavioral change
 - Placement: put a `Refactor:` item immediately before the first `Test:` item that depends on that structural change. Consecutive `Refactor:` items may be grouped together only when they all gate the same next behavioral test — this group goes right before that test, not at the top of the Test Cases list. Do not interleave structural items with unrelated behavioral tests
+
+**Phase division (large plans):**
+
+- A large plan may be divided into phases with `### Phase N: <milestone>` headings inside the Test Cases section. The boundary criterion is strictly semantic: a phase boundary is valid only at a point that is independently committable — all tests green, one coherent observable behavior increment completed (a vertical slice), and no un-generalized Fake It implementation or pending `Refactor:` dependency left dangling. This mirrors the tdd skill's Commit Discipline: a phase is a single logical unit of work, planned in advance
+- Item count is never the boundary criterion. A large item count (roughly more than 10) is only a trigger to look for natural semantic seams; when no such seam exists, keep the plan as a single phase rather than forcing a split
+- Each phase heading is followed by one line stating what becomes possible when the phase completes (e.g., `After this phase: the parser accepts all valid sequence diagrams`). If that line cannot be written meaningfully, the boundary is wrong — move or remove it
 
 **Bug fixes:**
 
@@ -88,7 +96,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 ## Context
 
-<Brief description of relevant existing code, modules, and patterns, plus any interpretation adopted under the Step 1 ambiguity threshold>
+<Background and motivation of the request, decisions from Step 1 clarification with their rationale, relevant existing code, modules, and patterns with paths, the project's test command and conventions, constraints, and any interpretation adopted under the Step 1 ambiguity threshold — detailed enough for a fresh implementer with no session context>
 
 ## Test Cases
 
@@ -98,6 +106,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - [ ] Test: <description — more complex case>
 - [ ] Test: <description — edge case>
 - [ ] Test: <description — error condition>
+- [ ] Test (integration): <description — resource-heavy verification, minimal and last>
 ```
 
 ### Plan File Rules
@@ -105,10 +114,12 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - All test items use `- [ ] Test:` prefix with a clear description
 - A `Test:` description states the scenario (input or situation) and the expected observable outcome — it must not prescribe implementation strategy (data structures, algorithms, internal organization). Design decisions belong to the Green and Refactor phases of the executing tdd skill. A convention-following test name inside the description is required naming, not implementation prescription — e.g., `- [ ] Test: TestCountWordsEmpty — empty string yields an empty map`. Likewise a public-API-visible type named there (the returned map) states observable outcome; the ban covers internal data structures and algorithms only
 - All structural-change items use `- [ ] Refactor:` prefix
+- Phase headings (`### Phase N: <milestone>` plus its `After this phase:` line) are optional structure for large plans, governed by the phase-division rules in Step 3; items keep the same checkbox format within phases
 - Items are listed in implementation order — each item may depend on previous items being complete
 - Do not mix behavioral and structural changes in a single item
 - The Goal section states the end-state, not the process
 - The Context section references specific files and types by name to orient the implementer
+- The plan file is the single source of truth for implementation. Write it so that a fresh implementer — a different session, a different AI agent, or a human — can execute it with zero access to this conversation. The Context section must therefore include: the background and motivation of the request, every decision made during Step 1 clarification with the user's answers and their rationale, relevant files/types/functions with paths, the project's test command and conventions, and known constraints. Length is not a concern; omitted context is
 
 ## Quality Checklist
 
@@ -123,3 +134,6 @@ Before presenting the plan to the user, verify (for a pure-refactor plan consist
 7. No test case implicitly depends on unplanned work
 8. Every `Test:` item states scenario and expected observable outcome without prescribing implementation, and none duplicates behavior already covered by existing passing tests
 9. The final reply includes the exact created plan filename and `.plans/` path
+10. No item tests a third-party library's or the standard library's own responsibility, and any `Test (integration):` items are minimal in count and placed last
+11. Portability: an implementer with no access to this conversation could execute the plan using only the plan file and the codebase
+12. If the plan has phases, every phase boundary lands on an independently committable point (all tests green, one coherent behavior increment, no dangling Fake It or `Refactor:` dependency), and each phase has its `After this phase:` line

@@ -41,12 +41,12 @@ Do not use when:
 
 - The user explicitly invokes `/tdd` to execute the plan inline in the current context — the tdd skill owns that.
 - The user asks only to create a plan — the tdd-plan skill owns that.
-- The work has no testable application behavior (docs, configuration, CI, housekeeping) — TDD does not apply; handle it directly without this skill.
+- The work has no testable application behavior (docs, configuration, CI, housekeeping) — TDD does not apply; the work-plan and work-implement skills own that.
 - The goal is reviewing code, not writing it — the local-review skill owns that.
 
 ## Workflow
 
-1. **Resolve the plan**: Use the tdd skill's precedence — an explicitly named plan file first, then the plan created in the current session, otherwise look at `.plans/`: exactly one plan matching the request → use it without asking; two or more candidates → list them and ask; none → create one first by following the tdd-plan skill (planning stays in the parent — it needs the user dialog), then continue here. When following tdd-plan from this skill, adopt the interpretation that the request plus the codebase pin down and record it in the plan's Context; ask (or, in a non-interactive run, stop with the questions) only when no defensible interpretation exists — this restates the tdd-plan skill's Step 1 ambiguity threshold, which is the canonical definition. If tdd-plan concludes the request has no testable behavior, this skill does not apply either; say so and stop.
+1. **Resolve the plan**: Use the tdd skill's precedence — an explicitly named plan file first, then the plan created in the current session, otherwise look at `.plans/`: exactly one plan matching the request → use it without asking; two or more candidates → list them and ask; none → create one first by following the tdd-plan skill (planning stays in the parent — it needs the user dialog), then continue here. When following tdd-plan from this skill, adopt the interpretation that the request plus the codebase pin down and record it in the plan's Context; ask (or, in a non-interactive run, stop with the questions) only when no defensible interpretation exists — this restates the tdd-plan skill's Step 1 ambiguity threshold, which is the canonical definition. If tdd-plan concludes the request has no testable behavior, this skill does not apply either; say so, suggest the work-plan skill, and stop.
 
 2. **Resolve the environment**: Determine `SKILLS_DIR` (above). Detect the target language from the plan's Context section and the files it names. Resolve the project's full-suite test command from its build files or docs (`go.mod` → `go test ./...`, `Cargo.toml` → `cargo test`, `build.zig` → `zig build test`, C → `ctest` / `make test` / the Makefile's check target). Both values go into every dispatch.
 

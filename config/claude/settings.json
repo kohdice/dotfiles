@@ -143,7 +143,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/stop.sh"
+            "command": "~/.claude/hooks/stop.sh",
+            "timeout": 300
           }
         ]
       }

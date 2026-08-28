@@ -60,6 +60,20 @@ targets=$(printf '%s' "$targets" | sort -u)
 
 tool_available() { command -v "$1" >/dev/null 2>&1; }
 
+# run_in_root <root> <cmd...> - hooks do not inherit the project's direnv/Nix
+# devshell environment, so linker and library paths (e.g. libiconv on macOS)
+# would be missing. Runs the command through direnv when the project uses it;
+# falls back to a plain subshell otherwise.
+run_in_root() {
+  local root=$1
+  shift
+  if tool_available direnv && [ -f "$root/.envrc" ]; then
+    direnv exec "$root" "$@"
+  else
+    (cd "$root" && "$@")
+  fi
+}
+
 # run_format <root> <cmd...> - formatting problems are reported, never blocking.
 run_format() {
   local root=$1
@@ -69,7 +83,7 @@ run_format() {
     return 0
   }
   local out
-  if ! out=$( (cd "$root" && "$@") 2>&1); then
+  if ! out=$(run_in_root "$root" "$@" 2>&1); then
     printf '• %s failed in %s\n%s\n' "$*" "$root" "$out" >&2
   fi
 }
@@ -85,7 +99,7 @@ run_lint() {
     return 0
   }
   local out status
-  out=$( (cd "$root" && "$@") 2>&1)
+  out=$(run_in_root "$root" "$@" 2>&1)
   status=$?
   if [ "$status" -ne 0 ]; then
     printf '• %s found issues in %s\n%s\n' "$label" "$root" "$out" >&2

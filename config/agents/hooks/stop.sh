@@ -67,7 +67,9 @@ tool_available() { command -v "$1" >/dev/null 2>&1; }
 run_in_root() {
   local root=$1
   shift
-  if tool_available direnv && [ -f "$root/.envrc" ]; then
+  # .envrc may live above the resolved root (e.g. a workspace root above a
+  # member crate); direnv resolves it by walking up, so mirror that walk.
+  if tool_available direnv && find_project_root "$root" .envrc >/dev/null; then
     direnv exec "$root" "$@"
   else
     (cd "$root" && "$@")

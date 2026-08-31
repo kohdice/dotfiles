@@ -149,15 +149,11 @@ path = "~/.agents/skills/c-idioms"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/c-tutor"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/comment-patterns"
-enabled = true
-
-[[skills.config]]
-path = "~/.agents/skills/empirical-prompt-tuning"
-enabled = true
-
-[[skills.config]]
-path = "~/.agents/skills/extract-glossary"
 enabled = true
 
 [[skills.config]]
@@ -189,6 +185,10 @@ path = "~/.agents/skills/nvim-config-review"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/pair-programming"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/performance-patterns"
 enabled = true
 
@@ -201,6 +201,10 @@ path = "~/.agents/skills/rust-idioms"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/rust-tutor"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/simplicity-patterns"
 enabled = true
 
@@ -210,6 +214,14 @@ enabled = true
 
 [[skills.config]]
 path = "~/.agents/skills/tdd-plan"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/work-implement"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/work-plan"
 enabled = true
 
 [[skills.config]]

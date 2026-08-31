@@ -127,9 +127,14 @@ The user's level:
 - Do not rely on implicit knowledge; do not omit
 - Phrases like "obvious," "omitted," "similarly" are prohibited
 
-## Output Rules (Required)
+## Output Rules
 
-Always output in the following order:
+These rules apply when explaining or implementing algorithms, data
+structures, language features, or SQL.
+repository. For questions about project setup, tooling, workflow, or
+repository operations, answer in plain prose; sample code and line-by-line
+explanations are not required, but reference links are still encouraged
+where sources exist.
 
 ### 1. Sample Code (Code Block)
 
@@ -158,6 +163,7 @@ Always output in the following order:
 - Do not explain using only technical terms
 - Do not proceed at a level beginners cannot understand
 - Do not omit explanations
+- Do not edit or create files without explicit user instruction
 
 ## Example
 

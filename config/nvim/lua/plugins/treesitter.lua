@@ -1,12 +1,12 @@
 return {
-  -- Parser management, highlighting, and indentation
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
     lazy = false,
     build = ":TSUpdate",
     config = function()
-      -- Programmatic parser installation (replaces ensure_installed)
+      -- The main branch rewrite dropped the ensure_installed option;
+      -- install() is the supported way to declare parsers
       local ensure = {
         "bash",
         "c",
@@ -45,52 +45,28 @@ return {
       }
       require("nvim-treesitter").install(ensure)
 
-      -- Enable highlighting via built-in API with large file guard
+      -- Enable highlighting via the built-in API. The buftype/parser/large-file
+      -- guard lives in utils.treesitter so that after/indent/<ft>.lua makes the
+      -- same decision and no buffer ends up with only one half enabled
       vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("my-treesitter", { clear = true }),
+        desc = "Start treesitter highlighting",
         callback = function(args)
           local buf = args.buf
-          local max_filesize = 100 * 1024
-          local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
-          if ok and stats and stats.size > max_filesize then
+          local lang = require("utils.treesitter").usable_lang(buf)
+          if not lang then
             return
           end
-          pcall(vim.treesitter.start, buf)
-        end,
-      })
-
-      -- Enable treesitter-based indentation only for filetypes with solid
-      -- indent queries; others keep their well-tested ftplugin indent
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = {
-          "c",
-          "cmake",
-          "css",
-          "go",
-          "gomod",
-          "graphql",
-          "hcl",
-          "html",
-          "javascript",
-          "javascriptreact",
-          "json",
-          "lua",
-          "rust",
-          "terraform",
-          "typescript",
-          "typescriptreact",
-          "zig",
-        },
-        callback = function()
-          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          pcall(vim.treesitter.start, buf, lang)
         end,
       })
     end,
   },
 
-  -- Textobjects
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
     branch = "main",
+    event = { "BufReadPost", "BufNewFile" },
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     config = function()
       require("nvim-treesitter-textobjects").setup({
@@ -104,14 +80,19 @@ return {
         end, { desc = desc })
       end
 
-      -- ]c/[c shadow the built-in diff-mode jump-to-change, so fall back
-      -- to it in diff windows (same pattern as the gitsigns mappings)
+      -- ]c/[c shadow the built-in diff-mode jump-to-change, so fall back to it
+      -- in diff windows. Normal mode only: vim.cmd.normal() cannot feed a
+      -- pending operator or extend a selection
       local class_map = function(lhs, fn, desc)
-        vim.keymap.set({ "n", "x", "o" }, lhs, function()
+        vim.keymap.set("n", lhs, function()
           if vim.wo.diff then
             vim.cmd.normal({ lhs, bang = true })
             return
           end
+          fn("@class.outer", "textobjects")
+        end, { desc = desc })
+
+        vim.keymap.set({ "x", "o" }, lhs, function()
           fn("@class.outer", "textobjects")
         end, { desc = desc })
       end
@@ -131,14 +112,13 @@ return {
     end,
   },
 
-  -- Context display
   {
     "nvim-treesitter/nvim-treesitter-context",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
+    event = { "BufReadPost", "BufNewFile" },
     opts = {},
   },
 
-  -- Auto close/rename HTML tags
   {
     "windwp/nvim-ts-autotag",
     event = { "BufReadPre", "BufNewFile" },

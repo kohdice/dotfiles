@@ -19,7 +19,8 @@ require("lazy").setup({
     { import = "plugins" },
   },
   install = { colorscheme = { "habamax" } },
-  checker = { enabled = true },
+  -- No background update polling; check on demand with :Lazy check
+  checker = { enabled = false },
   rocks = {
     enabled = false,
   },

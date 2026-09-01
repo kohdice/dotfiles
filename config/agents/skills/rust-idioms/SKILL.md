@@ -1,6 +1,6 @@
 ---
 name: rust-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing Rust code — implementing features in .rs files, "Rust で実装して", "この Rust コードを直して", or auditing Rust for modernization. It defines the mandatory procedure for resolving the project's edition and MSRV from Cargo.toml, plus a version-tagged catalog of modern idioms (Rust 1.65–1.95, 2024 Edition), so that generated code and review recommendations never exceed the project's declared rust-version or edition.
+description: This skill should be used when writing, modifying, refactoring, or reviewing Rust code — implementing features in .rs files, "Rust で実装して", "この Rust コードを直して", or auditing Rust for modernization. It defines the mandatory procedure for resolving the project's edition and MSRV from Cargo.toml, plus a version-tagged catalog of modern idioms (Rust 1.65 through the stated catalog coverage version, 2024 Edition), so that generated code and review recommendations never exceed the project's declared rust-version or edition.
 ---
 
 # Rust Idioms (edition- and MSRV-aware)
@@ -13,20 +13,22 @@ Before writing or recommending any Rust code:
 
 1. Read the `Cargo.toml` of the crate being edited: note `edition` and `rust-version` (MSRV).
 2. If the field says `edition.workspace = true` or `rust-version.workspace = true`, resolve it from `[workspace.package]` in the workspace root `Cargo.toml`.
-3. If `rust-version` is absent, treat the edition's release baseline as the floor and prefer conservative choices; suggest pinning `rust-version` as a low-priority improvement (in reviews, tag it `[recommend]`).
-4. State the resolved baseline in the deliverable — the review report's opening or the write-mode summary.
+3. Check the crate and workspace root for rustup's toolchain file — `rust-toolchain.toml` (`[toolchain] channel = "..."`) or the legacy plain-text `rust-toolchain`. A concrete `channel` version (e.g. `"1.90"`, `"1.90.0"`) is the pinned toolchain the project builds with: record it. A named channel (`"stable"`, `"beta"`, `"nightly"`) or an absent file pins no version — resolve nothing from it.
+4. If `rust-version` is absent, fall back in order: (a) a concrete pinned toolchain version, if any, as the working baseline; (b) otherwise the edition's release baseline as the floor, preferring conservative choices. Either way, suggest pinning `rust-version` as a low-priority improvement (in reviews, tag it `[recommend]`).
+5. State the resolved baseline in the deliverable — the review report's opening or the write-mode summary.
 
 Hard rules derived from the baseline:
 
 - **Never use a language or std feature stabilized strictly after the project MSRV** (a feature stabilized exactly at the MSRV is allowed). When an idiom below is desirable but MSRV-gated, present it as an option labeled with the required Rust version — do not silently use it. When writing code, record the gated option as a brief source comment at the affected line and mention it, with the required version, in the summary to the user.
+- **Never present a feature stabilized strictly after a concrete pinned toolchain version as a direct fix** — the project's own compiler rejects it (a feature stabilized exactly at the pinned version is allowed). Offer it as a gated option labeled with the required Rust version, exactly as for MSRV-gated idioms.
 - **Never use edition-gated syntax outside the matching edition** (e.g. let chains require edition 2024; code relying on 2021 temporary-lifetime behavior must not be rewritten as if 2024 rules applied, and vice versa).
 - When recommending a change in review, always cite the stabilizing Rust version so it can be checked against the MSRV.
 
 ## Catalog coverage and verification
 
-**Catalog coverage version: Rust 1.95.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
+**Catalog coverage version: Rust 1.97.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
 
-- **Staleness guard**: the resolved MSRV or installed toolchain (`rustc --version`) is newer than the coverage version above. (In a read-only review or when the toolchain cannot be invoked, judge staleness on the resolved MSRV alone — do not block on `rustc --version`.) The catalog is out of date for this project. Do both: (a) check the release notes for everything stabilized between the coverage version and the actual version, and follow those newer official recommendations now; (b) tell the user this skill's catalog needs updating to the new version (see Maintenance below).
+- **Staleness guard**: the resolved MSRV, a concrete pinned toolchain-file version, or the installed toolchain (`rustc --version`) is newer than the coverage version above. (In a read-only review or when the toolchain cannot be invoked, judge staleness on the resolved MSRV and the toolchain file alone — do not block on `rustc --version`.) The catalog is out of date for this project. Do both: (a) check the release notes for everything stabilized between the coverage version and the actual version, and follow those newer official recommendations now; (b) tell the user this skill's catalog needs updating to the new version (see Maintenance below).
 - A feature or its stabilizing version is **not listed here** AND is **boundary-relevant** — plausibly stabilized at or after the catalog floor (1.65) or near the resolved MSRV: never trust memory for stabilization versions; verify before gating on it. Long-established std APIs that clearly predate the catalog floor (e.g. `map_or`, `min`, `parse`, `checked_*`) need no verification.
 - A catalog entry **conflicts with observed compiler behavior**: the compiler wins; report the discrepancy.
 
@@ -46,12 +48,13 @@ When asked to update this skill after a new stable release:
 2. Add newly stabilized idioms to the catalog with their stabilizing version; add newly std-absorbed dependencies; add new edition semantics if an edition shipped.
 3. Remove nothing that older MSRVs may still need — the catalog is version-tagged precisely so old and new baselines coexist.
 4. Bump the coverage version at the top of "Catalog coverage and verification".
+5. **Floor raise** (only when both hold: SKILL.md is approaching ~300 lines, AND the floor-end entries are old enough that virtually all maintained projects' MSRVs exceed them): raise the catalog floor instead of deleting. Move entries stabilized below the new floor — version tags intact — to `references/archive.md`, bump the floor version wherever it is stated in this file, and amend the boundary-verification rule so the archive is consulted for below-floor stabilization versions before fetching release notes. This keeps rule 3 satisfied: nothing is removed from the skill's knowledge, only demoted out of the always-loaded window.
 
 ## Review output contract
 
 When the task is a review or audit, structure the report as follows. (Writing new code needs no report; the hard rules in Step 0 — including how to record gated options — still apply.)
 
-1. **Baseline statement first**: the resolved edition and MSRV, and which Cargo.toml (or `[workspace.package]`) they came from.
+1. **Baseline statement first**: the resolved edition and MSRV (and pinned toolchain, if any), and which source each came from — crate `Cargo.toml`, `[workspace.package]`, or the toolchain file.
 2. **Findings**, each tagged with exactly one severity. Severity follows from the rule class, not executor judgment:
    - `[error]` — rejected by the compiler under the resolved edition/toolchain (e.g. `#[no_mangle]` without `unsafe(...)` on edition 2024)
    - `[warn]` — compiles but triggers a warn-by-default lint or violates a mandatory guideline (e.g. `unsafe_op_in_unsafe_fn`, missing `# Safety` on an `unsafe fn`)
@@ -68,6 +71,7 @@ Flag these dependencies (severity: `[recommend]` when the replacement is within 
 - `lazy_static` / `once_cell` → `std::sync::OnceLock` (1.70; not drop-in — initialization moves to `get_or_init` at the access site) / `std::sync::LazyLock` (1.80; drop-in for `Lazy`). State the migration cost in the finding.
 - `cfg-if` → `cfg_select!` macro (1.95); within-baseline fallback: keep `cfg-if`, or expand to plain `#[cfg]` attributes
 - `async-trait` → native `async fn` in traits where dyn-compatibility is not required (1.75)
+- `assert_matches` crate → std `assert_matches!` / `debug_assert_matches!` (1.96)
 
 ## 2024 Edition semantics
 
@@ -80,7 +84,7 @@ These apply only when `edition = "2024"`:
 - **Temporary lifetimes**: `if let` and tail-expression temporary scopes changed — do not write code relying on old drop timing (e.g. lock guards in `if let` conditions).
 - **Prelude**: `Future` and `IntoFuture` are in the prelude — do not import them redundantly.
 
-## Modern idiom catalog (Rust 1.65 → 1.95)
+## Modern idiom catalog (Rust 1.65 → catalog coverage version)
 
 Prefer these over older equivalents, subject to the MSRV/edition rules above:
 
@@ -95,6 +99,9 @@ Prefer these over older equivalents, subject to the MSRV/edition rules above:
 - `cfg_select!` instead of `cfg-if` or long `#[cfg]` if-else towers (1.95)
 - `Vec::push_mut` / `insert_mut` when code pushes then immediately re-borrows via `last_mut().unwrap()` (1.95)
 - Atomic `update` / `try_update` instead of manual `compare_exchange` loops for simple read-modify-write (1.95)
+- `assert_matches!` / `debug_assert_matches!` instead of `assert!(matches!(...))` when asserting on a pattern (1.96)
+- `core::range` Copy-able range types (`Range`, `RangeFrom`, `RangeInclusive`, `RangeToInclusive`) when storing a range in a `Copy` type, instead of splitting into separate start/end fields (1.96); note: range syntax (`a..b`) still produces the legacy `core::ops` types, so conversion is explicit — do not flag ordinary use of `core::ops` ranges
+- Integer bit-query methods `bit_width`, `highest_one`, `lowest_one`, `isolate_highest_one`, `isolate_lowest_one` (also on `NonZero`) instead of manual `leading_zeros`/`trailing_zeros` arithmetic (1.97)
 - Do NOT use `core::hint::cold_path` or other perf hints unless profiling-driven intent is already evident
 
 ## Official style and API guidelines

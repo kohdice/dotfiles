@@ -4,10 +4,6 @@ return {
     -- (owner renamed from p00f)
     "dchinmay2/clangd_extensions.nvim",
     ft = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
-    opts = {
-      inlay_hints = {
-        inline = false, -- Change from default (show at end of line instead of inline)
-      },
-    },
+    opts = {},
   },
 }

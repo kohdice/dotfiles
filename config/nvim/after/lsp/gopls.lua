@@ -1,7 +1,8 @@
 return {
   settings = {
     gopls = {
-      gofumpt = true,
+      -- No gofumpt: saving goes through conform (goimports, gofmt), so it would
+      -- only restyle gopls-originated edits and mix two styles in one file
       codelenses = {
         gc_details = false,
         test = true,

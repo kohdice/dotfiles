@@ -8,9 +8,32 @@ personality = "pragmatic"
 
 [features]
 collaboration_modes = true
+hooks = true
 multi_agent = true
 search_tool = true
 skills = true
+
+[[hooks.PreToolUse]]
+matcher = "^Bash$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "~/.codex/hooks/pre-tool-use.sh"
+statusMessage = "Checking Bash command"
+
+[[hooks.PostToolUse]]
+matcher = "^(apply_patch|Edit|Write|MultiEdit)$"
+
+[[hooks.PostToolUse.hooks]]
+type = "command"
+command = "~/.codex/hooks/post-tool-use.sh"
+
+[[hooks.Stop]]
+
+[[hooks.Stop.hooks]]
+type = "command"
+command = "~/.codex/hooks/stop.sh"
+timeout = 600
 
 [agents]
 max_threads = 6
@@ -126,15 +149,11 @@ path = "~/.agents/skills/c-idioms"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/c-tutor"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/comment-patterns"
-enabled = true
-
-[[skills.config]]
-path = "~/.agents/skills/empirical-prompt-tuning"
-enabled = true
-
-[[skills.config]]
-path = "~/.agents/skills/extract-glossary"
 enabled = true
 
 [[skills.config]]
@@ -166,6 +185,10 @@ path = "~/.agents/skills/nvim-config-review"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/pair-programming"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/performance-patterns"
 enabled = true
 
@@ -178,6 +201,10 @@ path = "~/.agents/skills/rust-idioms"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/rust-tutor"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/simplicity-patterns"
 enabled = true
 
@@ -187,6 +214,14 @@ enabled = true
 
 [[skills.config]]
 path = "~/.agents/skills/tdd-plan"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/work-implement"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/work-plan"
 enabled = true
 
 [[skills.config]]

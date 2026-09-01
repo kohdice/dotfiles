@@ -7,7 +7,9 @@ return {
       {
         "<leader>cf",
         function()
-          require("conform").format({ async = true, lsp_format = "fallback" })
+          -- No lsp_format here: caller opts would override every per-filetype
+          -- one. See default_format_opts below.
+          require("conform").format({ async = true })
         end,
         mode = { "n", "v" },
         desc = "[C]ode [F]ormat with conform.nvim",
@@ -46,10 +48,16 @@ return {
           toml = { "taplo" },
           yaml = { "yamlfmt" },
           zig = { "zigfmt" },
-          ["_"] = { "trim_newlines" },
+          -- Catch-all. "prefer" over "fallback": trim_newlines always counts as
+          -- available, so "fallback" would never reach the LSP (js/ts via tsgo).
+          ["_"] = { "trim_newlines", lsp_format = "prefer" },
+        },
+        -- Here rather than at the call sites: caller opts outrank the
+        -- per-filetype lsp_format above, these do not.
+        default_format_opts = {
+          lsp_format = "fallback",
         },
         format_on_save = {
-          lsp_format = "fallback",
           timeout_ms = 500,
         },
         log_level = vim.log.levels.ERROR,

@@ -8,7 +8,7 @@
 }:
 
 let
-  isDarwin = pkgs.stdenv.isDarwin;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
 
   # Flake source in /nix/store — safe to readDir under pure evaluation.
   # NOTE: it only contains git-tracked files, so new entries under the
@@ -81,10 +81,12 @@ let
   # home.file symlinks (target -> source path in config/)
   homeSymlinks = {
     ".claude/CLAUDE.md" = "config/claude/CLAUDE.md";
+    ".claude/hooks" = "config/agents/hooks";
     ".claude/settings.json" = "config/claude/settings.json";
     ".claude/statusline.sh" = "config/claude/statusline.sh";
     ".codex/AGENTS.md" = "config/agents/AGENTS.md";
     ".codex/config.toml" = "config/codex/config.toml";
+    ".codex/hooks" = "config/agents/hooks";
   }
   // sharedSkillClaudeSymlinks
   // claudeSkillSymlinks # Claude-specific skills win on name collision.
@@ -98,7 +100,6 @@ let
     "ghostty" = "config/ghostty";
     "herdr/config.toml" = "config/herdr/config.toml";
     "nvim" = "config/nvim";
-    "starship.toml" = "config/starship/starship.toml";
     "tmux" = "config/tmux";
     "lazygit" = "config/lazygit";
     "zsh-abbr/user-abbreviations" = "config/zsh-abbr/user-abbreviations";

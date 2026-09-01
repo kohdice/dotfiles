@@ -25,6 +25,8 @@
       diff.tool = "nvimdiff";
       "difftool \"nvimdiff\"".cmd = ''nvim -d "$LOCAL" "$REMOTE"'';
 
+      "gpg \"ssh\"".allowedSignersFile = "~/.ssh/allowed_signers";
+
       "mergetool \"nvimdiff\"" = {
         cmd = ''nvim -d "$LOCAL" "$REMOTE" -ancestor "$BASE" -merge "$MERGED"'';
         trustExitCode = true;
@@ -34,7 +36,7 @@
     };
 
     signing = {
-      key = "~/.ssh/id_ed25519.pub";
+      key = "~/.ssh/id_ed25519_git_signing.pub";
       signByDefault = true;
       format = "ssh";
     };

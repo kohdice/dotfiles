@@ -25,6 +25,14 @@ return {
       desc = "Todo/Fix/Fixme (Trouble)",
     },
     { "<leader>st", "<cmd>TodoFzfLua<cr>", desc = "Todo" },
-    { "<leader>sT", "<cmd>TodoFzfLua keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme" },
+    {
+      -- Not :TodoFzfLua keywords=... — the command appends <args> outside the
+      -- call parentheses, so the filter is silently dropped instead of erroring
+      "<leader>sT",
+      function()
+        require("todo-comments.fzf").todo({ keywords = { "TODO", "FIX", "FIXME" } })
+      end,
+      desc = "Todo/Fix/Fixme",
+    },
   },
 }

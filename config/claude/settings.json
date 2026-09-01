@@ -115,6 +115,41 @@
     ],
     "defaultMode": "auto"
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/pre-tool-use.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/post-tool-use.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/stop.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -205,8 +240,8 @@
         "/boot"
       ],
       "allowRead": [
-        "~/.ssh/id_ed25519",
-        "~/.ssh/id_ed25519.pub"
+        "~/.ssh/id_ed25519_github_auth.pub",
+        "~/.ssh/id_ed25519_git_signing.pub"
       ]
     },
     "excludedCommands": [

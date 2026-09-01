@@ -7,7 +7,7 @@
     ./eza.nix
     ./gh.nix
     ./nix-index.nix
-    ./starship.nix
+    ./pure.nix
     ./zoxide.nix
     ./zsh.nix
   ];

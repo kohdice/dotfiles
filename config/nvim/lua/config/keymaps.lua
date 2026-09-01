@@ -1,19 +1,20 @@
 local keymap = vim.keymap
 local filepath = require("utils.filepath")
 
+-- <Leader>c* is taken (conform, trouble, lsp), so these live under <Leader>m*.
 local register_safe_mappings = {
   { "n", "x", '"_x', { desc = "Delete without copying", silent = true } },
-  { "n", "<Leader>p", '"0p', { desc = "Paste from yank register", silent = true } },
-  { "n", "<Leader>P", '"0P', { desc = "Paste before from yank register", silent = true } },
-  { "v", "<Leader>p", '"0p', { desc = "Paste from yank register (visual)", silent = true } },
-  { "n", "<Leader>c", '"_c', { desc = "Change without copying", silent = true } },
-  { "n", "<Leader>C", '"_C', { desc = "Change to end without copying", silent = true } },
-  { "v", "<Leader>c", '"_c', { desc = "Change without copying (visual)", silent = true } },
-  { "v", "<Leader>C", '"_C', { desc = "Change to end without copying (visual)", silent = true } },
-  { "n", "<Leader>d", '"_d', { desc = "Delete without copying", silent = true } },
-  { "n", "<Leader>D", '"_D', { desc = "Delete to end without copying", silent = true } },
-  { "v", "<Leader>d", '"_d', { desc = "Delete without copying (visual)", silent = true } },
-  { "v", "<Leader>D", '"_D', { desc = "Delete to end without copying (visual)", silent = true } },
+  { "n", "<Leader>mp", '"0p', { desc = "Paste from yank register", silent = true } },
+  { "n", "<Leader>mP", '"0P', { desc = "Paste before from yank register", silent = true } },
+  { "v", "<Leader>mp", '"0p', { desc = "Paste from yank register (visual)", silent = true } },
+  { "n", "<Leader>mc", '"_c', { desc = "Change without copying", silent = true } },
+  { "n", "<Leader>mC", '"_C', { desc = "Change to end without copying", silent = true } },
+  { "v", "<Leader>mc", '"_c', { desc = "Change without copying (visual)", silent = true } },
+  { "v", "<Leader>mC", '"_C', { desc = "Change to end without copying (visual)", silent = true } },
+  { "n", "<Leader>md", '"_d', { desc = "Delete without copying", silent = true } },
+  { "n", "<Leader>mD", '"_D', { desc = "Delete to end without copying", silent = true } },
+  { "v", "<Leader>md", '"_d', { desc = "Delete without copying (visual)", silent = true } },
+  { "v", "<Leader>mD", '"_D', { desc = "Delete to end without copying (visual)", silent = true } },
 }
 
 for _, mapping in ipairs(register_safe_mappings) do
@@ -57,17 +58,39 @@ keymap.set(
   { desc = "Move up (wrap-aware)", expr = true, silent = true }
 )
 
-keymap.set("n", "<A-j>", ":move .+1<CR>==", { desc = "Move line down", silent = true })
-keymap.set("n", "<A-k>", ":move .-2<CR>==", { desc = "Move line up", silent = true })
+-- ':move' past either end of the buffer fails with E16, and 'silent' does not
+-- suppress an error: the mapping aborts there, so its trailing keys never run
+-- (insert mode is left behind without gi, the selection is dropped without
+-- gv=gv). Swallow the key instead. line("v") is the cursor line outside Visual
+-- mode, so the same bounds check covers all three modes; <Ignore> rather than
+-- an empty string because an expr mapping that returns nothing ends Visual mode.
+local function move_lines(keys, offset)
+  return function()
+    local cursor, other = vim.fn.line("."), vim.fn.line("v")
+    local edge = offset > 0 and math.max(cursor, other) or math.min(cursor, other)
+    if edge + offset < 1 or edge + offset > vim.fn.line("$") then
+      return "<Ignore>"
+    end
+    return keys
+  end
+end
 
-keymap.set("i", "<A-j>", "<Esc>:move .+1<CR>==gi", { desc = "Move line down", silent = true })
-keymap.set("i", "<A-k>", "<Esc>:move .-2<CR>==gi", { desc = "Move line up", silent = true })
+local move_line_down = { desc = "Move line down", expr = true, silent = true }
+local move_line_up = { desc = "Move line up", expr = true, silent = true }
+local move_selection_down = { desc = "Move selection down", expr = true, silent = true }
+local move_selection_up = { desc = "Move selection up", expr = true, silent = true }
 
-keymap.set("v", "<A-j>", ":move '>+1<CR>gv=gv", { desc = "Move selection down", silent = true })
-keymap.set("v", "<A-k>", ":move '<-2<CR>gv=gv", { desc = "Move selection up", silent = true })
+keymap.set("n", "<A-j>", move_lines(":move .+1<CR>==", 1), move_line_down)
+keymap.set("n", "<A-k>", move_lines(":move .-2<CR>==", -1), move_line_up)
+
+keymap.set("i", "<A-j>", move_lines("<Esc>:move .+1<CR>==gi", 1), move_line_down)
+keymap.set("i", "<A-k>", move_lines("<Esc>:move .-2<CR>==gi", -1), move_line_up)
+
+keymap.set("v", "<A-j>", move_lines(":move '>+1<CR>gv=gv", 1), move_selection_down)
+keymap.set("v", "<A-k>", move_lines(":move '<-2<CR>gv=gv", -1), move_selection_up)
 
 keymap.set({ "i", "n", "s" }, "<Esc>", function()
-  vim.cmd("nohlsearch")
+  vim.cmd.nohlsearch()
   return vim.api.nvim_replace_termcodes("<Esc>", true, false, true)
 end, { desc = "Escape and Clear hlsearch", expr = true, silent = true })
 

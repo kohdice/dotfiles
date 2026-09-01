@@ -14,10 +14,11 @@ return {
         markdown = { "markdownlint-cli2" },
       }
 
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
         group = vim.api.nvim_create_augroup("lint", { clear = true }),
+        desc = "Run nvim-lint",
         callback = function()
-          require("lint").try_lint()
+          lint.try_lint()
         end,
       })
     end,

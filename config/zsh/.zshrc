@@ -69,9 +69,13 @@ setopt hist_ignore_dups      # Ignore duplicate commands in history
 setopt share_history         # Share history between sessions
 setopt inc_append_history    # Save history immediately
 
-# Starship
-if command -v starship >/dev/null 2>&1; then
-  eval "$(starship init zsh)"
+# Pure
+autoload -Uz promptinit
+promptinit
+if (( $+functions[prompt_pure_setup] )); then
+  PURE_GIT_PULL=1
+  PURE_CMD_MAX_EXEC_TIME=2
+  prompt pure
 fi
 
 # Zoxide

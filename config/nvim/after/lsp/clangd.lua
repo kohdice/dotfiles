@@ -1,7 +1,7 @@
 return {
   cmd = {
     "clangd",
-    "--completion-style=detailed", -- Show detailed completion information
+    "--completion-style=detailed",
   },
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
   root_markers = {

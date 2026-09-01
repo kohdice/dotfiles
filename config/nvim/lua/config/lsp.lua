@@ -1,15 +1,20 @@
--- Global capabilities (enhanced with blink.cmp if available)
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-local has_blink, blink = pcall(require, "blink.cmp")
-if has_blink then
-  capabilities = blink.get_lsp_capabilities(capabilities)
-end
-
-vim.lsp.config("*", {
-  capabilities = capabilities,
+vim.diagnostic.config({
+  virtual_text = {
+    source = "if_many",
+    prefix = "●",
+  },
+  float = {
+    source = "if_many",
+    border = "rounded",
+  },
+  severity_sort = true,
 })
 
--- LspAttach autocmd (keymaps, document highlighting)
+-- No vim.lsp.config("*") call here: blink.cmp already merged its completion
+-- capabilities into it at startup, and a later call would clobber them.
+
+local highlight_group = vim.api.nvim_create_augroup("my-lsp-highlight", { clear = true })
+
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("my-lsp-attach", { clear = true }),
   callback = function(args)
@@ -34,39 +39,60 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     nmap("gK", vim.lsp.buf.signature_help, "Signature Documentation")
 
-    -- C/C++ specific keymaps
     if client.name == "clangd" then
       nmap("<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", "Switch Source/Header (C/C++)")
     end
 
-    -- Document highlighting (cleaned up on LspDetach)
-    if client:supports_method("textDocument/documentHighlight") then
-      local highlight_group = vim.api.nvim_create_augroup("my-lsp-highlight", { clear = false })
+    -- bufnr is required, not optional: omitted, supports_method() falls back to
+    -- the current buffer, and LspAttach also fires for background ones
+    if client:supports_method("textDocument/inlayHint", bufnr) then
+      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+    end
+
+    if client:supports_method("textDocument/documentHighlight", bufnr) then
+      -- The callback runs once per attaching client; clear per buffer so a
+      -- second capable client does not stack duplicate autocmds
+      vim.api.nvim_clear_autocmds({ group = highlight_group, buffer = bufnr })
 
       vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
         group = highlight_group,
         buffer = bufnr,
         callback = vim.lsp.buf.document_highlight,
+        desc = "LSP: highlight references under cursor",
       })
 
       vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = highlight_group,
         buffer = bufnr,
         callback = vim.lsp.buf.clear_references,
-      })
-
-      vim.api.nvim_create_autocmd("LspDetach", {
-        group = vim.api.nvim_create_augroup("my-lsp-detach", { clear = true }),
-        callback = function(args2)
-          vim.lsp.buf.clear_references()
-          vim.api.nvim_clear_autocmds({ group = "my-lsp-highlight", buffer = args2.buf })
-        end,
+        desc = "LSP: clear reference highlights",
       })
     end
   end,
 })
 
--- Enable servers
+-- Module level, not inside LspAttach: clear = true on every attach would
+-- discard the cleanup registered for already-attached buffers
+vim.api.nvim_create_autocmd("LspDetach", {
+  group = vim.api.nvim_create_augroup("my-lsp-detach", { clear = true }),
+  callback = function(args)
+    -- Detach also happens on background buffers (:bd, server crash), and
+    -- clear_references() always targets the current buffer
+    vim.api.nvim_buf_call(args.buf, vim.lsp.buf.clear_references)
+
+    -- The detaching client is still in get_clients() here, so skip it: another
+    -- capable client may still need the highlight autocmds
+    for _, client in ipairs(vim.lsp.get_clients({ bufnr = args.buf })) do
+      if client.id ~= args.data.client_id and client:supports_method("textDocument/documentHighlight", args.buf) then
+        return
+      end
+    end
+
+    vim.api.nvim_clear_autocmds({ group = highlight_group, buffer = args.buf })
+  end,
+  desc = "LSP: clean up document-highlight autocmds",
+})
+
 local servers = {
   "clangd",
   "cssls",

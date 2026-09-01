@@ -40,7 +40,7 @@ Criteria for deciding whether an application config is managed as a Nix module
 | tmux          | Symlink | only ~20% declarative, needs file splitting |
 | neovim        | Symlink | Lua language, no home-manager integration   |
 | ghostty       | Symlink | no home-manager integration                 |
-| starship      | Symlink | no home-manager integration                 |
+| pure          | Nix     | Zsh prompt integration, packaged by nixpkgs |
 | lazygit       | Symlink | no home-manager integration                 |
 | karabiner     | Symlink | JSON config, macOS only                     |
 
@@ -74,12 +74,12 @@ nixpkgs or Homebrew Cask.
 
 ### Current Layout
 
-| Location                      | Current applications                                                                                      |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `modules/darwin/homebrew.nix` | azookey, chatgpt, claude, coteditor, devtoys, ghostty, google-chrome, karabiner-elements, scroll-reverser |
-| `modules/darwin/packages.nix` | container, numi, raycast, vlc-bin                                                                         |
-| `modules/home/packages.nix`   | slack, zoom-us, podman-desktop                                                                            |
-| `users/<name>/darwin.nix`     | kohdice: discord / work: elasticvue, docker-desktop, tableplus                                            |
+| Location | Current applications |
+| --- | --- |
+| `modules/darwin/homebrew.nix` | formula: container / casks: azookey, chatgpt, claude, coteditor, devtoys, ghostty, google-chrome, karabiner-elements, scroll-reverser |
+| `modules/darwin/packages.nix` | numi, raycast, vlc-bin |
+| `modules/home/packages.nix` | slack, zoom-us, podman-desktop |
+| `users/<name>/darwin.nix` | kohdice: discord / work: elasticvue, docker-desktop, tableplus |
 
 ## Symlinks
 
@@ -116,7 +116,6 @@ Agent-related files are split by runtime ownership:
 | ------------------------------------ | ------------------------------------------------- |
 | `config/ghostty`                     | `~/.config/ghostty`                               |
 | `config/nvim`                        | `~/.config/nvim`                                  |
-| `config/starship/starship.toml`      | `~/.config/starship.toml`                         |
 | `config/tmux`                        | `~/.config/tmux`                                  |
 | `config/lazygit`                     | `~/.config/lazygit`                               |
 | `config/zsh-abbr/user-abbreviations` | `~/.config/zsh-abbr/user-abbreviations`           |

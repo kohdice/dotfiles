@@ -24,7 +24,7 @@ return {
     },
   },
   deactivate = function()
-    vim.cmd([[Neotree close]])
+    vim.cmd.Neotree("close")
   end,
   opts = {
     open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
@@ -87,7 +87,9 @@ return {
   config = function(_, opts)
     require("neo-tree").setup(opts)
     vim.api.nvim_create_autocmd("TermClose", {
+      group = vim.api.nvim_create_augroup("my-neo-tree", { clear = true }),
       pattern = "*lazygit",
+      desc = "Refresh neo-tree git status after lazygit closes",
       callback = function()
         if package.loaded["neo-tree.sources.git_status"] then
           require("neo-tree.sources.git_status").refresh()

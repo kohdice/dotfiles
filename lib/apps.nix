@@ -3,7 +3,7 @@
 
 let
   pkgs = inputs.nixpkgs.legacyPackages.${system};
-  isDarwin = pkgs.stdenv.isDarwin;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
 
   # Use the tools pinned by flake.lock instead of registry-resolved ones so
   # the version applying the configuration matches the one that built it.
@@ -13,6 +13,8 @@ let
   # Reference the evaluated flake by store path so build/switch work from any
   # working directory (a bare `.#` resolves against the caller's cwd).
   flakeRef = "${inputs.self}";
+
+  setupSshKeys = import ./setupSshKeys.nix { inherit pkgs; };
 
   buildScript =
     profile:
@@ -41,11 +43,15 @@ let
     ${switchScript "." profile}
   '';
 
-  mkApp = name: description: text: {
+  mkPackageApp = package: description: {
     type = "app";
-    program = pkgs.lib.getExe (pkgs.writeShellApplication { inherit name text; });
+    program = pkgs.lib.getExe package;
     meta.description = description;
   };
+
+  mkApp =
+    name: description: text:
+    mkPackageApp (pkgs.writeShellApplication { inherit name text; }) description;
 in
 {
   build = mkApp "build" "Build kohdice profile" (buildScript "kohdice");
@@ -54,4 +60,5 @@ in
   switch-work = mkApp "switch-work" "Apply work profile" (switchScript flakeRef "work");
   update = mkApp "update" "Update all inputs and apply kohdice profile" (updateScript "kohdice");
   update-work = mkApp "update-work" "Update all inputs and apply work profile" (updateScript "work");
+  setup-ssh-keys = mkPackageApp setupSshKeys "Set up GitHub authentication and Git signing keys";
 }

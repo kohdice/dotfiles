@@ -1,76 +1,57 @@
--- General Settings
-vim.g.mapleader = " " -- Set leader key to space
-vim.opt.number = true -- Enable line numbers
-vim.opt.relativenumber = true -- Enable relative line numbers
-vim.opt.title = true -- Show window title
-vim.opt.shell = "zsh" -- Set default shell to Zsh
+vim.g.mapleader = " "
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.title = true
+vim.opt.shell = "zsh"
 
--- Indentation Settings
-vim.opt.smartindent = true -- Automatically indent based on syntax
-vim.opt.expandtab = true -- Use spaces instead of tabs
-vim.opt.shiftwidth = 4 -- Number of spaces per indentation level
-vim.opt.tabstop = 4 -- Number of spaces a tab counts for
+vim.opt.smartindent = true
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
 
--- Search Settings
-vim.opt.ignorecase = true -- Case-insensitive searching unless capital letter is used
-vim.opt.smartcase = true -- Override ignorecase when search contains uppercase letters
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
 
--- Interface Settings
-vim.opt.cmdheight = 0 -- Hide command line when not in use (Neovim 0.8+ required)
-vim.opt.laststatus = 3 -- Use a global statusline
-vim.opt.scrolloff = 10 -- Keep 10 lines above/below cursor when scrolling
-vim.opt.wrap = false -- Disable line wrapping
-vim.opt.splitbelow = true -- Open horizontal splits below current window
-vim.opt.splitright = true -- Open vertical splits to the right
-vim.opt.splitkeep = "screen" -- Keep scroll position when splitting
-vim.opt.mouse = "a" -- Enable mouse support in all modes
-vim.opt.cursorline = true -- Highlight the current line
+vim.opt.cmdheight = 0
+vim.opt.laststatus = 3 -- 3 = one global statusline instead of one per window
+vim.opt.scrolloff = 10
+vim.opt.wrap = false
+vim.opt.splitbelow = true
+vim.opt.splitright = true
+vim.opt.splitkeep = "screen"
+vim.opt.mouse = "a"
+vim.opt.cursorline = true
 
--- Clipboard Settings
-vim.opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus" -- Sync with system clipboard
+-- Over SSH, leave clipboard unset: "unnamedplus" would route every yank/put
+-- through the OSC 52 terminal roundtrip instead of using it on demand via "+
+vim.opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
 
--- Command Execution Settings
-vim.opt.inccommand = "split" -- Preview incremental substitution results in a split
+vim.opt.inccommand = "split"
 
--- UI Enhancements
+-- The blank entries hide the default '·' fold filler and '~' end-of-buffer marker
 vim.opt.fillchars = {
-  foldopen = "", -- Icon for opened folds
-  foldclose = "", -- Icon for closed folds
-  fold = " ", -- Hide fold background
-  foldsep = " ", -- Hide fold separators
-  diff = "╱", -- Symbol for diff view
-  eob = " ", -- Hide End-of-Buffer markers
+  foldopen = "",
+  foldclose = "",
+  fold = " ",
+  foldsep = " ",
+  diff = "╱",
+  eob = " ",
 }
-vim.opt.grepformat = "%f:%l:%c:%m" -- Configure grep output format
-vim.opt.grepprg = "rg --vimgrep" -- Use ripgrep for searching
-vim.opt.jumpoptions = "view" -- Preserve cursor position when jumping
-vim.opt.list = true -- Display hidden characters
+vim.opt.grepformat = "%f:%l:%c:%m" -- Matches rg --vimgrep output
+vim.opt.grepprg = "rg --vimgrep"
+vim.opt.jumpoptions = "view"
+vim.opt.list = true
 vim.opt.listchars = {
-  eol = "↲", -- End-of-line character
-  tab = "▸ ", -- Tab character
-  trail = "•", -- Trailing spaces
+  eol = "↲",
+  tab = "▸ ",
+  trail = "•",
 }
-vim.opt.signcolumn = "yes" -- Always show sign column to avoid text shifting
+vim.opt.signcolumn = "yes" -- Always reserved so text does not shift when signs appear
 
--- Performance Optimizations
-vim.opt.timeoutlen = 300 -- Adjust timeout for key sequences
-vim.opt.updatetime = 200 -- Reduce time before triggering CursorHold event
-vim.opt.virtualedit = "block" -- Allow cursor to move past end of line in visual block mode
-vim.opt.wildmode = "longest:full,full" -- Configure command-line completion behavior
-vim.opt.smoothscroll = true -- Enable smooth scrolling
+vim.opt.timeoutlen = 300
+vim.opt.updatetime = 200 -- Drives how soon CursorHold fires (LSP document highlight, config/lsp.lua)
+vim.opt.virtualedit = "block"
+vim.opt.wildmode = "longest:full,full" -- First Tab completes the longest common prefix, later Tabs cycle matches
+vim.opt.smoothscroll = true
 
--- Floating Window Borders (Neovim 0.11+)
-vim.o.winborder = "rounded" -- Add rounded borders to all floating windows
-
--- Diagnostic Display
-vim.diagnostic.config({
-  virtual_text = {
-    source = "if_many",
-    prefix = "●",
-  },
-  float = {
-    source = "if_many",
-    border = "rounded",
-  },
-  severity_sort = true,
-})
+vim.o.winborder = "rounded"

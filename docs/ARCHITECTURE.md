@@ -105,6 +105,7 @@ Agent-related files are split by runtime ownership:
 | `config/agents/AGENTS.md`     | `~/.codex/AGENTS.md`                          |
 | `config/agents/skills/*`      | `~/.agents/skills/*` and `~/.claude/skills/*` |
 | `config/claude/CLAUDE.md`     | `~/.claude/CLAUDE.md`                         |
+| `config/claude/rules/`        | `~/.claude/rules/`                            |
 | `config/claude/settings.json` | `~/.claude/settings.json`                     |
 | `config/claude/statusline.sh` | `~/.claude/statusline.sh`                     |
 | `config/codex/agents/*`       | `~/.codex/agents/*`                           |

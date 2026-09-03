@@ -81,6 +81,7 @@ let
   # home.file symlinks (target -> source path in config/)
   homeSymlinks = {
     ".claude/CLAUDE.md" = "config/claude/CLAUDE.md";
+    ".claude/rules" = "config/claude/rules";
     ".claude/hooks" = "config/agents/hooks";
     ".claude/settings.json" = "config/claude/settings.json";
     ".claude/statusline.sh" = "config/claude/statusline.sh";

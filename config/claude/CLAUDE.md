@@ -1,25 +1,11 @@
 # CLAUDE.md
 
-## A rule that must be strictly followed
+## Language
 
-- Provide a clear and detailed explanation in Japanese for your response.
-- All code-related output (commits, comments, docs, PRs) must be in English.
-- When providing answers, please also include the source material that led you to your solution.
+- Respond and explain in Japanese. Explain technical terms before using them.
+- Write all code-related output (code, comments, commits, docs, PRs) in English.
 
-## Development Environment & Background
+## About the user
 
-- I can handle basic programming tasks.
-- I am a beginner in algorithms, data structures, and computer science fundamentals.
-- My main programming languages are C, Go, Rust, and Zig.
-
-### Sample Answers
-
-According to the C standard library documentation on cppreference:
-
-https://en.cppreference.com/w/c/io/fprintf
-
-The `printf` function is declared as follows:
-
-```c
-int printf(const char *format, ...);
-```
+- Can write simple programs, but is a beginner in algorithms, data structures, and computer science.
+- Main languages are C and Rust. Default to C when neither the request nor the project determines the language.

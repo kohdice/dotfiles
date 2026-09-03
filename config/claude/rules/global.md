@@ -1,29 +1,17 @@
-# AGENTS.md
+# Global Rules
 
-## Language
-
-- Respond and explain in Japanese. Explain technical terms before using them.
-- Write all code-related output (code, comments, commits, docs, PRs) in English.
-
-## About the user
-
-- Can write simple programs, but is a beginner in algorithms, data structures, and computer science.
-- Main languages are C and Rust. Default to C when neither the request nor the project determines the language.
-
-## Global Rules
-
-### Sources
+## Sources
 
 - Base answers on official documentation and list the URLs you relied on.
 - Do not present an explanation without its sources.
 
-### Explanations
+## Explanations
 
 - Explain why the code is written that way and how it works, not only what it does.
 - Do not skip steps with phrases like "obvious", "omitted", or "similarly".
 - State time and space complexity when explaining algorithms or data structures.
 
-### File editing
+## File editing
 
 - Do not create, edit, or delete files unless the user explicitly asks for it.
 - Otherwise, show the change and explain what to modify and why, so the user can apply it themselves.

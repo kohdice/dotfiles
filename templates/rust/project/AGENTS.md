@@ -53,7 +53,11 @@ Standard `cargo` commands; no task runner is used.
 - Until the version reaches `1.0.0`, backward compatibility can be disregarded: prioritize changing the implementation to match the recommended approach.
 - APIs should prioritize semantics and consistency.
 - Specify the patch version when adding a new crate to `Cargo.toml`.
-- Follow the Actions / Calculations / Data separation from "Grokking Simplicity": keep data immutable, write logic as pure functions (calculations), and isolate side effects such as I/O (actions) so they are easy to find.
+- Follow the Actions / Calculations / Data separation from "Grokking Simplicity", and isolate actions carefully:
+  - Actions: depend on how many times or when they run (side-effecting / impure functions). Examples: sending an email, reading from a database, any I/O.
+  - Calculations: pure computations from input to output (mathematical functions). Examples: finding the maximum number, checking whether an email address is valid.
+  - Data: facts about events. Examples: the email address a user gave us, the dollar amount read from a bank's API.
+  - Prefer immutable data; write logic as calculations and keep actions at the edges so they are easy to find.
 
 ## Testing Guidelines
 

@@ -115,6 +115,9 @@
     ],
     "defaultMode": "auto"
   },
+  "attribution": {
+    "sessionUrl": false
+  },
   "hooks": {
     "PreToolUse": [
       {

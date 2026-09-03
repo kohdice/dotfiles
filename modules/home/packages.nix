@@ -38,7 +38,6 @@
     agent-browser
     claude-code
     codex
-    herdr
 
     # Build tools
     gnumake

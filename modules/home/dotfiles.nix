@@ -88,6 +88,7 @@ let
     ".codex/AGENTS.md" = "config/agents/AGENTS.md";
     ".codex/config.toml" = "config/codex/config.toml";
     ".codex/hooks" = "config/agents/hooks";
+    ".codex/rules" = "config/codex/rules";
   }
   // sharedSkillClaudeSymlinks
   // claudeSkillSymlinks # Claude-specific skills win on name collision.

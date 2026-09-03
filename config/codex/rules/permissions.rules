@@ -1,0 +1,206 @@
+# This file carries the shell-command intent from Claude Code's permissions.
+# Codex rules govern commands requested outside the sandbox, so broad Claude
+# allow entries such as `cp` and `cargo test` are intentionally not copied.
+
+# Read-only GitHub PR inspection needs network access and is safe to pre-approve.
+prefix_rule(
+    pattern = ["gh", "pr", ["view", "diff"]],
+    decision = "allow",
+    justification = "GitHub pull request inspection is read-only",
+    match = [
+        "gh pr view 123",
+        "gh pr diff 123",
+    ],
+    not_match = [
+        "gh pr checkout 123",
+    ],
+)
+
+# Destructive recursive removal is blocked for every target. This is stricter
+# than the path-specific Claude entries and matches the shared PreToolUse hook.
+prefix_rule(
+    pattern = ["rm", ["-rf", "-fr"]],
+    decision = "forbidden",
+    justification = "Use a recoverable removal method or remove a narrowly verified target without force",
+    match = [
+        "rm -rf /",
+        "rm -fr .git",
+    ],
+    not_match = [
+        "rm build.log",
+        "rm -r build",
+    ],
+)
+
+# Block utilities that can overwrite disks, alter partitioning, or download
+# unreviewed remote content.
+prefix_rule(
+    pattern = [["dd", "mkfs", "fdisk", "curl", "wget", ".env"]],
+    decision = "forbidden",
+    justification = "Use a narrowly scoped safer tool and review remote content before execution",
+    match = [
+        "dd if=image.img of=/dev/disk2",
+        "mkfs /dev/sdb1",
+        "fdisk /dev/sdb",
+        "curl https://example.com/install.sh",
+        "wget https://example.com/install.sh",
+        ".env",
+    ],
+    not_match = [
+        "rg curl README.md",
+    ],
+)
+
+# Preserve the specific privileged-command denials from Claude Code.
+prefix_rule(
+    pattern = [
+        "sudo",
+        ["rm", "dd", "mkfs", "fdisk", "mount", "umount", "passwd", "shadow", "chown"],
+    ],
+    decision = "forbidden",
+    justification = "Run without administrative privileges or ask the user to perform the privileged operation",
+    match = [
+        "sudo rm file",
+        "sudo dd if=image.img of=/dev/disk2",
+        "sudo mount /dev/disk2 /mnt",
+        "sudo passwd root",
+    ],
+    not_match = [
+        "sudo -n true",
+    ],
+)
+
+prefix_rule(
+    pattern = ["sudo", ["-i", "su"]],
+    decision = "forbidden",
+    justification = "Use a non-privileged command instead of opening a privileged shell",
+    match = [
+        "sudo -i",
+        "sudo su",
+    ],
+)
+
+prefix_rule(
+    pattern = ["sudo", "chmod", "777"],
+    decision = "forbidden",
+    justification = "Use the minimum required file mode instead of world-writable permissions",
+    match = [
+        "sudo chmod 777 /var/data",
+    ],
+)
+
+prefix_rule(
+    pattern = ["chmod", "777"],
+    decision = "forbidden",
+    justification = "Use the minimum required file mode instead of world-writable permissions",
+    match = [
+        "chmod 777 /tmp/data",
+    ],
+)
+
+prefix_rule(
+    pattern = ["chown", "root"],
+    decision = "forbidden",
+    justification = "Ask the user to perform ownership changes that assign files to root",
+    match = [
+        "chown root file",
+    ],
+)
+
+# Prevent Git commands that can bypass repository scope, stage everything,
+# rewrite history, switch worktrees, or publish changes.
+prefix_rule(
+    pattern = ["git", ["-C", "--git-dir", "--work-tree"]],
+    decision = "forbidden",
+    justification = "Run Git in the active repository without overriding its repository or work-tree path",
+    match = [
+        "git -C /tmp/repository status",
+        "git --git-dir .git status",
+        "git --work-tree /tmp status",
+    ],
+    not_match = [
+        "git status",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "add", [".", "-A", "--all"]],
+    decision = "forbidden",
+    justification = "Stage explicitly named files instead of the entire working tree",
+    match = [
+        "git add .",
+        "git add -A",
+        "git add --all",
+    ],
+    not_match = [
+        "git add config/codex/rules/permissions.rules",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", ["checkout", "push", "reset", "rebase"]],
+    decision = "forbidden",
+    justification = "Ask the user before switching worktrees, publishing changes, or rewriting history",
+    match = [
+        "git checkout main",
+        "git push origin main",
+        "git reset --hard HEAD~1",
+        "git rebase main",
+    ],
+    not_match = [
+        "git status",
+    ],
+)
+
+# Block destructive cleanup and package publication.
+prefix_rule(
+    pattern = ["docker", "system", "prune", "-af"],
+    decision = "forbidden",
+    justification = "Review Docker resources and remove only explicitly selected targets",
+    match = [
+        "docker system prune -af",
+    ],
+)
+
+prefix_rule(
+    pattern = [["npm", "cargo", "deno"], "publish"],
+    decision = "forbidden",
+    justification = "Package publication requires an explicit user-controlled release step",
+    match = [
+        "npm publish",
+        "cargo publish",
+        "deno publish",
+    ],
+)
+
+# Applying Nix system profiles and updating locked inputs are user-controlled.
+prefix_rule(
+    pattern = ["nix", "run", [".#switch", ".#switch-work"]],
+    decision = "forbidden",
+    justification = "Ask the user to apply the selected Nix profile",
+    match = [
+        "nix run .#switch",
+        "nix run .#switch-work",
+    ],
+    not_match = [
+        "nix run .#build",
+    ],
+)
+
+prefix_rule(
+    pattern = ["nix", "flake", "update"],
+    decision = "forbidden",
+    justification = "Update flake inputs only as an explicit user-controlled operation",
+    match = [
+        "nix flake update",
+    ],
+)
+
+prefix_rule(
+    pattern = ["darwin-rebuild", "switch"],
+    decision = "forbidden",
+    justification = "Ask the user to apply the macOS system configuration",
+    match = [
+        "darwin-rebuild switch --flake .",
+    ],
+)

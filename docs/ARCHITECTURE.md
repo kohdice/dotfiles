@@ -74,12 +74,12 @@ nixpkgs or Homebrew Cask.
 
 ### Current Layout
 
-| Location | Current applications |
-| --- | --- |
+| Location                      | Current applications                                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `modules/darwin/homebrew.nix` | formula: container / casks: azookey, chatgpt, claude, coteditor, devtoys, ghostty, google-chrome, karabiner-elements, scroll-reverser |
-| `modules/darwin/packages.nix` | numi, raycast, vlc-bin |
-| `modules/home/packages.nix` | slack, zoom-us, podman-desktop |
-| `users/<name>/darwin.nix` | kohdice: discord / work: elasticvue, docker-desktop, tableplus |
+| `modules/darwin/packages.nix` | numi, raycast, vlc-bin                                                                                                                |
+| `modules/home/packages.nix`   | slack, zoom-us, podman-desktop                                                                                                        |
+| `users/<name>/darwin.nix`     | kohdice: discord / work: elasticvue, docker-desktop, tableplus                                                                        |
 
 ## Symlinks
 
@@ -110,6 +110,7 @@ Agent-related files are split by runtime ownership:
 | `config/claude/statusline.sh` | `~/.claude/statusline.sh`                     |
 | `config/codex/agents/*`       | `~/.codex/agents/*`                           |
 | `config/codex/config.toml`    | `~/.codex/config.toml`                        |
+| `config/codex/rules/`         | `~/.codex/rules/`                             |
 
 ### ~/.config (xdg.configFile)
 

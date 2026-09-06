@@ -20,7 +20,6 @@
 
     # GUI applications (Cask)
     casks = [
-      "azookey"
       "coteditor"
       "ghostty"
       "google-chrome"

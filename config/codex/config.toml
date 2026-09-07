@@ -1,10 +1,28 @@
 approval_policy = "on-request"
+approvals_reviewer = "user"
+default_permissions = "development"
 hide_agent_reasoning = true
 model = "gpt-6-astra"
 # model_context_window = 1000000
 # model_auto_compact_token_limit = 950000
 model_reasoning_effort = "xhigh"
 personality = "pragmatic"
+
+[permissions.development]
+extends = ":workspace"
+
+[permissions.development.filesystem]
+"~/.aws" = "deny"
+"~/.config/gcloud" = "deny"
+"~/.boto" = "deny"
+
+[permissions.cloud-protected-read-only]
+extends = ":read-only"
+
+[permissions.cloud-protected-read-only.filesystem]
+"~/.aws" = "deny"
+"~/.config/gcloud" = "deny"
+"~/.boto" = "deny"
 
 [features]
 collaboration_modes = true
@@ -135,11 +153,6 @@ status_line = [
     "five-hour-limit",
     "weekly-limit",
 ]
-
-[tui.model_availability_nux]
-"gpt-5.5" = 4
-"gpt-5.6-sol" = 4
-gpt-6-astra = 1
 
 [[skills.config]]
 path = "~/.agents/skills/architecture-patterns"

@@ -1,7 +1,7 @@
 name = "pr-review-type-design-invariants"
 description = "Read-only PR reviewer for type design, data modeling, invariants, ownership boundaries, and invalid states."
 model_reasoning_effort = "high"
-sandbox_mode = "read-only"
+default_permissions = "cloud-protected-read-only"
 nickname_candidates = ["Type Review", "Design Review", "Invariant Review"]
 
 developer_instructions = """

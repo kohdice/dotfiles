@@ -2,6 +2,12 @@
 # Codex rules govern commands requested outside the sandbox, so broad Claude
 # allow entries such as `cp` and `cargo test` are intentionally not copied.
 
+prefix_rule(
+    pattern = [["aws", "gcloud", "gsutil", "bq"]],
+    decision = "prompt",
+    justification = "Cloud CLI commands require explicit user approval.",
+)
+
 # Read-only GitHub PR inspection needs network access and is safe to pre-approve.
 prefix_rule(
     pattern = ["gh", "pr", ["view", "diff"]],

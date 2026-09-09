@@ -49,7 +49,7 @@ return {
           yaml = { "yamlfmt" },
           zig = { "zigfmt" },
           -- Catch-all. "prefer" over "fallback": trim_newlines always counts as
-          -- available, so "fallback" would never reach the LSP (js/ts via tsgo).
+          -- available, so "fallback" would never reach the LSP (js/ts via tsc).
           ["_"] = { "trim_newlines", lsp_format = "prefer" },
         },
         -- Here rather than at the call sites: caller opts outrank the

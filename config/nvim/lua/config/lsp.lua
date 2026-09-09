@@ -107,7 +107,7 @@ local servers = {
   "rust_analyzer",
   "taplo",
   "terraformls",
-  "tsgo",
+  "tsc",
   "yamlls",
   "zls",
 }

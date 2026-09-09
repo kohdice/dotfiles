@@ -8,7 +8,7 @@
     deno
 
     # TypeScript 7 native compiler and LSP
-    typescript-go
+    typescript
 
     # Formatter
     prettierd

@@ -69,10 +69,6 @@ return {
     event = { "BufReadPost", "BufNewFile" },
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     config = function()
-      require("nvim-treesitter-textobjects").setup({
-        move = { set_jumps = true },
-      })
-
       local move = require("nvim-treesitter-textobjects.move")
       local map = function(lhs, fn, query, desc)
         vim.keymap.set({ "n", "x", "o" }, lhs, function()

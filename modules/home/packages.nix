@@ -26,7 +26,7 @@
     # Development tools
     devcontainer
     podman
-    podman-desktop
+    podman-compose
     shellcheck
     typos
 

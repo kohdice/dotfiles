@@ -33,7 +33,7 @@ return {
           lua = { "stylua" },
           markdown = { "prettierd", "prettier", stop_after_first = true },
           objcpp = { lsp_format = "prefer" },
-          proto = { lsp_format = "prefer" },
+          proto = { "clang_format" },
           python = function(bufnr)
             if require("conform").get_formatter_info("ruff_format", bufnr).available then
               return { "ruff_format" }

@@ -6,8 +6,8 @@ This file provides guidance to AI agents and agentic coding tools when working w
 
 Rust project organized as a Cargo workspace.
 
-- Rust toolchain: `1.97` (`channel` in `rust-toolchain.toml`)
-- Edition: `2024` (`edition` in workspace `Cargo.toml`; MSRV `rust-version = "1.97"`, also mirrored in `clippy.toml` `msrv`)
+- Rust toolchain: `1.98` (`channel` in `rust-toolchain.toml`)
+- Edition: `2024` (`edition` in workspace `Cargo.toml`; MSRV `rust-version = "1.98"`, also mirrored in `clippy.toml` `msrv`)
 - Workspace layout: a Cargo workspace (`resolver = "3"`) with members under `crates/*`:
   - Binary crates own process-level concerns such as CLI argument parsing, logging setup, and application startup.
   - Library crates own reusable functionality such as input validation, domain logic, external-system access, and response conversion.

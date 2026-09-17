@@ -26,7 +26,7 @@ Hard rules derived from the baseline:
 
 ## Catalog coverage and verification
 
-**Catalog coverage version: Rust 1.97.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
+**Catalog coverage version: Rust 1.98.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
 
 - **Staleness guard**: the resolved MSRV, a concrete pinned toolchain-file version, or the installed toolchain (`rustc --version`) is newer than the coverage version above. (In a read-only review or when the toolchain cannot be invoked, judge staleness on the resolved MSRV and the toolchain file alone — do not block on `rustc --version`.) The catalog is out of date for this project. Do both: (a) check the release notes for everything stabilized between the coverage version and the actual version, and follow those newer official recommendations now; (b) tell the user this skill's catalog needs updating to the new version (see Maintenance below).
 - A feature or its stabilizing version is **not listed here** AND is **boundary-relevant** — plausibly stabilized at or after the catalog floor (1.65) or near the resolved MSRV: never trust memory for stabilization versions; verify before gating on it. Long-established std APIs that clearly predate the catalog floor (e.g. `map_or`, `min`, `parse`, `checked_*`) need no verification.
@@ -34,9 +34,9 @@ Hard rules derived from the baseline:
 
 Verification sources, in order of authority:
 
-1. Release notes: https://github.com/rust-lang/rust/blob/master/RELEASES.md (exact stabilization versions)
+1. Release notes: https://doc.rust-lang.org/releases.html#version-1980-2026-08-20 (current coverage); https://github.com/rust-lang/rust/blob/master/RELEASES.md (exact stabilization versions)
 2. Edition Guide: https://doc.rust-lang.org/edition-guide/ (edition-gated semantics)
-3. Announcements: https://blog.rust-lang.org/ (context for changes)
+3. Announcements: https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/ (context for the current release)
 
 **Verification fallback**: if a source is unreachable (offline, sandboxed, restricted), try at most one alternate route, then stop and degrade: prefer a construct whose version is already catalog-listed; if none fits, state the recommendation with an explicit "unverified" label and the assumed stabilizing version. Never let unreachable sources block the deliverable or trigger repeated fetch attempts.
 
@@ -45,7 +45,7 @@ Verification sources, in order of authority:
 When asked to update this skill after a new stable release:
 
 1. Read the release notes (RELEASES.md) for every version between the coverage version and the new stable.
-2. Add newly stabilized idioms to the catalog with their stabilizing version; add newly std-absorbed dependencies; add new edition semantics if an edition shipped.
+2. Add newly stabilized idioms to the catalog with their stabilizing version; add newly std-absorbed dependencies; add new edition semantics if an edition shipped. Record compiler and lint compatibility changes separately from API stabilization.
 3. Remove nothing that older MSRVs may still need — the catalog is version-tagged precisely so old and new baselines coexist.
 4. Bump the coverage version at the top of "Catalog coverage and verification".
 5. **Floor raise** (only when both hold: SKILL.md is approaching ~300 lines, AND the floor-end entries are old enough that virtually all maintained projects' MSRVs exceed them): raise the catalog floor instead of deleting. Move entries stabilized below the new floor — version tags intact — to `references/archive.md`, bump the floor version wherever it is stated in this file, and amend the boundary-verification rule so the archive is consulted for below-floor stabilization versions before fetching release notes. This keeps rule 3 satisfied: nothing is removed from the skill's knowledge, only demoted out of the always-loaded window.
@@ -72,6 +72,7 @@ Flag these dependencies (severity: `[recommend]` when the replacement is within 
 - `cfg-if` → `cfg_select!` macro (1.95); within-baseline fallback: keep `cfg-if`, or expand to plain `#[cfg]` attributes
 - `async-trait` → native `async fn` in traits where dyn-compatibility is not required (1.75)
 - `assert_matches` crate → std `assert_matches!` / `debug_assert_matches!` (1.96)
+- `itoa` → primitive integer `format_into` with [`core::fmt::NumBuffer`](https://doc.rust-lang.org/core/fmt/struct.NumBuffer.html) (1.98), when its only use is decimal formatting into a borrowed `&str`; this is not a general formatting or floating-point replacement
 
 ## 2024 Edition semantics
 
@@ -102,7 +103,24 @@ Prefer these over older equivalents, subject to the MSRV/edition rules above:
 - `assert_matches!` / `debug_assert_matches!` instead of `assert!(matches!(...))` when asserting on a pattern (1.96)
 - `core::range` Copy-able range types (`Range`, `RangeFrom`, `RangeInclusive`, `RangeToInclusive`) when storing a range in a `Copy` type, instead of splitting into separate start/end fields (1.96); note: range syntax (`a..b`) still produces the legacy `core::ops` types, so conversion is explicit — do not flag ordinary use of `core::ops` ranges
 - Integer bit-query methods `bit_width`, `highest_one`, `lowest_one`, `isolate_highest_one`, `isolate_lowest_one` (also on `NonZero`) instead of manual `leading_zeros`/`trailing_zeros` arithmetic (1.97)
+- Integer [`format_into`](https://doc.rust-lang.org/std/primitive.u32.html#method.format_into) with `core::fmt::NumBuffer` for decimal text consumed as a borrowed `&str`, instead of allocating a temporary `String` (1.98); retain general formatting when width, radix, or custom formatting is required
+- [`str::substr_range`](https://doc.rust-lang.org/std/primitive.str.html#method.substr_range) / [`[T]::subslice_range`](https://doc.rust-lang.org/std/primitive.slice.html#method.subslice_range) to locate an existing borrow within its source (1.98); these inspect storage, not matching contents, and return `Option<core::range::Range<usize>>`; account for the documented empty-slice and zero-sized-type limitations
+- `str` / `[T]` [`strip_circumfix`](https://doc.rust-lang.org/std/primitive.str.html#method.strip_circumfix) when both a prefix and suffix must match and be removed together (1.98); preserve rejection of missing or overlapping delimiters
+- [`NonZero::from_str_radix`](https://doc.rust-lang.org/std/num/struct.NonZero.html#method.from_str_radix) instead of parsing an integer and separately rejecting zero (1.98); preserve the caller's error contract
+- [`String::from_utf16le` / `from_utf16be`](https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf16le) and their `_lossy` variants for UTF-16 byte slices with known endianness (1.98); use lossy decoding only when replacing invalid input is intended
+- Concrete atomic types' `from_mut`, `from_mut_slice`, and `get_mut_slice` for safe conversion through exclusive borrows (1.98), e.g. [`AtomicU32::from_mut`](https://doc.rust-lang.org/std/sync/atomic/struct.AtomicU32.html#method.from_mut); `from_mut` / `from_mut_slice` require matching atomic/primitive alignment on the target. This does not stabilize the generic `Atomic<T>` type
+- `f32` / `f64` [`algebraic_*`](https://doc.rust-lang.org/std/primitive.f32.html#algebraic-operators) methods (1.98) are not routine replacements for arithmetic operators: they permit algebraic transformations with weaker, non-deterministic floating-point results; consider them only when the numerical contract permits those semantics and measurements justify the change
 - Do NOT use `core::hint::cold_path` or other perf hints unless profiling-driven intent is already evident
+
+## Compiler compatibility
+
+Apply these checks to the compiler used to build the project, or an explicit upgrade target, even when the MSRV is older. An MSRV limits available APIs; it does not disable newer compiler diagnostics. Use a concrete toolchain pin or known build compiler version; if neither is known, state that applicability is conditional. Keep fixes within the resolved MSRV and edition.
+
+From [Rust 1.98](https://doc.rust-lang.org/releases.html#version-1980-2026-08-20):
+
+- Runtime symbol definitions can trigger `invalid_runtime_symbol_definitions` (deny by default) or `suspicious_runtime_symbol_definitions` (warn by default); inspect affected definitions such as `memcmp` and `memset` when present. `c_void_returns` warns about returning `core::ffi::c_void` by value.
+- Some ambiguous imports, including cases previously covered by `ambiguous_glob_imports`, are now errors. Prefer explicit imports where ambiguity occurs. Recheck `repr(transparent)` wrappers that rely on extra fields having trivial layout; the compiler now rejects more such layouts.
+- rustfmt discovers module files declared inside `cfg_select!`; an upgrade can expose previously unformatted files. This formatter change does not alter `cfg_select!`'s stabilization version (1.95).
 
 ## Official style and API guidelines
 

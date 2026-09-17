@@ -23,7 +23,7 @@ When a claim about cost is cheap to check statically, check it (e.g., `go build 
 
 ### Respect the project's language baseline
 
-Version resolution is owned by the matching idiom skill (`c-idioms`, `go-idioms`, `rust-idioms`, `zig-idioms`): resolve the baseline from the build manifest (`-std=`, `go.mod` go directive, `Cargo.toml` edition/rust-version, `build.zig.zon` minimum_zig_version) before recommending version-gated APIs. The per-language references below are verified against C23, Go 1.26, Rust 1.95 (2024 Edition), and Zig 0.16.0; entries gated on a newer version than the project's baseline must be presented as upgrade-gated options, not applied silently.
+Version resolution is owned by the matching idiom skill (`c-idioms`, `go-idioms`, `rust-idioms`, `zig-idioms`): resolve the baseline from the build manifest (`-std=`, `go.mod` go directive, `Cargo.toml` edition/rust-version, `build.zig.zon` minimum_zig_version) before recommending version-gated APIs. The per-language references below are verified against C23, Go 1.26, Rust 1.98 (2024 Edition), and Zig 0.16.0; entries gated on a newer version than the project's baseline must be presented as upgrade-gated options, not applied silently.
 
 ### Correctness before speed
 

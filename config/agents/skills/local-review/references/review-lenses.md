@@ -1,10 +1,10 @@
 # Review lenses (local scope)
 
-Detailed material for SKILL.md workflow step 3. Defines the lens catalog, lens selection, the dispatch contract, the findings schema, whole-codebase chunking, and the parent's synthesis rules.
+Detailed material for SKILL.md workflow step 3. Defines the lens catalog, lens selection, execution modes, the dispatch contract, the findings schema, whole-codebase chunking, and the parent's synthesis rules.
 
 ## Lens catalog
 
-The named agents below are runtime-neutral reviewer roles. Use the matching named agent when the current runtime has loaded it from that runtime's agent discovery path or plugin system. If a matching named agent is unavailable, run the selected lens through a generic read-only sub-agent; if sub-agents are unavailable, run the selected lenses inline in the parent, single-pass, after reading each selected lens's knowledge skill.
+The named agents below are runtime-neutral reviewer roles. Use the matching named agent when the current runtime has loaded it from that runtime's agent discovery path or plugin system. If a matching named agent is unavailable, run the selected lens through a generic read-only sub-agent; when the scope is small, or sub-agents are unavailable, run the selected lenses directly in the parent, single-pass, after reading each selected lens's knowledge skill (see "Execution modes" below).
 
 | Lens         | Named agent (if loaded)                                                                 | Knowledge skill                                                                   | Focus                                                                                                                                                                                                                                                                                                          | Severity notes                                                                    |
 | ------------ | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
@@ -15,16 +15,32 @@ The named agents below are runtime-neutral reviewer roles. Use the matching name
 | comment      | `comment-reviewer`                                                                      | `comment-patterns`                                                                | Comment content value and accuracy: restating/journal/banner noise, echo doc comments missing the real contract, stale or misleading comments, dead TODOs, missing why-comments on demonstrably non-obvious logic                                                                                              | Advisory by default; High only for a misleading comment the code contradicts      |
 | correctness  | — (generic read-only sub-agent)                                                         | — (no knowledge skill yet)                                                        | Logic errors, off-by-one, edge cases, broken control flow, swallowed errors. For files outside the four languages (docs, configs): internal contradictions, broken references to files/agents/settings, invalid or inconsistent configuration — judged by reading, never by running validators or interpreters | High = a path that produces wrong results or silently drops an error              |
 
-**Knowledge skills** hold each lens's full checklist (principles, pattern catalog, accepted/not-flagged criteria). Read them from the current runtime's installed skill location. In this repository the shared skills are linked into both `~/.agents/skills/` and `~/.claude/skills/`. The named agents are expected to preload or explicitly use their knowledge skill, so dispatch prompts for them need not restate it. When a lens runs **without** its named agent — a generic sub-agent, or the inline fallback — read the knowledge skill's `SKILL.md` first and apply its catalog and accepted criteria as the checklist; the Focus column above is only a selection summary, not the checklist. Exception: `correctness` has no knowledge skill, so its Focus cell is deliberately written out in full and serves as its complete checklist.
+**Knowledge skills** hold each lens's full checklist (principles, pattern catalog, accepted/not-flagged criteria). They are sibling skills of this one: resolve `<skills root>/<name>/SKILL.md` relative to the directory this skill was loaded from, and pass the absolute path into any dispatch that must read one. The named agents are expected to preload or explicitly use their knowledge skill, so dispatch prompts for them need not restate it. When a lens runs **without** its named agent — a generic sub-agent, or the inline fallback — read the knowledge skill's `SKILL.md` first and apply its catalog and accepted criteria as the checklist; the Focus column above is only a selection summary, not the checklist. Exception: `correctness` has no knowledge skill, so its Focus cell is deliberately written out in full and serves as its complete checklist.
 
 Severity below High is lens-independent: Medium = misbehavior under a plausible condition; Low = a minor robustness gap or an issue unlikely to fire in practice.
 
 ## Lens selection
 
-- **working diff / branch diff / path**: dispatch `correctness` + one idiom lens per language present + the four cross-language lenses (`architecture`, `performance`, `simplicity`, `comment`). Drop `performance` when nothing in scope is hot code per performance-patterns' "Hot path first" definition (code whose call context multiplies its executions: functions run per-request, per-item, or per-frame; recursive calls; code called (directly or transitively) from other hot code; loop bodies iterating over input-sized or unbounded data — judged by call context, not code shape alone; de-minimis: a single leaf function with no known hot caller and no throughput or latency mention is cold); drop `architecture` when no files moved and no imports changed; note every dropped lens in the report. Added files count as import changes (their entire import block is new) and are judged hot by the same definition as modified files; when unsure whether a drop condition holds, run the lens.
-- **all (audit)**: dispatch every lens, chunked as described below.
+Select lenses from what the change actually touches. Read the diff (or the file list for a path scope) first; then, for **working diff / branch diff / path** scope:
+
+- `correctness`: always.
+- `idiom`: one per language present among the changed C/Go/Rust/Zig files.
+- `architecture`: when a file was added or moved, an import/include/use block changed, a new package/module/crate appeared, or code crossed a layer boundary. Added files count as import changes (their entire import block is new).
+- `performance`: when something in scope is hot code per performance-patterns' "Hot path first" definition (code whose call context multiplies its executions: functions run per-request, per-item, or per-frame; recursive calls; code called (directly or transitively) from other hot code; loop bodies iterating over input-sized or unbounded data — judged by call context, not code shape alone; de-minimis: a single leaf function with no known hot caller and no throughput or latency mention is cold).
+- `simplicity`: when the change adds or reshapes an abstraction — an interface/trait, generic, builder, wrapper, new layer or module, option or flag — or adds more than a few lines of new structure; not for a change that only fills in a straight-line function.
+- `comment`: when the change adds or edits comments or doc comments, or touches code whose existing comments make claims the change could invalidate.
+
+Note every lens not selected in the report, with its one-line reason. When unsure whether a condition holds, select the lens. The user may name lenses explicitly ("just check comments"); an explicit ask overrides the selection above.
+
+- **all (audit)**: every lens, chunked as described below.
 - Files outside C/Go/Rust/Zig get only `correctness`. This rule wins over the per-scope lists above: the idiom and cross-language lenses apply only to files in those four languages, so when every in-scope file is outside them, dispatch `correctness` alone and list the other lenses as skipped.
-- `correctness` has no named agent in any runtime. In multi-agent mode, dispatch it to a generic read-only sub-agent (prefer a read-only agent type such as Explore when available; otherwise a general-purpose type) with the dispatch contract below — the run still counts as multi-agent. In inline-fallback mode it runs inline like every other lens.
+- `correctness` has no named agent in any runtime. In delegated mode, dispatch it to a generic read-only sub-agent (prefer a read-only agent type such as Explore when available; otherwise a general-purpose type) with the dispatch contract below — the run still counts as delegated. In direct mode it runs in the parent like every other lens.
+
+## Execution modes
+
+- **Delegated**: one read-only sub-agent per selected lens, in parallel — the named agent when loaded, otherwise a generic read-only sub-agent given the lens's knowledge-skill path. Use it when the scope is more than a handful of files, spans several languages, is an `all` audit, or when independent perspectives matter (a reviewer that has not seen the author's reasoning judges cold). The implement-review-loop skill always uses this mode with fresh sub-agents each round; the direct mode below is for standalone use of this skill only.
+- **Direct**: the parent reads each selected lens's knowledge skill and applies the lenses itself in one pass. Use it for a small scope — roughly a handful of files in one language — where the coordination cost of several sub-agents outweighs the isolation, and as the fallback when dispatch tooling is unavailable. The report labels the run as direct (single-pass).
+- Either way the findings schema, severity definitions, and synthesis rules below apply unchanged.
 - Overlap rules when the named agents are dispatched: `correctness` must not comment on style or idiom (the idiom reviewers own official style), structure (architecture), complexity (simplicity), runtime cost (performance), or comment prose (comment). `comment` must not flag doc-comment format or mandated presence (the idiom lenses own official format) nor commented-out code blocks (simplicity owns dead code).
 
 ## Dispatch contract (per sub-agent)
@@ -44,7 +60,7 @@ You are a read-only reviewer applying the <LENS> lens to local code (not a GitHu
 
 ## Lens
 <focus and severity notes for this lens, from the catalog>
-<generic sub-agent only (named agent not loaded): "Before reviewing, read the <knowledge skill> skill from the current runtime's installed skill location and apply its pattern catalog and accepted criteria as your checklist." Omit for named agents — they preload or explicitly use it — and for lenses with no knowledge skill.>
+<generic sub-agent only (named agent not loaded): "Before reviewing, read the <knowledge skill> skill at <absolute path resolved by the parent> and apply its pattern catalog and accepted criteria as your checklist." Omit for named agents — they preload or explicitly use it — and for lenses with no knowledge skill.>
 
 ## Hard constraints
 - READ-ONLY: no file edits, no git writes, no worktrees or branches.
@@ -100,9 +116,9 @@ A whole codebase does not fit one agent's context; chunk it and log coverage. A 
 
 ## Synthesis (parent only)
 
-1. Wait for every dispatched lens (or finish the inline single-pass for every selected lens).
+1. Wait for every dispatched lens (or finish the direct single pass for every selected lens).
 2. Flatten all findings into one list; drop findings not grounded in the actual code — re-read the cited lines for every finding you keep (verification is by reading, never by executing).
 3. Merge findings by root cause, not by position — `(path, line)` equality is only the first approximation, and two findings share a root cause exactly when a single fix resolves both (two failure modes of one expression: same cause; two problems on one line needing different fixes: separate causes). Findings on different-but-nearby lines that share one root cause (a doc comment and the loop it describes, an unwired file flagged at two lines) become one entry listing every contributing lens and anchor line; findings on the same line with unrelated root causes stay separate entries. When the single-fix test and these examples disagree (a comment contradicted by two independent bugs, so no single fix clears it), the single-fix test wins — the examples illustrate the test, they do not extend it. The merged entry's severity is the highest one that its lens's severity notes actually justify — re-judge against the catalog rather than blindly taking the max (an advisory-by-default lens's High counts only when its "High only for ..." condition holds).
 4. Group by severity: High → Medium → Low. Each entry: `path:line`, lens, body, and the proposed fix if one was returned.
-5. Write one report in the conversation language (code in English): a one-paragraph overall assessment first, then the grouped findings, then coverage (lenses run / skipped with reasons; chunks covered / dropped for `all` scope; whether the run was multi-agent or single-pass).
+5. Write one report in the conversation language (code in English): a one-paragraph overall assessment first, then the grouped findings, then coverage (lenses run / not selected with reasons; chunks covered / dropped for `all` scope; whether the run was delegated or direct).
 6. Propose fixes only as recommendations — this skill never applies them.

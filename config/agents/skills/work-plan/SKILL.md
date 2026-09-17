@@ -1,6 +1,6 @@
 ---
 name: work-plan
-description: "This skill should be used when the user asks to plan work that will NOT be implemented with TDD — any task without automatically testable application behavior, regardless of technology: infrastructure (Terraform, Nix, Kubernetes, cloud resources), configuration, CI/CD pipelines, documentation, build scripts, data/schema migrations, repository housekeeping, tooling setup. Triggers on phrases like: 'plan the Terraform setup', 'create a work plan for <task>', 'plan this migration', 'インフラ構築の計画を立てて', '作業プランを作って', 'CI 設定変更を計画して', 'ドキュメント整備の計画を作って'. It produces a checklist plan in `.plans/` where every item carries a verification step with an expected outcome, ready for execution by the work-implement skill. Do NOT use when the requested change has automatically testable application behavior — the tdd-plan skill owns that. Do NOT use to execute a plan — the work-implement skill owns execution, and the tdd skill owns `/tdd`."
+description: "This skill should be used when the user asks to plan work that will NOT be implemented with TDD — any task without automatically testable application behavior: infrastructure (Terraform, Nix, Kubernetes, cloud resources), configuration, CI/CD pipelines, documentation, build scripts, data/schema migrations, repository housekeeping, tooling setup. Triggers on phrases like: 'plan the Terraform setup', 'create a work plan for <task>', 'plan this migration', 'インフラ構築の計画を立てて', '作業プランを作って', 'CI 設定変更を計画して', 'ドキュメント整備の計画を作って'. It produces a checklist plan in `.plans/` where every item carries a verification step with an expected outcome, ready for execution by the work-implement skill. Do NOT use when the requested change has automatically testable application behavior — the tdd-plan skill owns that. Do NOT use to execute a plan — the work-implement skill owns execution."
 ---
 
 # Work Plan (non-TDD planning)
@@ -36,7 +36,7 @@ A checklist without completion criteria is a todo list, not a plan. Every item i
 ### Step 2: Analyze the Target
 
 1. Read the relevant files, modules, and configuration to understand the current state.
-2. Identify the project's check commands: validators (`terraform validate`, `nix flake check`), formatters/linters, dry-run builders (`terraform plan`, `nix run .#build`, `--dry-run` flags), and any full-project check. Record them — the plan's Context names a **global check command** when one exists, and work-implement runs it as a baseline and after every item.
+2. Identify the project's check commands: validators (`terraform validate`, `nix flake check`), formatters/linters, dry-run builders (`terraform plan`, `nix run .#build`, `--dry-run` flags), and any full-project check. Record them — the plan's Context names a **global check command** when one exists, and work-implement runs it as a baseline, at phase and plan completion, and before suggesting a commit.
 3. Identify prerequisites the executor needs: required CLIs, credentials/authentication, target environment or workspace names, network access. Record them in Context; never record secret values.
 4. Note constraints: ordering dependencies, state that must not be touched, maintenance windows, anything irreversible.
 

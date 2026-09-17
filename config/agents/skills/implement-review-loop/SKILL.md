@@ -1,6 +1,6 @@
 ---
 name: implement-review-loop
-description: This skill should be used when the user asks, in one request, to implement and iterate with review until findings are resolved — "implement <feature> and fix the review findings", "レビューが通るまで実装して", "実装してレビュー指摘を潰して仕上げて", "レビューつきで実装して", "implement with a review loop". It orchestrates a bounded implement → review → fix loop: the implement skill's workflow builds the feature, the local-review skill's workflow reviews the resulting diff with fresh reviewer sub-agents each round, and high-severity (blocking) findings are fixed via fix dispatches (optionally medium too, when the user asks for a stricter gate up front) — capped at 2 fix rounds (3 only when the user explicitly asks for more; 1 in the inline fallback when sub-agent dispatch is unavailable), with a findings ledger that stops the loop when a fixed finding recurs. Findings below the gate are reported, never auto-fixed. Do NOT use for implementation without a review loop (implement skill), review without applying fixes (local-review skill), plan creation only (tdd-plan skill), fixing findings from a review that already happened (follow-up implementation, not a loop), or work with no testable application behavior.
+description: This skill should be used when the user asks, in one request, to implement and iterate with review until findings are resolved — "implement <feature> and fix the review findings", "レビューが通るまで実装して", "実装してレビュー指摘を潰して仕上げて", "レビューつきで実装して", "implement with a review loop". It runs a bounded implement → review → fix loop on top of the implement and local-review skills — fresh reviewer sub-agents every round, only high-severity findings fixed (medium too on request, set up front), at most 2 fix rounds (3 on explicit request; 1 inline), and a findings ledger that stops the loop when a fixed finding recurs. Findings below the gate are reported, never auto-fixed. Do NOT use for implementation without a review loop (implement skill), review without fixes (local-review skill), plan creation only (tdd-plan skill), fixing findings from a review that already happened, or work with no testable application behavior.
 ---
 
 # Implement-Review Loop (bounded quality loop orchestrator)
@@ -11,11 +11,11 @@ This skill is a thin orchestrator. It owns exactly three things: **loop control*
 
 ## Principles
 
-- **Composition by reference, not restatement**: The implement skill owns how code gets written (plan resolution, sequential TDD dispatch, suite verification). The local-review skill owns how code gets reviewed (lens selection, parallel read-only dispatch, synthesis). This skill adds only the loop around them and duplicates neither.
+- **Composition by reference, not restatement**: The implement skill owns how code gets written (plan resolution, batch execution — direct or delegated — with evidence, milestone verification). The local-review skill owns how code gets reviewed (lens selection, parallel read-only dispatch, synthesis). This skill adds only the loop around them and duplicates neither.
 - **Blocking vs advisory**: Only `high`-severity findings block the loop (add `medium` only when the user explicitly asks for a stricter gate). Everything else — including simplicity findings, which are advisory by design — goes into the final report untouched. Auto-fixing advisory findings is how a loop starts optimizing for the reviewer instead of the user.
 - **Hard cap, graceful exit**: Reaching the fix-round cap is a normal outcome, not a failure. Exit with the remaining findings listed; never bargain for "one more round".
 - **Fresh reviewers every round**: Each review round dispatches new reviewer sub-agents. A reviewer that saw the previous round has learned the code and cannot judge it cold.
-- **Verify, don't trust**: The parent re-runs the full test suite after every fix dispatch, exactly as the implement skill requires. A fix that turns the suite red is handled by the recovery policy in `implementer-dispatch.md`, not by parent patching.
+- **Evidence at round boundaries**: Each fix pass runs the fast tier at its checkpoints and reports evidence, exactly as the implement skill's dispatch contract requires; the parent runs the full suite once at the end of every fix round, before the next review — the same milestone rule the implement skill applies at phase completion. A fix that turns the suite red is handled by the recovery policy in `implementer-dispatch.md`.
 - **No git writes**: Neither the parent nor any sub-agent commits, pushes, stashes, or changes branches. At the end, suggest the git-commit skill and leave the decision to the user.
 
 ## When to use
@@ -32,18 +32,18 @@ Do not use when:
 
 ## Skill and reference locations
 
-Resolve `SKILLS_DIR` once, per the implement skill's "Skill locations" section. This skill's phases use these documents directly (one level of reference from this file — do not hop through the other skills' SKILL.md to reach them):
+Resolve `<skills root>` as the parent of this skill's own directory — the same rule as the implement skill's "Skill locations" section: sibling skills, no runtime probe. This skill's phases use these documents directly (one level of reference from this file — do not hop through the other skills' SKILL.md to reach them):
 
-- `$SKILLS_DIR/implement/SKILL.md` — the implementation workflow (phase 1) and its invariants.
-- `$SKILLS_DIR/implement/references/implementer-dispatch.md` — the dispatch contract, result schema, and recovery policy that fix dispatches (phase 4) adapt.
-- `$SKILLS_DIR/local-review/SKILL.md` — the review workflow (phase 2) and its read-only invariants.
-- `$SKILLS_DIR/local-review/references/review-lenses.md` — the lens catalog, findings schema, and severity definitions the gate (phase 3) depends on.
+- `<skills root>/implement/SKILL.md` — the implementation workflow (phase 1) and its invariants.
+- `<skills root>/implement/references/implementer-dispatch.md` — the dispatch contract, result schema, and recovery policy that fix passes (phase 4) adapt.
+- `<skills root>/local-review/SKILL.md` — the review workflow (phase 2) and its read-only invariants.
+- `<skills root>/local-review/references/review-lenses.md` — the lens catalog, findings schema, and severity definitions the gate (phase 3) depends on.
 
 ## Workflow
 
-1. **Implement**: Run the implement skill's workflow end to end (plan resolution, baseline, sequential dispatch, per-batch suite verification). Commit interaction is this loop's responsibility, not the implement skill's: suppress both its final commit suggestion and the commit suggestion in its phase checkpoints — the loop is not done and the code is not yet reviewed. The checkpoints' pause behavior still applies as loop control: at each phase boundary, report the phase's `After this phase:` outcome and wait for the user before continuing, unless the user asked to run the whole plan without stopping. Commits are suggested exactly once, in the final report (step 6), where the git-commit skill can split the working tree into one commit per phase. If the implement skill concludes the request has no testable behavior, this skill does not apply either; say so and stop. Record the baseline commit hash (`git rev-parse HEAD`) and the set of files the loop has changed (`git status --porcelain`) — the file set is the review scope, updated after every fix round. If HEAD differs from the recorded hash at exit, attribute the movement in the report (this loop never moves it; concurrent external activity can).
+1. **Implement**: Run the implement skill's workflow end to end (plan resolution, baseline, batch execution — direct or delegated — with evidence, milestone full-suite runs). Commit interaction is this loop's responsibility, not the implement skill's: suppress its final commit suggestion — the loop is not done and the code is not yet reviewed. Its phase reporting applies unchanged: report each phase's `After this phase:` outcome and full-suite result and continue; pause only for a checkpoint the user asked for or a decision that blocks the next batch. Commits are suggested exactly once, in the final report (step 6), where the git-commit skill can split the working tree into one commit per phase. If the implement skill concludes the request has no testable behavior, this skill does not apply either; say so and stop. Record the baseline commit hash (`git rev-parse HEAD`) and the set of files the loop has changed (`git status --porcelain`) — the file set is the review scope, updated after every fix round. If HEAD differs from the recorded hash at exit, attribute the movement in the report (this loop never moves it; concurrent external activity can).
 
-2. **Review**: Run the local-review skill's workflow over the loop's changes: the working diff when the tree was clean at loop start, otherwise the recorded file list as a path scope (pre-existing unrelated changes must not reach the gate). If the user named a base, use the branch diff instead. Orchestration bookkeeping (the plan file, anything under `.plans/`) is never part of the review scope, regardless of git tracking status. Lens selection, dispatch, and synthesis follow `review-lenses.md` unchanged. Dispatch fresh reviewer sub-agents — never reuse a previous round's.
+2. **Review**: Run the local-review skill's workflow over the loop's changes: the working diff when the tree was clean at loop start, otherwise the recorded file list as a path scope (pre-existing unrelated changes must not reach the gate). If the user named a base, use the branch diff instead. Orchestration bookkeeping (the plan file, anything under `.plans/`) is never part of the review scope, regardless of git tracking status. Lens selection and synthesis follow `review-lenses.md` unchanged. Execution differs from standalone local-review in one respect: the direct-review path (the parent reviewing a small scope itself) never applies here — every round dispatches fresh reviewer sub-agents, never a previous round's, because the ledger's recurrence check depends on reviewers who have not seen the earlier round.
 
 3. **Gate and ledger**:
    - **Gate**: blocking = findings with severity `high` (plus `medium` only if the user asked for a stricter gate at the start — never tighten the gate mid-loop). Non-blocking findings, however trivial their fixes look, pass through to step 6 unmodified. If there are no blocking findings, go to step 6.
@@ -51,30 +51,30 @@ Resolve `SKILLS_DIR` once, per the implement skill's "Skill locations" section. 
    - Record every new blocking finding in the ledger — before the cap check, so a cap exit can mark them.
    - **Cap check**: if the fix-round cap (2 by default; 3 only on explicit user request; 1 in inline fallback) is already spent, mark the recorded findings `unfixed — cap reached` and go to step 6 with them listed.
 
-4. **Fix**: For each blocking finding, dispatch **one** fix sub-agent, sequentially (concurrent edits break the all-tests-green invariant). The dispatch adapts the contract in `implementer-dispatch.md`:
+4. **Fix**: For each blocking finding, make **one** fix pass, sequentially (fixes share files and build on each other): a fix dispatch to a fresh sub-agent, or a direct fix in the parent when the implement skill's direct-execution rule applies (small, clear, one file, no catalog beyond the idiom baseline needed). Either way the pass adapts the contract in `implementer-dispatch.md`:
    - The assigned item is the finding — path, line, severity, lens, body, and proposed fix, pasted verbatim from the review report.
-   - Knowledge skills: `tdd` + the idiom skill for the file's language + `simplicity-patterns` + `comment-patterns`, plus the finding lens's own knowledge skill when it has one (`performance-patterns`, `architecture-patterns`; a `comment` finding's skill is already loaded).
+   - Knowledge skills: `tdd` + the idiom skill for the file's language, plus the finding lens's own knowledge skill when it has one (`simplicity-patterns`, `comment-patterns`, `performance-patterns`, `architecture-patterns`); any other conditional skill only when the fix makes a decision the selection table in `implementer-dispatch.md` assigns it to.
    - Cycle discipline: a `correctness` finding is treated as a `Test:` item — write a failing test that reproduces the defect when feasible, then fix. Findings from the other lenses are treated as `Refactor:` items — structure or idiom changes with test results identical before and after.
-   - Hard constraints, result schema, and the recovery policy (one follow-up fix dispatch on parent-verified suite failure, then stop) apply unchanged from `implementer-dispatch.md`.
-   - After each fix dispatch, the parent re-runs the full suite before dispatching the next.
+   - Hard constraints, evidence, result schema, and the recovery policy (one follow-up fix pass on a failing run, then stop) apply unchanged from `implementer-dispatch.md`.
+   - Each fix pass reports its fast-tier evidence; the parent reads it and spot-runs the fast tier when it is missing or inconsistent. After the round's last fix, the parent runs the full suite once; a red result goes through the recovery policy before the next review round.
    - Mark the finding fixed in the ledger, with the round number.
 
 5. **Loop**: Increment the fix-round counter and return to step 2 for a fresh review of the updated diff.
 
-6. **Report**: One final report containing: rounds used — fix rounds spent out of the cap, plus the number of review rounds run; blocking findings fixed (from the ledger); remaining blocking findings if the cap was hit or a recurrence stopped the loop; all advisory/lower-severity findings from the last review, untouched; the final suite result — the most recent parent-run full-suite result, which is the implement phase's final run when no fix dispatch occurred (do not re-run the suite just for the report; suite re-runs are tied to fix dispatches); and the mode (delegated or inline). Report language precedence: a standing user-level language directive (e.g. the user's CLAUDE.md) > the conversation language; code, identifiers, and paths stay in English (the same rule as local-review's synthesis). State the baseline hash outcome — `HEAD unchanged from baseline <hash>` in the normal case, or the attributed movement. Suggest committing via the git-commit skill (for a phased plan, one commit per phase). Never commit automatically.
+6. **Report**: One final report containing: rounds used — fix rounds spent out of the cap, plus the number of review rounds run; blocking findings fixed (from the ledger); remaining blocking findings if the cap was hit or a recurrence stopped the loop; all advisory/lower-severity findings from the last review, untouched; the final suite result — the most recent parent-run full-suite result: the last fix round's end-of-round run, or the implement phase's plan-completion run when no fix round occurred (do not re-run the suite just for the report); and the mode (delegated or inline). Report language precedence: a standing user-level language directive (e.g. the user's CLAUDE.md) > the conversation language; code, identifiers, and paths stay in English (the same rule as local-review's synthesis). State the baseline hash outcome — `HEAD unchanged from baseline <hash>` in the normal case, or the attributed movement. Suggest committing via the git-commit skill (for a phased plan, one commit per phase). Never commit automatically.
 
-**Inline fallback**: When sub-agent dispatch is unavailable, both phases already define inline modes — use them, cap the loop at 1 fix round (inline context accumulates fast), and state in the report that the run was inline. A fix dispatch (and its one recovery dispatch) degrades to an inline fix pass in the parent under the same constraints, discipline mapping, and one-recovery limit.
+**Inline fallback**: When sub-agent dispatch is unavailable, the implement phase runs directly and the review phase runs single-pass inline, as those skills define; cap the loop at 1 fix round (inline context accumulates fast, and inline reviewers are not fresh), and state in the report that the run was inline. A fix dispatch (and its one recovery dispatch) degrades to a direct fix pass in the parent under the same constraints, discipline mapping, and one-recovery limit.
 
 ## Stop conditions
 
 The loop ends when the **first** of these fires:
 
-| Condition                                                               | Meaning         | Exit                                                        |
-| ----------------------------------------------------------------------- | --------------- | ----------------------------------------------------------- |
-| A review round returns zero blocking findings                           | Converged       | Normal — report advisory findings and finish                |
-| Fix-round cap reached (2 default / 3 on explicit request / 1 inline)    | Resource cutoff | Normal — list remaining blocking findings                   |
-| A finding marked fixed in the ledger recurs                             | Fix not landing | Stop — report the recurrence for the user to judge          |
-| The suite stays red after a fix dispatch plus its one recovery dispatch | Regression      | Stop — per the recovery policy in `implementer-dispatch.md` |
+| Condition                                                            | Meaning         | Exit                                                        |
+| -------------------------------------------------------------------- | --------------- | ----------------------------------------------------------- |
+| A review round returns zero blocking findings                        | Converged       | Normal — report advisory findings and finish                |
+| Fix-round cap reached (2 default / 3 on explicit request / 1 inline) | Resource cutoff | Normal — list remaining blocking findings                   |
+| A finding marked fixed in the ledger recurs                          | Fix not landing | Stop — report the recurrence for the user to judge          |
+| The suite stays red after a fix pass plus its one recovery pass      | Regression      | Stop — per the recovery policy in `implementer-dispatch.md` |
 
 ## Findings ledger
 
@@ -98,20 +98,20 @@ Matching rule: same `path`, same `lens`, and substantially the same defect. Matc
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                                   | Reality                                                                                                                             |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| "One more round would clear the remaining findings."              | The cap is a hard limit. Reaching it is a normal exit — list what remains and hand it to the user.                                  |
-| "This advisory finding is easy — fix it while I'm here."          | Advisory findings are the user's call. Auto-fixing them optimizes for the reviewer, not the user.                                   |
-| "Reuse the same reviewers so the findings stay consistent."       | A reviewer that saw the last round cannot judge cold. Fresh dispatch every round; consistency comes from the ledger, not the agent. |
-| "The fix is trivial — patch it in the parent, skip the dispatch." | Parent patching loads the knowledge skills this orchestration exists to keep out of the parent, and mixes modes.                    |
-| "The recurred finding just needs a slightly different fix."       | A recurrence means the fix class is wrong, not the wording. Stop and report; the user decides the next move.                        |
-| "Tighten the gate to medium now that high is clean."              | Moving the gate mid-loop is how a bounded loop becomes unbounded. The gate is fixed before round 1.                                 |
-| "Skip the suite re-run; the fix was a one-liner."                 | Every fix dispatch is followed by a parent suite run. A claim in a result object is not evidence.                                   |
+| Rationalization                                               | Reality                                                                                                                                     |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| "One more round would clear the remaining findings."          | The cap is a hard limit. Reaching it is a normal exit — list what remains and hand it to the user.                                          |
+| "This advisory finding is easy — fix it while I'm here."      | Advisory findings are the user's call. Auto-fixing them optimizes for the reviewer, not the user.                                           |
+| "Reuse the same reviewers so the findings stay consistent."   | A reviewer that saw the last round cannot judge cold. Fresh dispatch every round; consistency comes from the ledger, not the agent.         |
+| "Fix the findings directly, so review them directly too."     | A fix may run directly under the implement skill's direct-execution rule; reviewers are always fresh sub-agents — the ledger depends on it. |
+| "The recurred finding just needs a slightly different fix."   | A recurrence means the fix class is wrong, not the wording. Stop and report; the user decides the next move.                                |
+| "Tighten the gate to medium now that high is clean."          | Moving the gate mid-loop is how a bounded loop becomes unbounded. The gate is fixed before round 1.                                         |
+| "Skip the end-of-round suite run; the fixes were one-liners." | Every fix round ends with a parent full-suite run, and every fix pass reports fast-tier evidence. A bare claim is not evidence.             |
 
 ## Additional Resources
 
 ### Reference Files
 
-- **`$SKILLS_DIR/implement/references/implementer-dispatch.md`** — dispatch contract, result schema, batching, and recovery policy that fix dispatches adapt.
-- **`$SKILLS_DIR/local-review/references/review-lenses.md`** — lens catalog, findings schema, and the severity definitions the gate depends on.
+- **`<skills root>/implement/references/implementer-dispatch.md`** — dispatch contract, result schema, batching, and recovery policy that fix passes adapt.
+- **`<skills root>/local-review/references/review-lenses.md`** — lens catalog, findings schema, and the severity definitions the gate depends on.
 - **`agents/openai.yaml`** — UI metadata for this skill only.

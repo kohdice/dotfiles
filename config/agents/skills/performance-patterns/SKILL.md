@@ -94,4 +94,4 @@ After identifying the languages involved, read the matching reference for concre
 
 - `references/go.md`, `references/rust.md`, `references/c.md`, `references/zig.md`
 
-The references live in this skill's directory (deployed at `~/.claude/skills/performance-patterns/references/`).
+The references live in this skill's own directory, next to this `SKILL.md` (`references/<lang>.md`), wherever the skill was loaded from; read only the reference for the language at hand.

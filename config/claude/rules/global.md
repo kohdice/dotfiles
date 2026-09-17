@@ -15,3 +15,10 @@
 
 - Do not create, edit, or delete files unless the user explicitly asks for it.
 - Otherwise, show the change and explain what to modify and why, so the user can apply it themselves.
+
+## Execution
+
+- Carry an authorized task through its ordinary milestones without pausing for confirmation. Pause only for a checkpoint the user asked for, or for a decision or permission that actually blocks progress.
+- The user's explicit instructions take precedence over a skill's defaults, within the limits the runtime itself imposes (system and developer instructions, permissions).
+- When a skill or rule makes you stop, skip, or narrow part of a task, name the instruction that caused it (file and rule) in the same message.
+- Distinguish failures the task caused from failures that existed before it. Investigate whether a pre-existing failure affects the task; fix it when the fix lies within the authorized scope, otherwise report it and continue with what does not depend on it.

@@ -1,13 +1,13 @@
 ---
 name: tdd
-description: 'This skill should be used only when the user explicitly invokes `/tdd` (with or without a plan filename) to execute a TDD plan from `.plans/` inline in the current context, or when the implement skill falls back to inline execution because sub-agent dispatch is unavailable. It defines Kent Beck''s Red-Green-Refactor and Tidy First discipline, and serves as the discipline reference that the implement skill''s implementer sub-agents read before writing code. Do NOT use this skill when the user says bare "go" or asks to implement a feature or plan — the implement skill owns those and dispatches sub-agents that read this skill. Do NOT use when the user is asking to create a new TDD plan — that is handled by the tdd-plan skill.'
+description: 'This skill should be used only when the user explicitly invokes `/tdd` (with or without a plan filename) to execute a TDD plan from `.plans/` inline in the current context, or when the implement skill executes a batch directly in the parent. It defines Kent Beck''s Red-Green-Refactor and Tidy First discipline and the Test Tiers (fast tier at every checkpoint, full suite at milestones), and serves as the discipline reference that the implement skill''s implementers — parent or sub-agent — read before writing code. Do NOT use this skill when the user says bare "go" or asks to implement a feature or plan — the implement skill owns those. Do NOT use when the user is asking to create a new TDD plan — that is handled by the tdd-plan skill.'
 ---
 
 # TDD (Test-Driven Development)
 
 ## Overview
 
-Guide development following Kent Beck's TDD and Tidy First principles. Follow an explicit plan file whenever the user provides one. Bare `go` does not trigger this skill (the implement skill owns it); however, when this skill is already executing as the implement skill's inline fallback and the user said bare `go` right after creating a plan in the same session, continue from that newly created plan. When the user invokes `/tdd <plan-file>` or otherwise supplies a filename, use that plan instead. User-facing questions and reports follow the ambient conversation language conventions (e.g., CLAUDE.md); this skill's English examples do not override them.
+Guide development following Kent Beck's TDD and Tidy First principles. Follow an explicit plan file whenever the user provides one. Bare `go` does not trigger this skill (the implement skill owns it); however, when this skill is already executing as the implement skill's direct-execution mode and the user said bare `go` right after creating a plan in the same session, continue from that newly created plan. When the user invokes `/tdd <plan-file>` or otherwise supplies a filename, use that plan instead. User-facing questions and reports follow the ambient conversation language conventions (e.g., CLAUDE.md); this skill's English examples do not override them.
 
 ## Plan Management
 
@@ -20,7 +20,7 @@ Plans are stored in the `.plans/` directory (created by the tdd-plan skill). Res
 Use this precedence order:
 
 1. If the user provides a plan filename or path, use it.
-2. If the user said bare `go` (reaching this skill via the implement skill's inline fallback) and a plan was created in the current session, use that most recent current-session plan.
+2. If the user said bare `go` (reaching this skill via the implement skill's direct execution) and a plan was created in the current session, use that most recent current-session plan.
 3. If `/tdd` is invoked without a filename and there is no current-session plan, ask the user which existing plan in `.plans/` to use. List, at minimum, each plan file's name together with its title line (reading the plan files for this is a sanctioned read-only step; adding further read-only context such as remaining-item counts is welcome) so the user can choose by name. While waiting for the answer, any read-only inspection is fine; make no writes and no state-changing runs.
 
 Resolve bare filenames such as `watch-refresh.md` relative to `.plans/`, and accept explicit paths such as `.plans/watch-refresh.md`.
@@ -69,7 +69,9 @@ Execute each test through three distinct phases. In this skill, "run all tests" 
 Split the suite into two tiers and run each at the right time:
 
 - **Fast tier** (unit tests: no containers, no network, no real external services): this is what "run all tests" means at every Red-Green-Refactor checkpoint.
-- **Slow tier** (integration/E2E tests using containers, databases, or the network — typically behind build tags, `-short` exclusions, or markers): run only when a plan item marked `Test (integration):` is itself the current item, when the plan is complete, or before a commit. Never run the slow tier as part of a routine checkpoint.
+- **Slow tier** (integration/E2E tests using containers, databases, or the network — typically behind build tags, `-short` exclusions, or markers): run only when a plan item marked `Test (integration):` is itself the current item, when a phase or the plan is complete, or before a commit. Never run the slow tier as part of a routine checkpoint.
+
+The **full suite** is the fast tier plus the slow tier. Its run points — phase completion, plan completion, before a commit — are the milestone scope. Orchestrating skills (implement, implement-review-loop) reference this definition rather than restating it.
 
 Identify the project's tier mechanism (build tags, test markers, separate packages) during the first baseline run and state which tier each subsequent run covers. A `Test (integration):` plan item goes through the same Red-Green-Refactor cycle, but its Red and Green confirmation runs execute that integration test (plus the fast tier), not the whole slow tier.
 

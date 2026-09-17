@@ -30,6 +30,8 @@ hooks = true
 multi_agent = true
 search_tool = true
 skills = true
+multi_agent_v2.min_wait_timeout_ms = 120000
+multi_agent_v2.default_wait_timeout_ms = 120000
 
 [[hooks.PreToolUse]]
 matcher = "^Bash$"

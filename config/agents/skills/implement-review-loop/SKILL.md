@@ -69,12 +69,12 @@ Resolve `<skills root>` as the parent of this skill's own directory — the same
 
 The loop ends when the **first** of these fires:
 
-| Condition                                                                       | Meaning         | Exit                                                        |
-| ------------------------------------------------------------------------------- | --------------- | ----------------------------------------------------------- |
-| A review round returns zero blocking findings                                   | Converged       | Normal — report advisory findings and finish                |
-| A completed review has blocking findings and the fix-round cap is already spent | Resource cutoff | Normal — list remaining blocking findings                   |
-| A finding marked fixed in the ledger recurs                                     | Fix not landing | Stop — report the recurrence for the user to judge          |
-| The suite stays red after a fix pass plus its one recovery pass                 | Regression      | Stop — per the recovery policy in `implementer-dispatch.md` |
+| Condition | Meaning | Exit |
+| --- | --- | --- |
+| A review round returns zero blocking findings | Converged | Normal — report advisory findings and finish |
+| A completed review has blocking findings and the fix-round cap is already spent | Resource cutoff | Normal — list remaining blocking findings |
+| A finding marked fixed in the ledger recurs | Fix not landing | Stop — report the recurrence for the user to judge |
+| The suite stays red after a fix pass plus its one recovery pass | Regression | Stop — per the recovery policy in `implementer-dispatch.md` |
 
 ## Findings ledger
 
@@ -98,15 +98,15 @@ Matching rule: same `path`, same `lens`, and substantially the same defect. Matc
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                               | Reality                                                                                                                                     |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| "One more round would clear the remaining findings."          | The cap is a hard limit. Reaching it is a normal exit — list what remains and hand it to the user.                                          |
-| "This advisory finding is easy — fix it while I'm here."      | Advisory findings are the user's call. Auto-fixing them optimizes for the reviewer, not the user.                                           |
-| "Reuse the same reviewers so the findings stay consistent."   | A reviewer that saw the last round cannot judge cold. Fresh dispatch every round; consistency comes from the ledger, not the agent.         |
-| "Fix the findings directly, so review them directly too."     | A fix may run directly under the implement skill's direct-execution rule; reviewers are always fresh sub-agents — the ledger depends on it. |
-| "The recurred finding just needs a slightly different fix."   | A recurrence means the fix class is wrong, not the wording. Stop and report; the user decides the next move.                                |
-| "Tighten the gate to medium now that high is clean."          | Moving the gate mid-loop is how a bounded loop becomes unbounded. The gate is fixed before round 1.                                         |
-| "Skip the end-of-round suite run; the fixes were one-liners." | Every fix round ends with a parent full-suite run, and every fix pass reports fast-tier evidence. A bare claim is not evidence.             |
+| Rationalization | Reality |
+| --- | --- |
+| "One more round would clear the remaining findings." | The cap is a hard limit. Reaching it is a normal exit — list what remains and hand it to the user. |
+| "This advisory finding is easy — fix it while I'm here." | Advisory findings are the user's call. Auto-fixing them optimizes for the reviewer, not the user. |
+| "Reuse the same reviewers so the findings stay consistent." | A reviewer that saw the last round cannot judge cold. Fresh dispatch every round; consistency comes from the ledger, not the agent. |
+| "Fix the findings directly, so review them directly too." | A fix may run directly under the implement skill's direct-execution rule; reviewers are always fresh sub-agents — the ledger depends on it. |
+| "The recurred finding just needs a slightly different fix." | A recurrence means the fix class is wrong, not the wording. Stop and report; the user decides the next move. |
+| "Tighten the gate to medium now that high is clean." | Moving the gate mid-loop is how a bounded loop becomes unbounded. The gate is fixed before round 1. |
+| "Skip the end-of-round suite run; the fixes were one-liners." | Every fix round ends with a parent full-suite run, and every fix pass reports fast-tier evidence. A bare claim is not evidence. |
 
 ## Additional Resources
 

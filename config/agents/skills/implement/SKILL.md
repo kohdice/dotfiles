@@ -64,18 +64,18 @@ Do not use when:
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                                      | Reality                                                                                                                                          |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| "Dispatch tooling exists, so every item goes to a sub-agent."        | Delegation is chosen per batch by what it buys. Small, clear work runs directly in the parent.                                                   |
-| "Read every catalog in the parent so no dispatch is ever needed."    | Load only the catalogs the batch's decisions need (the selection table). Reading everything defeats the reason delegation exists.                |
-| "Dispatch several implementer batches in parallel to finish faster." | Increments build on the previous green state and share files. Implementer batches are sequential; only read-only work fans out.                  |
-| "The result says pass — no need to read the evidence."               | Read the command, tier, and outcome of every cycle. Missing or inconsistent evidence means a parent spot-run, not trust.                         |
-| "Re-run the full suite after every batch to be safe."                | The full suite runs at phase completion, plan completion, and before a commit suggestion. The fast tier is the per-checkpoint scope (tdd skill). |
-| "Let the sub-agent tick its own checkbox."                           | Plan writes are parent-only. Centralized writes keep the plan trustworthy.                                                                       |
-| "The suite failed; keep patching until it is green."                 | One fix pass, then stop and report. The user decides between reverting and debugging.                                                            |
-| "Commit after each green cycle to be safe."                          | Committing is the user's call. Suggest the git-commit skill at the end; never commit inside this skill.                                          |
-| "The plan is short, so skip the baseline run."                       | A broken baseline invalidates every Red signal after it. Always confirm green before the first batch.                                            |
-| "A phase just finished — wait for the user before continuing."       | Report the phase and continue. Pause only for a checkpoint the user asked for or a decision that blocks the next batch.                          |
+| Rationalization | Reality |
+| --- | --- |
+| "Dispatch tooling exists, so every item goes to a sub-agent." | Delegation is chosen per batch by what it buys. Small, clear work runs directly in the parent. |
+| "Read every catalog in the parent so no dispatch is ever needed." | Load only the catalogs the batch's decisions need (the selection table). Reading everything defeats the reason delegation exists. |
+| "Dispatch several implementer batches in parallel to finish faster." | Increments build on the previous green state and share files. Implementer batches are sequential; only read-only work fans out. |
+| "The result says pass — no need to read the evidence." | Read the command, tier, and outcome of every cycle. Missing or inconsistent evidence means a parent spot-run, not trust. |
+| "Re-run the full suite after every batch to be safe." | The full suite runs at phase completion, plan completion, and before a commit suggestion. The fast tier is the per-checkpoint scope (tdd skill). |
+| "Let the sub-agent tick its own checkbox." | Plan writes are parent-only. Centralized writes keep the plan trustworthy. |
+| "The suite failed; keep patching until it is green." | One fix pass, then stop and report. The user decides between reverting and debugging. |
+| "Commit after each green cycle to be safe." | Committing is the user's call. Suggest the git-commit skill at the end; never commit inside this skill. |
+| "The plan is short, so skip the baseline run." | A broken baseline invalidates every Red signal after it. Always confirm green before the first batch. |
+| "A phase just finished — wait for the user before continuing." | Report the phase and continue. Pause only for a checkpoint the user asked for or a decision that blocks the next batch. |
 
 ## Additional Resources
 

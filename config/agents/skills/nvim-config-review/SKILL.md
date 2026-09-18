@@ -76,13 +76,13 @@ When asked to update the catalog:
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                     | Reality                                                                                            |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| "This plugin is unpopular now, so flag it."         | Popularity is not deprecation. Flag only archived repos, README notices, or built-in replacements. |
-| "Run nvim headless to confirm the config loads."    | Out of scope. It writes state. Confirm by reading code.                                            |
-| "The deprecation table says so, no need to verify." | The table is a snapshot; verify load-bearing findings against live docs.                           |
-| "lazy.nvim exists, so vim.pack must replace it."    | Check the reference: coexistence is legitimate; report the trade-off, not a mandate.               |
-| "I'll fix this one-liner while I'm here."           | Read-only. Report it; fixing is a follow-up task.                                                  |
+| Rationalization | Reality |
+| --- | --- |
+| "This plugin is unpopular now, so flag it." | Popularity is not deprecation. Flag only archived repos, README notices, or built-in replacements. |
+| "Run nvim headless to confirm the config loads." | Out of scope. It writes state. Confirm by reading code. |
+| "The deprecation table says so, no need to verify." | The table is a snapshot; verify load-bearing findings against live docs. |
+| "lazy.nvim exists, so vim.pack must replace it." | Check the reference: coexistence is legitimate; report the trade-off, not a mandate. |
+| "I'll fix this one-liner while I'm here." | Read-only. Report it; fixing is a follow-up task. |
 
 ## Additional Resources
 

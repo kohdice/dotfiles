@@ -69,20 +69,20 @@ Do not use when:
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                                  | Reality                                                                                                                                 |
-| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| "The apply is small — run it without asking."                    | Live-state mutations always get explicit confirmation. Small applies have large blast radii.                                            |
-| "The sub-agent can run the apply; it has the context."           | Apply items never leave the parent. A sub-agent cannot be interrupted by the user mid-mutation.                                         |
-| "The command exited 0 — the item is verified."                   | The gate is the expected outcome, not the exit code. Compare the output against what the plan says it must show.                        |
-| "Skip the before-check; the change obviously isn't applied yet." | An already-satisfied expectation is exactly the signal the before-check exists to catch. Run it.                                        |
-| "The result says verified — no need to read the evidence."       | Read each item's command, summary, and result. A summary that does not match the plan verbatim means a parent re-run, not trust.        |
-| "Re-run every Verify step in the parent to be safe."             | The parent re-runs the global check at milestones and spot-checks mismatched or missing evidence. Duplicate re-runs add no information. |
-| "Dispatch tooling exists, so every item goes to a sub-agent."    | Delegation is chosen per batch by what it buys. One small item with short output runs directly in the parent.                           |
-| "The Verify step is too strict; loosen it so the item passes."   | Weakening a gate to pass it defeats the plan. Stop and escalate the mismatch instead.                                                   |
-| "Verification failed; keep patching until it passes."            | One fix pass, then stop and report. The user decides between reverting and debugging.                                                   |
-| "Roll back the failed apply so the report looks clean."          | Rollback is a state mutation like any other: present the Rollback line and let the user decide.                                         |
-| "A phase just finished — wait for the user before continuing."   | Report the phase and continue. Pause only for a requested checkpoint, an apply confirmation, or a decision that blocks the next batch.  |
-| "Commit after each phase to be safe."                            | Committing is the user's call. Suggest the git-commit skill at the end; never commit inside this skill.                                 |
+| Rationalization | Reality |
+| --- | --- |
+| "The apply is small — run it without asking." | Live-state mutations always get explicit confirmation. Small applies have large blast radii. |
+| "The sub-agent can run the apply; it has the context." | Apply items never leave the parent. A sub-agent cannot be interrupted by the user mid-mutation. |
+| "The command exited 0 — the item is verified." | The gate is the expected outcome, not the exit code. Compare the output against what the plan says it must show. |
+| "Skip the before-check; the change obviously isn't applied yet." | An already-satisfied expectation is exactly the signal the before-check exists to catch. Run it. |
+| "The result says verified — no need to read the evidence." | Read each item's command, summary, and result. A summary that does not match the plan verbatim means a parent re-run, not trust. |
+| "Re-run every Verify step in the parent to be safe." | The parent re-runs the global check at milestones and spot-checks mismatched or missing evidence. Duplicate re-runs add no information. |
+| "Dispatch tooling exists, so every item goes to a sub-agent." | Delegation is chosen per batch by what it buys. One small item with short output runs directly in the parent. |
+| "The Verify step is too strict; loosen it so the item passes." | Weakening a gate to pass it defeats the plan. Stop and escalate the mismatch instead. |
+| "Verification failed; keep patching until it passes." | One fix pass, then stop and report. The user decides between reverting and debugging. |
+| "Roll back the failed apply so the report looks clean." | Rollback is a state mutation like any other: present the Rollback line and let the user decide. |
+| "A phase just finished — wait for the user before continuing." | Report the phase and continue. Pause only for a requested checkpoint, an apply confirmation, or a decision that blocks the next batch. |
+| "Commit after each phase to be safe." | Committing is the user's call. Suggest the git-commit skill at the end; never commit inside this skill. |
 
 ## Additional Resources
 

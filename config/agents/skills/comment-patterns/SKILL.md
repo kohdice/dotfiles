@@ -18,11 +18,11 @@ Grounded in Kent Beck's "Tidy First?" (the "Delete Redundant Comments" and "Expl
 
 **Code → How, Tests → What, Commits → Why, Comments → Why not.**
 
-| Layer              | Responsibility                                                                                                                                                                                                 |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Code — How         | Express the implementation through names, types, control flow, and structure. Improve these before adding prose that narrates the mechanism.                                                                   |
-| Tests — What       | Specify observable behavior with concrete inputs, expected results, boundaries, and failure cases. Test names and assertions describe the contract without coupling it to incidental implementation steps.     |
-| Commits — Why      | Explain the problem, motivation, and tradeoffs behind a change. General business rationale and change history belong here, not in implementation comments.                                                     |
+| Layer | Responsibility |
+| --- | --- |
+| Code — How | Express the implementation through names, types, control flow, and structure. Improve these before adding prose that narrates the mechanism. |
+| Tests — What | Specify observable behavior with concrete inputs, expected results, boundaries, and failure cases. Test names and assertions describe the contract without coupling it to incidental implementation steps. |
+| Commits — Why | Explain the problem, motivation, and tradeoffs behind a change. General business rationale and change history belong here, not in implementation comments. |
 | Comments — Why not | Preserve local knowledge that prevents a plausible but incorrect edit: why a simpler or idiomatic alternative fails, why a workaround remains necessary, or why an ordering or constraint must not be relaxed. |
 
 Apply this policy to ordinary implementation commentary. **API documentation, safety justifications, constraints, and machine-read comments retain their roles** even when they describe what happens or why an operation is safe. Tests do not replace caller-facing documentation. A precondition or unit need not be rewritten as a rejected alternative.

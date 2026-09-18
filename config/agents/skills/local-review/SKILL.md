@@ -46,14 +46,14 @@ Review local code by **applying specialized read-only review lenses** — as ind
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                        | Reality                                                                                                |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| "I'll fix this small issue while I'm here."            | This skill is read-only. Report it; fixing is a separate, user-approved task.                          |
-| "The whole codebase fits in one agent prompt."         | It does not. Chunk it, or precision collapses. Log what each chunk covered.                            |
-| "Run the tests to confirm the bug."                    | Out of scope. Report the finding with code evidence; the user decides how to verify.                   |
-| "The named agents are missing, so skip the review."    | Run the same lenses through generic sub-agents, or directly in the parent, and label the result.       |
-| "Run every lens every time, to be thorough."           | Lenses are selected by what the change touches. A lens with nothing to judge adds noise, not coverage. |
-| "Simplicity findings justify a harsh overall verdict." | There is no verdict here, and simplicity findings are advisory by default.                             |
+| Rationalization | Reality |
+| --- | --- |
+| "I'll fix this small issue while I'm here." | This skill is read-only. Report it; fixing is a separate, user-approved task. |
+| "The whole codebase fits in one agent prompt." | It does not. Chunk it, or precision collapses. Log what each chunk covered. |
+| "Run the tests to confirm the bug." | Out of scope. Report the finding with code evidence; the user decides how to verify. |
+| "The named agents are missing, so skip the review." | Run the same lenses through generic sub-agents, or directly in the parent, and label the result. |
+| "Run every lens every time, to be thorough." | Lenses are selected by what the change touches. A lens with nothing to judge adds noise, not coverage. |
+| "Simplicity findings justify a harsh overall verdict." | There is no verdict here, and simplicity findings are advisory by default. |
 
 ## Additional Resources
 

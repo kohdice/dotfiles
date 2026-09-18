@@ -225,6 +225,10 @@ path = "~/.agents/skills/simplicity-patterns"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/sql-tutor"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/tdd"
 enabled = true
 

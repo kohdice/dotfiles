@@ -2,7 +2,7 @@
 
 Repo-specific design decisions and procedures that cannot be derived from the
 code itself. For the directory layout, commands, and module overview, see
-[AGENTS.md](../AGENTS.md) and [README.md](../README.md).
+[README.md](../README.md).
 
 ## Config Management Policy: Nix Module vs Symlink
 
@@ -40,6 +40,7 @@ Criteria for deciding whether an application config is managed as a Nix module
 | tmux          | Symlink | only ~20% declarative, needs file splitting |
 | neovim        | Symlink | Lua language, no home-manager integration   |
 | ghostty       | Symlink | no home-manager integration                 |
+| herdr         | Symlink | no home-manager integration                 |
 | pure          | Nix     | Zsh prompt integration, packaged by nixpkgs |
 | lazygit       | Symlink | no home-manager integration                 |
 | karabiner     | Symlink | JSON config, macOS only                     |
@@ -74,12 +75,13 @@ nixpkgs or Homebrew Cask.
 
 ### Current Layout
 
-| Location                      | Current applications                                                                                                                  |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `modules/darwin/homebrew.nix` | formula: container / casks: azookey, chatgpt, claude, coteditor, devtoys, ghostty, google-chrome, karabiner-elements, scroll-reverser |
-| `modules/darwin/packages.nix` | numi, raycast, vlc-bin                                                                                                                |
-| `modules/home/packages.nix`   | slack, zoom-us, podman-desktop                                                                                                        |
-| `users/<name>/darwin.nix`     | kohdice: discord / work: elasticvue, docker-desktop, tableplus                                                                        |
+| Location                      | Current applications                                                                               |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| `modules/darwin/homebrew.nix` | formula: container / casks: coteditor, ghostty, google-chrome, karabiner-elements, scroll-reverser |
+| `modules/darwin/packages.nix` | numi, raycast, vlc-bin                                                                             |
+| `modules/home/packages.nix`   | slack, zoom-us                                                                                     |
+| `modules/linux/packages.nix`  | ghostty, google-chrome (installed via Cask on macOS)                                               |
+| `users/<name>/darwin.nix`     | kohdice: discord / work: elasticvue, tableplus                                                     |
 
 ## Symlinks
 
@@ -87,13 +89,14 @@ All symlinks are defined in `modules/home/dotfiles.nix`.
 
 Agent-related files are split by runtime ownership:
 
-- `config/claude/` stores Claude Code-specific configuration, commands, and
-  Claude Code skills.
+- `config/claude/` stores Claude Code-specific configuration: `CLAUDE.md`,
+  rules, settings, the status line script, custom commands, and custom agents.
+  A `config/claude/skills/` directory is optional and absent today.
 - `config/codex/` stores Codex-specific runtime configuration and Codex custom
   agent TOML files.
-- `config/agents/` stores runtime-neutral agent assets, such as shared guidance
-  and open agent skills, that can be linked into runtime-specific discovery
-  paths.
+- `config/agents/` stores runtime-neutral agent assets: shared guidance
+  (`AGENTS.md`), hooks used by both runtimes, and open agent skills. They are
+  linked into runtime-specific discovery paths.
 - Shared skills under `config/agents/skills/` are linked into both
   `~/.agents/skills/` and `~/.claude/skills/` because Claude Code does not
   discover `~/.agents/skills/`.
@@ -103,8 +106,11 @@ Agent-related files are split by runtime ownership:
 | Source                        | Target                                        |
 | ----------------------------- | --------------------------------------------- |
 | `config/agents/AGENTS.md`     | `~/.codex/AGENTS.md`                          |
+| `config/agents/hooks/`        | `~/.claude/hooks/` and `~/.codex/hooks/`      |
 | `config/agents/skills/*`      | `~/.agents/skills/*` and `~/.claude/skills/*` |
 | `config/claude/CLAUDE.md`     | `~/.claude/CLAUDE.md`                         |
+| `config/claude/agents/*`      | `~/.claude/agents/*`                          |
+| `config/claude/commands/*`    | `~/.claude/commands/*`                        |
 | `config/claude/rules/`        | `~/.claude/rules/`                            |
 | `config/claude/settings.json` | `~/.claude/settings.json`                     |
 | `config/claude/statusline.sh` | `~/.claude/statusline.sh`                     |
@@ -117,6 +123,7 @@ Agent-related files are split by runtime ownership:
 | Source                               | Target                                            |
 | ------------------------------------ | ------------------------------------------------- |
 | `config/ghostty`                     | `~/.config/ghostty`                               |
+| `config/herdr/config.toml`           | `~/.config/herdr/config.toml`                     |
 | `config/nvim`                        | `~/.config/nvim`                                  |
 | `config/tmux`                        | `~/.config/tmux`                                  |
 | `config/lazygit`                     | `~/.config/lazygit`                               |
@@ -127,9 +134,9 @@ Directories under `config/agents/skills/` are linked entry-by-entry into both
 `~/.agents/skills/` and `~/.claude/skills/`. Directories under
 `config/claude/skills/` are linked entry-by-entry into `~/.claude/skills/`
 after the shared skill links, so a Claude Code-specific skill wins when it has
-the same name as a shared skill. Files under `config/claude/commands/` are
-linked entry-by-entry into `~/.claude/commands/`, and files under
-`config/codex/agents/` are linked entry-by-entry into `~/.codex/agents/`. The
+the same name as a shared skill. Files under `config/claude/commands/`,
+`config/claude/agents/`, and `config/codex/agents/` are linked entry-by-entry
+into `~/.claude/commands/`, `~/.claude/agents/`, and `~/.codex/agents/`. The
 enumeration is based on the flake source, so **new entries are not linked until
 they are `git add`ed**.
 
@@ -168,12 +175,11 @@ Create a new profile under `users/` (three files plus the export):
 
 ```nix
 # users/newprofile/info.nix - user info
+# `home` and `dotfilesDir` are derived from `name` in lib/mkSystem.nix.
 {
   name = "username";
   fullName = "Your Name";
   email = "your@email.com";
-  home = "/Users/username"; # /home/username for Linux
-  dotfilesDir = "/Users/username/developments/dotfiles";
 }
 ```
 
@@ -200,6 +206,10 @@ Create a new profile under `users/` (three files plus the export):
 
 ### 2. Register it in flake.nix
 
+Add the profile to `darwinConfigurations`, `homeConfigurations`, and `checks`.
+The `checks` attribute lists profiles by name, so a profile that is missing
+there is never built by `nix flake check`.
+
 ```nix
 # macOS
 darwinConfigurations = {
@@ -214,9 +224,22 @@ homeConfigurations = {
   work = mkSystem "linux" { system = "x86_64-linux"; user = "work"; };
   newprofile = mkSystem "linux" { system = "x86_64-linux"; user = "newprofile"; };
 };
+
+# Checks
+// nixpkgs.lib.optionalAttrs (system == darwinSystem) {
+  kohdice = self.darwinConfigurations.kohdice.system;
+  work = self.darwinConfigurations.work.system;
+  newprofile = self.darwinConfigurations.newprofile.system;
+}
+// nixpkgs.lib.optionalAttrs (builtins.elem system linuxSystems) {
+  kohdice-home = self.homeConfigurations.kohdice.activationPackage;
+  work-home = self.homeConfigurations.work.activationPackage;
+  newprofile-home = self.homeConfigurations.newprofile.activationPackage;
+}
 ```
 
 ### 3. Add matching apps (optional)
 
-Add `build-newprofile` / `switch-newprofile` entries to `lib/apps.nix`,
-following the existing `build-work` / `switch-work` definitions.
+Add `build-newprofile` / `switch-newprofile` / `update-newprofile` entries to
+`lib/apps.nix`, following the existing `build-work` / `switch-work` /
+`update-work` definitions.

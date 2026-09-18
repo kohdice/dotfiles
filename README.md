@@ -75,15 +75,16 @@ ssh-add ~/.ssh/id_ed25519_git_signing
 
 ## Daily Usage
 
-| Command                 | Description                     |
-| ----------------------- | ------------------------------- |
-| `nix run .#build`       | Build kohdice profile (dry-run) |
-| `nix run .#build-work`  | Build work profile (dry-run)    |
-| `nix run .#switch`      | Apply kohdice profile           |
-| `nix run .#switch-work` | Apply work profile              |
-| `nix run .#update`      | Update all packages and apply   |
-| `nix fmt`               | Format Nix and Lua files        |
-| `nix flake check`       | Validate flake configuration    |
+| Command                 | Description                                   |
+| ----------------------- | --------------------------------------------- |
+| `nix run .#build`       | Build kohdice profile (dry-run)               |
+| `nix run .#build-work`  | Build work profile (dry-run)                  |
+| `nix run .#switch`      | Apply kohdice profile                         |
+| `nix run .#switch-work` | Apply work profile                            |
+| `nix run .#update`      | Update all packages and apply kohdice profile |
+| `nix run .#update-work` | Update all packages and apply work profile    |
+| `nix fmt`               | Format Nix and Lua files                      |
+| `nix flake check`       | Validate flake configuration                  |
 
 ## Module Structure
 
@@ -91,12 +92,15 @@ ssh-add ~/.ssh/id_ed25519_git_signing
 dotfiles/
 ├── flake.nix              # Entry point
 ├── lib/                   # Helper functions and runnable setup applications
+├── overlays/              # nixpkgs overlays (AI agent CLIs from llm-agents.nix)
 ├── modules/
 │   ├── darwin/            # macOS system configuration
 │   ├── home/              # home-manager configuration (cross-platform)
 │   └── linux/             # Linux-specific configuration
 ├── users/                 # User profile definitions
-└── config/                # Application configs (nvim, tmux, claude, codex, etc.)
+├── config/                # Application configs (nvim, tmux, claude, codex, etc.)
+├── templates/             # AGENTS.md templates for new C / Rust projects
+└── docs/                  # Design decisions (ARCHITECTURE.md)
 ```
 
 ## Documentation

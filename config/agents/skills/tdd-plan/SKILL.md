@@ -1,13 +1,13 @@
 ---
 name: tdd-plan
-description: "This skill should be used when the user asks to plan the TDD implementation of application code — a new feature, a behavior change, or a bug fix with automatically testable behavior. Triggers on phrases like: 'plan to implement <feature>', 'create an implementation plan for <feature>', 'prepare a TDD plan', 'design a development plan for <feature>'. Do NOT use for planning work with no testable application behavior: writing README or documentation, configuration/CI/infrastructure changes, or repository housekeeping — the work-plan skill owns those. Do NOT use when the user says 'go' or asks to implement the next test — that is handled by the tdd skill."
+description: "This skill should be used when the user asks to plan the TDD implementation of application code — a new feature, a behavior change, or a bug fix with automatically testable behavior. Triggers on phrases like: 'plan to implement <feature>', 'create an implementation plan for <feature>', 'prepare a TDD plan', 'design a development plan for <feature>'. Do NOT use for planning work with no testable application behavior: writing README or documentation, configuration/CI/infrastructure changes, or repository housekeeping — the work-plan skill owns those. Do NOT use when the user says 'go' or asks to implement the plan — the implement skill owns execution (the tdd skill owns explicit `/tdd`)."
 ---
 
 # TDD Plan
 
 ## Overview
 
-Create structured implementation plans for TDD-driven development. Analyze the user's requirements and the existing codebase, then produce a plan file in `.plans/` containing ordered test cases ready for execution by the tdd skill. Always end by telling the user the exact plan filename that was created so they can continue with `go` in the same session or `/tdd <filename>` later.
+Create structured implementation plans following [Kent Beck's Canon TDD](https://newsletter.kentbeck.com/p/canon-tdd). Analyze the user's requirements and the existing codebase, then produce a plan file in `.plans/` containing ordered test cases ready for execution by the implement skill (or the tdd skill via `/tdd`). After creating a plan, tell the user the exact plan filename so they can continue with `go` in the same session (the implement skill picks it up) or `/tdd <filename>` later.
 
 ## When NOT to Use This Skill
 
@@ -27,7 +27,7 @@ Execute these steps in order when creating a plan.
 
 1. Read the user's request to understand the desired feature or change
 2. Apply the ambiguity threshold: the request is ambiguous only if a decision that produces an observable behavior difference is still unsettled after consulting both the request and the codebase. Conventions already encoded in the code — existing function semantics, pinned tests, naming — implicitly resolve otherwise-open points: adopt the interpretation they pin down and record it in the plan's Context section (Step 4). These resolvers transfer at package/module scope: a convention established by sibling APIs settles the same question for new code in that unit unless the request contradicts it. The public API surface (name, signature, ownership/mutation, return shape) counts as observable behavior under this threshold — convention-resolvable when the codebase exhibits a consistent pattern, otherwise one of the questions; internal organization (data structures, algorithms) is never a question topic and belongs to the executing tdd skill's Green/Refactor phases. Reading the code early for this check is expected and does not replace the full Step 2 analysis. This threshold is the canonical definition; the implement skill's step 1 restates it and defers here
-3. If the request is ambiguous under that threshold, ask targeted questions before proceeding — 3–7 items covering only the unsettled points (scope, tech stack, and non-functional requirements insofar as the codebase does not settle them), one question per independent observable-behavior decision, with sub-conditions of the same decision folded into that question rather than split out (two points belong to the same decision when one is meaningless until the other is answered). A low-stakes API-surface element such as the function name may be proposed as a default inside a related question instead of consuming its own item. Each question may cite the codebase evidence showing why the point is unsettled. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `.plans/` directory or any plan / questions file — no filesystem side effects
+3. If the request is ambiguous under that threshold, ask targeted questions before proceeding — only the unsettled points (scope, tech stack, and non-functional requirements insofar as the codebase does not settle them), one question per independent observable-behavior decision, with no minimum question count. Fold sub-conditions of the same decision into that question rather than split them out (two points belong to the same decision when one is meaningless until the other is answered). A low-stakes API-surface element such as the function name may be proposed as a default inside a related question instead of consuming its own item. Each question may cite the codebase evidence showing why the point is unsettled. When interactive questioning is not possible (e.g., running non-interactively), do not fabricate a plan: return the questions as your final reply and stop without creating the `.plans/` directory or any plan / questions file — no filesystem side effects
 4. Identify the scope: new feature, extension of existing feature, bug fix, or refactor
 5. If no testable application behavior can be identified, do not proceed: explain that TDD planning does not apply, point to the work-plan skill, and stop without filesystem side effects
 
@@ -56,7 +56,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - One behavior per test — each test validates exactly one thing
 - Test observable behavior through the public API — never implementation details (private functions, internal call order, interactions with mocks). Implementation-coupled tests break under legitimate refactoring, violating the Tidy First invariant that structural changes keep test results identical
 - Plan only new or changed behavior — do not include tests for behavior already covered by existing passing tests (discovered in Step 2). Such a test can never fail in the Red phase, so it adds no information and violates the rule that every test must fail before the change
-- Test only code this project owns. Do not plan tests that verify the responsibilities of third-party libraries, frameworks, or the standard library (e.g., that an ORM escapes SQL, that a JSON library parses JSON). Kent Beck's rule: test third-party code only if you have reason to distrust it
+- Test only code this project owns. Do not plan tests that verify the responsibilities of third-party libraries, frameworks, or the standard library (e.g., that an ORM escapes SQL, that a JSON library parses JSON)
 - Prefer unit-level tests that run fast and in isolation. Plan a resource-heavy test (containers, real databases, network, end-to-end) only when the requested behavior cannot be verified any other way, keep such tests to the minimum count, place them last in the plan, and mark them `Test (integration):` so the executing skill can run them sparingly
 - A test name must clearly describe what is being verified
 - Follow the target project's existing test naming convention, discovered in Step 2 (e.g., Zig inline tests `test "parses empty sequence diagram"`, Rust `#[test] fn parses_empty_sequence_diagram`, Go `TestParsesEmptySequenceDiagram`)
@@ -75,15 +75,15 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 **Bug fixes:**
 
-- When the scope identified in Step 1 is a bug fix, the first two plan items must follow the tdd skill's Defect Fix Workflow: (1) `Test:` an API-level test that demonstrates the defect from the caller's perspective, then (2) `Test:` the smallest test that replicates the root cause
-- Add further `Test:` items only if the fix also requires new behavior beyond making these two tests pass
+- When the scope identified in Step 1 is a bug fix, start with a `Test:` item that demonstrates the defect through the public API from the caller's perspective. Then add the smallest root-cause reproducer only if it checks a distinct missing behavior through a public API. When the caller-visible regression is already the smallest reproducer, use one test for both roles and explain the overlap in Context
+- Add further `Test:` items only if the fix requires additional new or changed behavior; do not pad the plan with duplicate reproductions or already passing cases
 
 ### Step 4: Write the Plan File
 
 1. Create the `.plans/` directory if it does not exist (resolved against the current working directory, which should be the project root)
 2. Choose a descriptive kebab-case file name based on the feature (e.g., `sequence-parser.md`, `table-renderer.md`)
 3. Write the plan file using the format specified below
-4. In the final reply, print the exact created filename and `.plans/` path, and mention that a follow-up bare `go` in the same session should continue with that plan
+4. In the final reply, print the exact created filename and `.plans/` path, and mention that a follow-up bare `go` in the same session continues with that plan via the implement skill
 
 ## Plan File Format
 
@@ -123,7 +123,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 ## Quality Checklist
 
-Before presenting the plan to the user, verify (for a pure-refactor plan consisting only of `Refactor:` items, test-related checks apply to any characterization tests added to pin current behavior):
+Before presenting the plan to the user, verify:
 
 1. Every test case is small enough to implement in a single Red-Green cycle
 2. Test names are descriptive and follow the project's naming conventions

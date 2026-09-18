@@ -28,7 +28,7 @@ Where to surface these decisions (fixed, not left to judgment):
 
 ## Catalog coverage and verification
 
-**Catalog coverage version: Go 1.26.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
+**Catalog coverage version: Go 1.26.** The catalogs below are verified against official sources up to this version. They are the default version checklist; do not re-derive listed introduction versions when the project baseline falls within coverage. This does not restrict consulting official documentation to verify behavioral contracts or supply required citations. Recheck or extend version information when:
 
 - **Staleness guard**: the resolved `go` directive or installed toolchain (`go version`) is newer than the coverage version above, comparing minor versions only — a patch release of the covered minor (e.g. go1.26.4 against coverage 1.26) never triggers this guard. The two inputs matter in different modes: the `go` directive always (it gates every recommendation); the installed toolchain only when code will be built or run — in a pure review, if the directive is within coverage, skip the `go version` probe. The catalog is out of date for this project. Do both: (a) check the release notes for everything added between the coverage version and the actual version, and follow those newer official recommendations now; (b) tell the user this skill's catalog needs updating to the new version (see Maintenance below).
 - An API or its introducing version is **not listed here**: never trust memory for introduction versions; verify before gating on it.
@@ -60,14 +60,14 @@ Flag these dependencies when the `go` directive allows the std replacement:
 
 ## Modern idiom catalog (Go 1.18 → catalog coverage version)
 
-Prefer these over older equivalents, subject to the version rules above. Entries conditioned on intent ("where X matters", "for X needs") are questions to the author in review — flag them as review-and-decide items, not definite findings — and in generated code apply them only when the intent is stated or observable:
+Prefer these over older equivalents, subject to the version rules above. Version availability does not establish behavioral equivalence: preserve documented and observable behavior when modernizing existing code; a migration that changes it requires a separate contract decision. Entries conditioned on intent ("where X matters", "for X needs") are questions to the author in review — flag them as review-and-decide items, not definite findings — and in generated code apply them only when the intent is stated or observable:
 
 - `interface{}` → `any` (1.18); `strings.Index`+slicing → `strings.Cut` / `CutPrefix` / `CutSuffix` (1.18/1.20)
 - `sort.Slice` / `sort.Sort` with ad-hoc `Less` → `slices.Sort` / `slices.SortFunc` / `slices.SortStableFunc` (1.21); manual search loops → `slices.Contains` / `slices.Index` / `slices.BinarySearch`
 - Hand-written `min`/`max` helpers → builtins (1.21); map-clearing loops → `clear` (1.21)
 - `sync.Once` + wrapper function → `sync.OnceFunc` / `OnceValue` / `OnceValues` (1.21)
 - `log.Printf` for structured/leveled logging needs → `log/slog` (1.21); fan-out to multiple handlers → `slog.NewMultiHandler` (1.26)
-- `math/rand` → `math/rand/v2` (1.22): `rand.N`, `rand.IntN`, no seeding boilerplate
+- `math/rand` → `math/rand/v2` (1.22): `rand.N`, `rand.IntN`; top-level functions need no seeding. Preserve the existing generator when callers require its exact historical sequence; the v2 generators change output streams. Local generators still need explicit seeds for reproducibility. See the [official migration rationale](https://go.dev/blog/randv2).
 - `for i := 0; i < n; i++` where `i` is only an index → `for i := range n` (1.22); loop-variable copies (`i := i`, `v := v`) are obsolete since per-iteration scoping (1.22) — flag them for removal. When generating new code at a pre-1.22 baseline, write the copy only when the closure actually outlives the iteration (goroutine, stored callback, parallel subtest) — never as a reflex
 - Channel-based generators or callback iteration → `iter.Seq` / `iter.Seq2` range-over-func (1.23), with `slices.Collect` / `maps.Collect`
 - `runtime.SetFinalizer` → `runtime.AddCleanup` (1.24)
@@ -86,10 +86,10 @@ Prefer these over older equivalents, subject to the version rules above. Entries
 
 ## Testing modernizations
 
-These entries apply to `_test.go` files only — never flag the same patterns in production code (e.g., `context.Background()` in `main` is fine).
+These entries apply to test infrastructure in `_test.go` files only, not APIs deliberately exercised by a test. If the test's purpose is unclear, classify the replacement as review-and-decide. Never flag the same patterns in production code (e.g., `context.Background()` in `main` is fine).
 
 - `for i := 0; i < b.N; i++` → `b.Loop()` (1.24)
-- `context.Background()` in tests → `t.Context()` (1.24; also added to `B` and `F` — use `b.Context()` / `f.Context()` in benchmarks and fuzz targets)
+- `context.Background()` used to manage test work → `t.Context()` (1.24; also added to `B` and `F` — use `b.Context()` / `f.Context()` in benchmarks and fuzz targets), when cancellation at test completion is appropriate. Unlike `Background`, [T.Context](https://pkg.go.dev/testing#T.Context) is canceled before cleanup functions run.
 - `os.Chdir` in tests → `t.Chdir` (1.24)
 - Consider `testing/synctest` for concurrency tests (1.25) and `T.ArtifactDir` for test outputs (1.26)
 

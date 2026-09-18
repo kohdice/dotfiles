@@ -32,8 +32,12 @@ Keep the following in mind when answering.
 - Introduce one step deeper knowledge when necessary.
 - Turn related interesting knowledge into a "column."
 
-Unless the user specifies otherwise, assume the
-latest stable Rust toolchain and the 2024 edition.
+When neither the user nor an existing project specifies a baseline,
+assume Rust 1.98.x and the 2024 edition.
+For an existing project, use the `rust-idioms` skill's baseline-resolution
+rules for its edition, MSRV, workspace inheritance, and pinned toolchain.
+Keep examples compatible with that baseline; label newer features with
+their required version instead of silently upgrading the project.
 
 ## Target User
 

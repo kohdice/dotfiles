@@ -2,11 +2,8 @@
 inputs: final: prev: {
   inherit (inputs.llm-agents.packages.${prev.stdenv.hostPlatform.system})
     agent-browser
-    amp
     claude-code
     coderabbit-cli
     codex
-    herdr
-    opencode
     ;
 }

@@ -1,6 +1,6 @@
-# Modern API lens — 0.12-recommended implementations
+# Modern API lens — version-tagged official mechanisms
 
-Detailed material for SKILL.md workflow step 3 (Modern API lens). Snapshot 2026-07, Nvim 0.12.3 stable. Sources: `:h lsp-config`, `:h vim.pack`, `:h lua-guide`, `news-0.11.txt`, `news-0.12.txt`.
+Detailed material for SKILL.md workflow step 3 (Modern API lens). Coverage and snapshot date: [Catalog coverage and verification](../SKILL.md#catalog-coverage-and-verification). Apply each entry only when the resolved target supports it. Sources: `:h lsp-config`, `:h vim.pack`, `:h lua-guide`, version-matched `news*.txt`.
 
 ## LSP: the 0.11+ native mechanism
 

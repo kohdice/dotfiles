@@ -21,7 +21,7 @@ A module/package/crate should have one reason to change. Parsing, business rules
 
 ### The project's declared architecture wins
 
-Before judging or placing anything, discover what architecture the project claims (README, ARCHITECTURE.md, docs/, ADRs, directory names like `domain/`, `adapters/`, `internal/`). When none of those exist, package/crate/module doc comments that assign an architectural role — naming a layer or position such as core rules, storage, transport ("Package billing holds the core invoicing rules", "storage for X") — count as the project's declaration; judge against them. A comment that merely describes functionality ("counts lines and words") assigns no role and declares nothing. Violations of the project's own declared rules outrank everything else. Do not impose an architecture the project never adopted.
+Before judging or placing anything, discover what architecture the project claims (README, ARCHITECTURE.md, docs/, ADRs, directory names like `domain/`, `adapters/`, `internal/`). When the project documentation does not settle a unit's role (even if the listed directories exist), package/crate/module doc comments that assign an architectural role — naming a layer or position such as core rules, storage, transport ("Package billing holds the core invoicing rules", "storage for X") — count as the project's declaration; judge against them. A comment that merely describes functionality ("counts lines and words") assigns no role and declares nothing. Violations of the project's own declared rules outrank everything else. Do not impose an architecture the project never adopted.
 
 ### Official guidance over personal taste
 
@@ -70,7 +70,7 @@ Sources: Zig Build System documentation (ziglang.org/learn/build-system), std li
 
 - Modules not declared via `build.zig` (`addModule`/`createModule`) but reached through relative-path `@import` across logical boundaries
 - A root source file that fails to define the module's public surface, forcing consumers to import deep internals
-- `anytype` parameters crossing module boundaries where a declared interface struct (std.Io.Writer-style vtable pattern) is the convention
+- `anytype` parameters crossing a boundary where the project's contract or an applicable primary source requires a declared runtime interface. Establish that requirement before flagging; `std.Io.Writer` alone is not evidence for unrelated APIs, and documented compile-time generic APIs are accepted
 
 ### C
 

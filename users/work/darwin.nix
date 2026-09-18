@@ -4,7 +4,6 @@
 {
   homebrew.casks = [
     "elasticvue"
-    "docker-desktop"
     "tableplus"
   ];
 }

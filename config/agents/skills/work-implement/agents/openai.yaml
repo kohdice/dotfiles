@@ -1,4 +1,4 @@
 interface:
   display_name: "Work Implement"
-  short_description: "Non-TDD plan execution via delegated sub-agents"
+  short_description: "Non-TDD plan execution, direct or via sub-agents"
   default_prompt: "Use $work-implement to execute this work plan."

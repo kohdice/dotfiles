@@ -33,7 +33,7 @@ return {
           lua = { "stylua" },
           markdown = { "prettierd", "prettier", stop_after_first = true },
           objcpp = { lsp_format = "prefer" },
-          proto = { lsp_format = "prefer" },
+          proto = { "clang_format" },
           python = function(bufnr)
             if require("conform").get_formatter_info("ruff_format", bufnr).available then
               return { "ruff_format" }
@@ -49,7 +49,7 @@ return {
           yaml = { "yamlfmt" },
           zig = { "zigfmt" },
           -- Catch-all. "prefer" over "fallback": trim_newlines always counts as
-          -- available, so "fallback" would never reach the LSP (js/ts via tsgo).
+          -- available, so "fallback" would never reach the LSP (js/ts via tsc).
           ["_"] = { "trim_newlines", lsp_format = "prefer" },
         },
         -- Here rather than at the call sites: caller opts outrank the

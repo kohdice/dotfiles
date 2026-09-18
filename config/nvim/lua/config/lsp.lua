@@ -5,7 +5,6 @@ vim.diagnostic.config({
   },
   float = {
     source = "if_many",
-    border = "rounded",
   },
   severity_sort = true,
 })
@@ -107,7 +106,7 @@ local servers = {
   "rust_analyzer",
   "taplo",
   "terraformls",
-  "tsgo",
+  "tsc",
   "yamlls",
   "zls",
 }

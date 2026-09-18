@@ -3,6 +3,9 @@
 
 {
   home.packages = with pkgs; [
+    # Tools
+    xan
+
     # AWS
     awscli2
     ssm-session-manager-plugin

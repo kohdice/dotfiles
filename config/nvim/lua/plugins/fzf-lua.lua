@@ -36,7 +36,6 @@ return {
     },
     grep = {
       git_icons = true,
-      rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
     },
     fzf_colors = true,
     fzf_opts = {

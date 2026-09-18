@@ -26,7 +26,7 @@
     # Development tools
     devcontainer
     podman
-    podman-desktop
+    podman-compose
     shellcheck
     typos
 
@@ -38,7 +38,6 @@
     agent-browser
     claude-code
     codex
-    herdr
 
     # Build tools
     gnumake

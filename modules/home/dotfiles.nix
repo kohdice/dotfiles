@@ -81,12 +81,14 @@ let
   # home.file symlinks (target -> source path in config/)
   homeSymlinks = {
     ".claude/CLAUDE.md" = "config/claude/CLAUDE.md";
+    ".claude/rules" = "config/claude/rules";
     ".claude/hooks" = "config/agents/hooks";
     ".claude/settings.json" = "config/claude/settings.json";
     ".claude/statusline.sh" = "config/claude/statusline.sh";
     ".codex/AGENTS.md" = "config/agents/AGENTS.md";
     ".codex/config.toml" = "config/codex/config.toml";
     ".codex/hooks" = "config/agents/hooks";
+    ".codex/rules" = "config/codex/rules";
   }
   // sharedSkillClaudeSymlinks
   // claudeSkillSymlinks # Claude-specific skills win on name collision.

@@ -1,22 +1,13 @@
 return {
   "nvim-lualine/lualine.nvim",
   event = "VeryLazy",
-  opts = function(_, opts)
-    opts.options = {
-      section_separators = { left = "", right = "" },
-      component_separators = { left = "", right = "" },
-      disabled_filetypes = {},
-    }
-    opts.sections = {
+  opts = {
+    sections = {
       lualine_b = {
         { "branch", icon = " " },
       },
       lualine_c = {
-        {
-          "filename",
-          file_status = true,
-          path = 0,
-        },
+        "filename",
         {
           "diff",
           symbols = {
@@ -40,19 +31,12 @@ return {
         "encoding",
         "filetype",
       },
-    }
-    opts.inactive_sections = {
-      lualine_a = {},
-      lualine_b = {},
+    },
+    inactive_sections = {
       lualine_c = { {
         "filename",
-        file_status = true,
         path = 1,
       } },
-      lualine_x = { "location" },
-      lualine_y = {},
-      lualine_z = {},
-    }
-    return opts
-  end,
+    },
+  },
 }

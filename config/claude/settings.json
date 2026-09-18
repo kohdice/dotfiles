@@ -15,6 +15,9 @@
     "DISABLE_COST_WARNINGS": "0",
     "MAX_THINKING_TOKENS": "31999"
   },
+  "attribution": {
+    "sessionUrl": false
+  },
   "includeCoAuthoredBy": true,
   "permissions": {
     "allow": [

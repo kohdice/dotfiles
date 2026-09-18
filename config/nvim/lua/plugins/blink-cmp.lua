@@ -18,10 +18,8 @@ return {
     },
 
     completion = {
-      menu = { border = "rounded" },
       documentation = {
         auto_show = true,
-        window = { border = "rounded" },
       },
     },
 
@@ -40,7 +38,5 @@ return {
         },
       },
     },
-
-    fuzzy = { implementation = "prefer_rust_with_warning" },
   },
 }

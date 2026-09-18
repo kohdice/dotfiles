@@ -1,17 +1,19 @@
 ---
 name: work-plan
-description: "This skill should be used when the user asks to plan work that will NOT be implemented with TDD — any task without automatically testable application behavior, regardless of technology: infrastructure (Terraform, Nix, Kubernetes, cloud resources), configuration, CI/CD pipelines, documentation, build scripts, data/schema migrations, repository housekeeping, tooling setup. Triggers on phrases like: 'plan the Terraform setup', 'create a work plan for <task>', 'plan this migration', 'インフラ構築の計画を立てて', '作業プランを作って', 'CI 設定変更を計画して', 'ドキュメント整備の計画を作って'. It produces a checklist plan in `.plans/` where every item carries a verification step with an expected outcome, ready for execution by the work-implement skill. Do NOT use when the requested change has automatically testable application behavior — the tdd-plan skill owns that. Do NOT use to execute a plan — the work-implement skill owns execution, and the tdd skill owns `/tdd`."
+description: "This skill should be used when the user asks to plan work that will NOT be implemented with TDD — any task without automatically testable application behavior: infrastructure (Terraform, Nix, Kubernetes, cloud resources), configuration, CI/CD pipelines, documentation, build scripts, data/schema migrations, repository housekeeping, tooling setup. Do not use for straightforward, low-risk work that can be completed and verified directly, unless the user explicitly requests a plan. Triggers on phrases like: 'plan the Terraform setup', 'create a work plan for <task>', 'plan this migration', 'インフラ構築の計画を立てて', '作業プランを作って', 'CI 設定変更を計画して', 'ドキュメント整備の計画を作って'. It produces a checklist plan in `.plans/` where every item carries a verification step with an expected outcome, ready for execution by the work-implement skill. Do NOT use when the requested change has automatically testable application behavior — the tdd-plan skill owns that. Do NOT use to execute a plan — the work-implement skill owns execution."
 ---
 
 # Work Plan (non-TDD planning)
 
 ## Overview
 
+Do not use for straightforward, low-risk work that can be completed and verified directly, unless the user explicitly requests a plan. Handle such work directly without creating a plan file.
+
 Create structured plans for work that TDD does not apply to. Analyze the user's request and the target environment, then produce a plan file in `.plans/` containing ordered work items, each with a verification step and its expected outcome, ready for execution by the work-implement skill. Always end by telling the user the exact plan filename that was created so they can continue with `go` in the same session or ask work-implement to execute it later.
 
-This skill is technology-neutral. Terraform, Nix, CI pipelines, documentation, shell tooling, migrations, housekeeping — anything the user chooses not to drive with TDD is in scope. The single routing question is:
+This skill is technology-neutral. Terraform, Nix, CI pipelines, documentation, shell tooling, migrations, housekeeping — tasks without automatically testable application behavior are in scope. The single routing question is:
 
-> Can an automated test fail before the change and pass after it, and is the user driving the change through that test?
+> Does the requested change introduce or alter automatically testable application behavior?
 
 If yes, this is tdd-plan's territory — hand over and stop. If no, plan it here.
 
@@ -31,12 +33,12 @@ A checklist without completion criteria is a todo list, not a plan. Every item i
 1. Read the request and identify the goal and the affected systems or files.
 2. Apply the tdd-plan skill's ambiguity threshold, adapted to this scope: the request is ambiguous only if a decision that produces an observable outcome difference is still unsettled after consulting the request, the codebase/configuration, and the live environment's conventions (existing module layout, naming schemes, environment names, provider versions). Conventions already encoded in the repository resolve otherwise-open points: adopt them and record the interpretation in the plan's Context section.
 3. If ambiguous, ask targeted questions before proceeding — only the unsettled points, one question per independent decision. When interactive questioning is not possible, return the questions as the final reply and stop without creating `.plans/` or any file.
-4. Route: if the request turns out to have automatically testable application behavior that the user wants driven by tests, state that tdd-plan owns it and stop.
+4. Route: if the request turns out to have automatically testable application behavior, state that tdd-plan owns it and stop.
 
 ### Step 2: Analyze the Target
 
 1. Read the relevant files, modules, and configuration to understand the current state.
-2. Identify the project's check commands: validators (`terraform validate`, `nix flake check`), formatters/linters, dry-run builders (`terraform plan`, `nix run .#build`, `--dry-run` flags), and any full-project check. Record them — the plan's Context names a **global check command** when one exists, and work-implement runs it as a baseline and after every item.
+2. Identify the project's check commands: validators (`terraform validate`, `nix flake check`), formatters/linters, dry-run builders (`terraform plan`, `nix run .#build`, `--dry-run` flags), and any full-project check. Record them — the plan's Context names a **global check command** when one exists, and work-implement runs it as a baseline, at phase and plan completion, and before suggesting a commit.
 3. Identify prerequisites the executor needs: required CLIs, credentials/authentication, target environment or workspace names, network access. Record them in Context; never record secret values.
 4. Note constraints: ordering dependencies, state that must not be touched, maintenance windows, anything irreversible.
 

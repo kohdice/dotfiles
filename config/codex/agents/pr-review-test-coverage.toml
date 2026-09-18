@@ -1,7 +1,7 @@
 name = "pr-review-test-coverage"
 description = "Read-only PR reviewer for missing or weak tests and assertions around behavior changes and edge cases."
 model_reasoning_effort = "high"
-sandbox_mode = "read-only"
+default_permissions = "cloud-protected-read-only"
 nickname_candidates = ["Test Review", "Coverage Review", "Assertion Review"]
 
 developer_instructions = """

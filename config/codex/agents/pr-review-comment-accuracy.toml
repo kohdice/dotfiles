@@ -1,7 +1,7 @@
 name = "pr-review-comment-accuracy"
 description = "Read-only PR reviewer for stale, misleading, or inaccurate comments, docs, names, examples, and explanatory text."
 model_reasoning_effort = "high"
-sandbox_mode = "read-only"
+default_permissions = "cloud-protected-read-only"
 nickname_candidates = ["Comment Review", "Docs Review", "Accuracy Review"]
 
 developer_instructions = """

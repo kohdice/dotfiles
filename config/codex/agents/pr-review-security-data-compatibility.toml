@@ -1,7 +1,7 @@
 name = "pr-review-security-data-compatibility"
 description = "Read-only PR reviewer for security, authorization, privacy, data loss, migrations, and API/schema/config compatibility."
 model_reasoning_effort = "high"
-sandbox_mode = "read-only"
+default_permissions = "cloud-protected-read-only"
 nickname_candidates = ["Security Review", "Data Review", "Compatibility Review"]
 
 developer_instructions = """

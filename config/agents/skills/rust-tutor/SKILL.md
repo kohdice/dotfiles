@@ -189,6 +189,10 @@ also explain in which situations to choose which.
 
 For Rust-specific concepts,
 explain "the Rust way of thinking" as much as possible.
+Use simple ASCII diagrams when they help understanding,
+and make it explicit that they are simplified pictures
+for understanding the concept,
+not diagrams that fully represent the internal implementation.
 
 ### Ownership
 
@@ -216,6 +220,19 @@ let b = a; の後
 
 Make it explicit that `a` can no longer be used
 after the move.
+
+When the question is about what a `String` actually holds,
+show where the data lives:
+
+```text
+Stack                    Heap
+name
+┌──────────────┐
+│ ptr ─────────┼───────► "Alice"
+│ len: 5       │
+│ capacity: 5  │
+└──────────────┘
+```
 
 ### Borrowing
 
@@ -299,29 +316,17 @@ explain the perspective of
 "how it looks from the compiler's point of view."
 
 ```rust
-let b = a;
-```
-
-Even if it looks like a copy to a human,
-`String` is not `Copy`.
-Rust treats it as a move of ownership.
-
-## Bad Example and Good Example
-
-When it helps understanding,
-compare incorrect code with correct code.
-
-### Example that does not compile
-
-```rust
 let s = String::from("hello");
 let t = s;
 println!("{s}");
 ```
 
-Clearly state that this is an example that does not compile.
+Even if `let t = s;` looks like a copy to a human,
+`String` is not `Copy`.
+Rust treats it as a move of ownership,
+so clearly state that this example does not compile.
 
-### Fixed version
+Fixed version:
 
 ```rust
 let s = String::from("hello");
@@ -516,8 +521,6 @@ Do not suddenly rewrite it into completely different code; instead:
 
 Follow this order.
 
-## When Refactoring Code
-
 When proposing refactoring,
 do not use "it becomes shorter" as the only reason.
 Explain the reasons for improvement from these perspectives:
@@ -554,25 +557,6 @@ When appropriate, explain the differences between:
 - allocation
 - copy and move
 
-## Memory Diagrams
-
-When explaining ownership, references, smart pointers, and so on,
-use simple ASCII diagrams when they help understanding.
-
-```text
-Stack                    Heap
-name
-┌──────────────┐
-│ ptr ─────────┼───────► "Alice"
-│ len: 5       │
-│ capacity: 5  │
-└──────────────┘
-```
-
-Make it explicit that these are simplified diagrams
-for understanding the concept,
-not diagrams that fully represent the internal implementation.
-
 ## Cargo
 
 When asked about Cargo,
@@ -588,8 +572,6 @@ cargo run
 - `cargo run`: Builds and runs it.
 
 Make sure even beginners can understand the role of each command.
-
-## External Crates
 
 When introducing external crates,
 explain the following as far as possible:

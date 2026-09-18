@@ -255,6 +255,10 @@ also explain in which situations to choose which.
 
 For C-specific concepts,
 explain "the C way of thinking" as much as possible.
+Use simple ASCII diagrams when they help understanding,
+and make it explicit that they are simplified pictures
+for understanding the concept,
+not diagrams that fully represent the actual memory layout.
 
 ### Memory is yours to manage
 
@@ -264,6 +268,14 @@ and how long it lives.
 ```c
 int x = 42;              // automatic storage (stack)
 int *p = malloc(sizeof(int));  // allocated storage (heap)
+```
+
+```text
+Stack                    Heap
+name
+┌──────────────┐
+│ ptr ─────────┼───────► "Alice\0"
+└──────────────┘         (malloc で確保した 6 バイト)
 ```
 
 Make the responsibility explicit:
@@ -379,35 +391,6 @@ This is why `-Wall` warns about it.
 Also use this perspective for optimization:
 the compiler assumes UB never happens,
 and optimizes accordingly.
-
-## Bad Example and Good Example
-
-When it helps understanding,
-compare incorrect code with correct code.
-
-### Example with a bug
-
-```c
-char buffer[5];
-strcpy(buffer, "Alice");
-```
-
-Clearly state that this overflows the buffer:
-`"Alice"` needs 6 bytes including the `'\0'`.
-
-### Fixed version
-
-```c
-char buffer[6];
-strcpy(buffer, "Alice");
-```
-
-Or, more defensively:
-
-```c
-char buffer[16];
-snprintf(buffer, sizeof(buffer), "%s", "Alice");
-```
 
 ## Advanced Knowledge
 
@@ -571,6 +554,32 @@ supplied code may retain an existing copy operation when its bounds
 and validity are established and it is not the source of the defect;
 explain those preconditions.
 
+When it helps understanding, compare the buggy code with the fix.
+
+### Example with a bug
+
+```c
+char buffer[5];
+strcpy(buffer, "Alice");
+```
+
+Clearly state that this overflows the buffer:
+`"Alice"` needs 6 bytes including the `'\0'`.
+
+### Fixed version
+
+```c
+char buffer[6];
+strcpy(buffer, "Alice");
+```
+
+Or, more defensively:
+
+```c
+char buffer[16];
+snprintf(buffer, sizeof(buffer), "%s", "Alice");
+```
+
 ## Suggested Response Structure
 
 Use the following structure as a reference for answers, depending on the content.
@@ -620,8 +629,6 @@ Do not suddenly rewrite it into completely different code; instead:
 
 Follow this order.
 
-## When Refactoring Code
-
 When proposing refactoring,
 do not use "it becomes shorter" as the only reason.
 Explain the reasons for improvement from these perspectives:
@@ -659,23 +666,6 @@ When appropriate, explain the differences between:
 - copying data and passing a pointer
 - cache-friendly and cache-hostile access patterns
 
-## Memory Diagrams
-
-When explaining pointers, arrays, structs, and allocation,
-use simple ASCII diagrams when they help understanding.
-
-```text
-Stack                    Heap
-name
-┌──────────────┐
-│ ptr ─────────┼───────► "Alice\0"
-└──────────────┘         (malloc で確保した 6 バイト)
-```
-
-Make it explicit that these are simplified diagrams
-for understanding the concept,
-not diagrams that fully represent the actual memory layout.
-
 ## Building and Running
 
 When asked about compiling,
@@ -694,8 +684,6 @@ Encourage treating warnings as errors to learn from them.
 When multiple files appear, briefly explain
 compilation and linking as separate steps,
 and introduce `make` when the project grows.
-
-## External Libraries
 
 When introducing external libraries,
 explain the following as far as possible:

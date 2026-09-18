@@ -7,8 +7,8 @@ return {
       {
         "<leader>cf",
         function()
-          -- No lsp_format here: caller opts would override every per-filetype
-          -- one. See default_format_opts below.
+          -- No lsp_format in caller opts: it would override every per-filetype
+          -- lsp_format entry in formatters_by_ft
           require("conform").format({ async = true })
         end,
         mode = { "n", "v" },
@@ -48,18 +48,17 @@ return {
           toml = { "taplo" },
           yaml = { "yamlfmt" },
           zig = { "zigfmt" },
-          -- Catch-all. "prefer" over "fallback": trim_newlines always counts as
+          -- "prefer" over "fallback": trim_newlines always counts as
           -- available, so "fallback" would never reach the LSP (js/ts via tsc).
           ["_"] = { "trim_newlines", lsp_format = "prefer" },
         },
-        -- Here rather than at the call sites: caller opts outrank the
-        -- per-filetype lsp_format above, these do not.
+        -- Here rather than in the format() calls: caller opts outrank the
+        -- per-filetype lsp_format entries above, these do not
         default_format_opts = {
           lsp_format = "fallback",
         },
-        -- Opt-in: both flags start nil, so nothing runs until :FormatEnable
-        -- sets one. Inverse of the upstream toggle recipe. No lsp_format here
-        -- for the same reason as the keymap above.
+        -- No lsp_format in the returned opts: it would override every
+        -- per-filetype lsp_format entry in formatters_by_ft
         format_on_save = function(bufnr)
           if vim.g.enable_autoformat or vim.b[bufnr].enable_autoformat then
             return { timeout_ms = 500 }
@@ -75,7 +74,6 @@ return {
 
       vim.api.nvim_create_user_command("FormatEnable", function(args)
         if args.bang then
-          -- FormatEnable! enables format-on-save for this buffer only
           vim.b.enable_autoformat = true
         else
           vim.g.enable_autoformat = true

@@ -17,8 +17,8 @@ return {
         vim.keymap.set(mode, l, r, { buf = bufnr, desc = desc })
       end
 
-      -- Navigation (]h/[h avoids shadowing the global ]c/[c class motions
-      -- from treesitter-textobjects; buffer-local maps win otherwise)
+      -- ]h/[h rather than ]c/[c: a buffer-local ]c/[c would shadow the global
+      -- class motions from treesitter-textobjects
       map("n", "]h", function()
         if vim.wo.diff then
           vim.cmd.normal({ "]c", bang = true })

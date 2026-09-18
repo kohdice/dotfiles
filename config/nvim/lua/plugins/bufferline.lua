@@ -7,8 +7,6 @@ return {
   },
   event = "VeryLazy",
   opts = function()
-    -- Derive highlight colors from the colorscheme palette instead of
-    -- duplicating hex literals that drift when the colorscheme changes
     local colors = require("solarized-osaka.colors").setup()
     return {
       options = {

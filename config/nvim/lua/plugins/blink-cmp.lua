@@ -24,7 +24,6 @@ return {
     },
 
     cmdline = {
-      -- Show the menu while typing (blink only shows it on <Tab> by default)
       completion = { menu = { auto_show = true } },
     },
 

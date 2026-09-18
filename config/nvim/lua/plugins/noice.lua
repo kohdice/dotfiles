@@ -102,9 +102,8 @@ return {
     },
   },
   config = function(_, opts)
-    -- HACK: noice shows messages from before it was enabled,
-    -- but this is not ideal when Lazy is installing plugins,
-    -- so clear the messages in this case.
+    -- noice replays messages emitted before it loaded; when lazy.nvim is
+    -- mid-install those are only its progress output, so drop them
     if vim.o.filetype == "lazy" then
       vim.cmd.messages("clear")
     end

@@ -36,7 +36,7 @@ You are a worker sub-agent executing work-plan item(s) in the repository at <REP
 >
 
 ## Verification discipline (apply to each assigned item, in order)
-1. Before-check: run the item's Verify step first and confirm the expected outcome does NOT hold yet. If it already holds, do not change anything for that item — record before_check as "already_satisfied" and explain in notes. If the Verify step cannot run before the change (e.g., it presupposes the change exists), record "not_checkable" and proceed.
+1. Before-check: run the item's Verify step first and confirm the expected outcome does NOT hold yet. If it already holds, inspect whether the task's intended state is actually present. Record before_check as "already_satisfied" and make no change: when the intended state is present, report verify.result "pass" and explain the evidence in notes; otherwise the gate is inadequate — return status "blocked", report the unperformed post-change Verify as "not_run", and explain the mismatch in notes. Never rewrite the gate or treat its passing output alone as completed work. If the Verify step cannot run before the change (e.g., it presupposes the change exists), record "not_checkable" and proceed.
 2. Change: make the item's change, and nothing beyond it.
 3. Verify: run the item's Verify step and compare the OUTPUT against the expected outcome stated in the item — not merely the exit code. Unexpected extra output (an unplanned resource in a plan diff, a new warning) is a fail; report it, do not explain it away.
 
@@ -63,7 +63,7 @@ You are a worker sub-agent executing work-plan item(s) in the repository at <REP
 ## Return (structured result only)
 Return a single JSON object matching the result schema below — no diffs, no file dumps, no full command logs. Keep notes to a few sentences. Write notes and discovered_tasks in English (discovered_tasks entries are appended verbatim to the plan file).
 
-<the Result schema block from this reference, pasted verbatim>
+<the Result schema block and its Field notes from this reference, pasted verbatim>
 ```
 
 ## Result schema
@@ -109,12 +109,12 @@ Return a single JSON object matching the result schema below — no diffs, no fi
 
 Field notes:
 
-- `items[].verify.summary` is a one-line statement of what the output showed relative to the expectation (e.g., `"plan diff: + aws_s3_bucket.state only — matches"`), not the raw output. The parent compares it against the plan's expected outcome verbatim; a mismatch triggers a parent re-run of that Verify step.
-- On `before_check: "already_satisfied"`, `verify.result` is `"pass"` with no change made; `notes` explains what was found already in place.
+- `items[].verify.summary` is a one-line statement of what the output showed relative to the expectation (e.g., `"plan diff: + aws_s3_bucket.state only — matches"`), not the raw output. For a `done` result, the parent compares it against the plan's expected outcome verbatim; a mismatch triggers a parent re-run of that Verify step. A `blocked` result follows SKILL.md step 6's stop path instead.
+- `before_check: "already_satisfied"` describes the before-check output, not proof that the task is complete. Set `verify.result` to `"pass"` only when the task's intended state was also confirmed, with no change made and that evidence in `notes`. If the gate passes without the intended state, return `status: "blocked"`, leave the unperformed post-change Verify as `"not_run"`, and explain the mismatch in `notes`.
 - `discovered_tasks` entries are full plan-item blocks ready for the parent to append: the `- [ ] Task:` line plus its `- Verify:` bullet(s), each with a concrete expected outcome. An entry that would mutate live state, or that carries an open design question ("decide whether…"), goes into `notes` for the parent to escalate — never into `discovered_tasks`. The parent deduplicates against existing plan items before appending (by outcome, not wording).
 - On `status: "blocked"`, `items` covers whatever was completed before the block, `notes` carries the reason, and the blocked item's `verify.result` is `"not_run"` when the block happened before its verification.
 
-When dispatching via tooling that supports a response schema, pass the schema so the return is validated rather than parsed. Otherwise the schema travels inside the prompt itself, as the template's Return section shows.
+When dispatching via tooling that supports a response schema, pass the schema so the return is validated rather than parsed. Otherwise the schema travels inside the prompt itself, as the template's Return section shows. Include the Field notes in the worker prompt in either case; the schema alone does not express their evidence and discovery constraints.
 
 ## Recovery policy (a verification fails)
 

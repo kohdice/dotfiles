@@ -58,7 +58,7 @@ When the task is a review or audit, structure the report as follows. (Writing ne
 2. **Findings**, each tagged with exactly one severity. Severity follows from the rule class, not executor judgment:
    - `[error]` — rejected by the compiler under the resolved edition/toolchain (e.g. `#[no_mangle]` without `unsafe(...)` on edition 2024)
    - `[warn]` — compiles but triggers a warn-by-default lint or violates a mandatory guideline (e.g. `unsafe_op_in_unsafe_fn`, missing `# Safety` on an `unsafe fn`)
-   - `[recommend]` — legal but officially discouraged, with a within-MSRV replacement (e.g. `static mut` accessed without references → atomics)
+   - `[recommend]` — legal but officially discouraged, or a catalog-listed optional modernization, with a within-baseline replacement. Explicitly distinguish the two; optional modernization alone implies neither a rule violation nor deprecation.
    - `[gated-option]` — desirable but above the MSRV or edition; must carry the required Rust version and must never be presented as a direct fix
 3. Every finding cites the authority it rests on: the stabilizing Rust version, the edition rule, or — for version-independent guidance — the official guideline item (e.g. API Guidelines C-GETTER), so it can be checked against the baseline.
 4. Report prose follows the conversation language; code snippets, identifiers, and severity tags stay in English. This language policy applies to every deliverable, including write-mode summaries.
@@ -126,5 +126,6 @@ From [Rust 1.98](https://doc.rust-lang.org/releases.html#version-1980-2026-08-20
 
 - Naming per RFC 430 / API Guidelines: `as_`/`to_`/`into_` conversion prefixes, getter names without `get_`, iterator method naming (`iter`, `iter_mut`, `into_iter`)
 - Error types implement `std::error::Error + Send + Sync` where crossing API boundaries; use `?` with `From` conversions instead of manual `map_err` chains
-- Doc comments: `///` with `# Examples`, `# Errors`, `# Panics`, `# Safety` sections per API Guidelines; `# Safety` is mandatory on `unsafe fn` and unsafe trait impls
+- Doc comments: `///` with applicable `# Examples`, `# Errors`, `# Panics`, and `# Safety` sections per [API Guidelines C-FAILURE](https://rust-lang.github.io/api-guidelines/documentation.html#function-docs-include-error-panic-and-safety-considerations-c-failure). Public `unsafe fn` and `unsafe trait` definitions document caller and implementer obligations, respectively, in `# Safety`; [`clippy::missing_safety_doc`](https://rust-lang.github.io/rust-clippy/master/index.html#missing_safety_doc) is warn-by-default.
+- For `unsafe` blocks and `unsafe impl`, recommend `// SAFETY:` comments explaining why the implementation satisfies its safety requirements. An adequate existing justification is sufficient; do not require an additional `# Safety` section on `unsafe impl`. Missing implementation justification alone is `[recommend]` unless an enabled lint or mandatory project rule requires otherwise: [`clippy::undocumented_unsafe_blocks`](https://rust-lang.github.io/rust-clippy/master/index.html#undocumented_unsafe_blocks) is allow-by-default.
 - Follow rustfmt defaults; run `cargo fmt` rather than hand-formatting (when `cargo fmt` is not run for any reason — unavailable, sandboxed, or disallowed — match rustfmt defaults manually and note it)

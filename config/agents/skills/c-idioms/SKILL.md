@@ -5,7 +5,7 @@ description: This skill should be used when writing, modifying, refactoring, or 
 
 # C Idioms (standard-version-aware, up to C23)
 
-Authority sources: the C23 standard ISO/IEC 9899:2024 (working drafts N3096/N3220), the WG14 proposals it incorporates, and cppreference.com's C23 documentation. Do not invent recommendations: every idiom below traces to one of these sources.
+Authority sources: ISO/IEC 9899:2024 (C23), its public WG14 draft N3096, and adopted WG14 proposals. N3220 is a post-C23 working draft: do not attribute later changes to C23 without checking their adoption history. cppreference is a secondary index, not the normative authority.
 
 ## Step 0: Resolve the project baseline (ALWAYS first)
 
@@ -13,7 +13,7 @@ Before writing or recommending any C code:
 
 1. Determine the target standard: grep build files (Makefile, CMakeLists.txt, meson.build, build.zig, compile_flags.txt, .clang-format/.clang-tidy) for `-std=` flags (`c23`, `c2x`, `gnu23`, `gnu2x`, `c17`, `c11`, ...) or `C_STANDARD 23`.
 2. If no explicit standard is declared, treat the compiler default as the floor and write to a conservative subset — assume C99 as the concrete floor unless there is evidence of older toolchains. Suggesting to pin `-std=` as a low-priority improvement is **mandatory output in your response**, exactly like the baseline statement in step 4. In this branch the baseline self-check (see Standard-conformance hygiene) runs with the project's flags as-is, plus one compile at the assumed floor (e.g. `-std=c99 -pedantic`) when a compiler is available.
-3. Note compiler reality: near-complete C23 support requires GCC 14+ / Clang 18+ (older compilers accept `-std=c2x`); MSVC support is partial. Mention this when recommending migration.
+3. When recommending C23 migration, distinguish acceptance of `-std=c23`/`-std=c2x` from support for the specific language features and C library facilities being proposed. Check the supported compiler versions and target library/SDK using their official feature tables; a compiler version alone does not guarantee complete C23 support. Sources: [GCC](https://gcc.gnu.org/projects/c-status.html), [Clang](https://clang.llvm.org/c_status.html). State the relevant implementation limits in the response.
 4. **State the resolved baseline and its source in your response** (e.g. "target: C17, from `Makefile: -std=c17`") before emitting any code or findings. If it came from a compiler-default fallback (step 2), say so. This statement is mandatory output, not an internal step — silent resolution is non-compliance.
 
 Hard rules derived from the baseline:
@@ -37,17 +37,17 @@ Hard rules derived from the baseline:
 
 ## Catalog coverage and verification
 
-**Catalog coverage version: C23 (ISO/IEC 9899:2024, `__STDC_VERSION__ == 202311L`).** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
+**Catalog coverage version: C23 (ISO/IEC 9899:2024, `__STDC_VERSION__ == 202311L`).** Use the catalogs below as the default checklist within coverage, without routinely rechecking every entry. Official sources take precedence over this catalog. Verify when:
 
 - **Staleness guard**: the project targets a standard newer than the coverage version above (e.g. a future `-std=c2y`). The catalog is out of date for this project. Do both: (a) check official sources for changes between the coverage version and the targeted standard, and follow those newer official recommendations now; (b) tell the user this skill's catalog needs updating (see Maintenance below).
 - A construct or its removing/introducing standard version is **not listed here**: never trust memory for standard-version history; verify before gating on it.
-- A catalog entry **conflicts with observed compiler behavior**: verify against the sources; if the conflict stands, report the discrepancy.
+- A catalog entry is **uncertain or conflicts with official evidence or observed compiler behavior**: verify the exact status, version history, and replacement semantics; report any confirmed discrepancy. Compiler acceptance alone does not establish standard conformance.
 
 Verification sources, in order of authority:
 
-1. cppreference C23 overview: https://en.cppreference.com/w/c/23 (feature-by-feature status and versions)
-2. WG14 working drafts N3096/N3220 and proposal documents (exact normative wording)
-3. Compiler release notes (GCC/Clang) for implementation status
+1. WG14 drafts and adopted proposals for standard wording and version history: https://www.open-std.org/jtc1/sc22/wg14/www/docs/
+2. Official compiler and C library documentation for implementation availability; compiler extensions are not ISO deprecations.
+3. Secondary lookup index: https://en.cppreference.com/w/c/23
 
 ## Maintenance (updating this skill for a new C standard)
 
@@ -73,19 +73,20 @@ Each entry is tagged with the standard that removed or changed it. **Ripple rule
 
 ## Obsolescent constructs with official replacements
 
-Version default for this section, citable verbatim in reviews: each construct below became **obsolescent in C23** and each replacement was **introduced in C23**, unless a different version is noted on the entry:
+Status belongs to the specific construct, not to a section heading. The entries below explicitly identify C23 obsolescence and replacement versions; do not extend that status to an entire header or to other valid idioms.
 
-- **`_Noreturn`, `<stdnoreturn.h>`, `noreturn` macro** (obsolescent) → `[[noreturn]]` attribute
-- **`<stdbool.h>`**: `bool`/`true`/`false` are keywords now; the header and `__bool_true_false_are_defined` are obsolescent → drop the include, use the keywords. Same for `_Bool` → `bool`
-- **`<stdalign.h>`**: `alignas`/`alignof` are keywords → drop the include; `_Alignas`/`_Alignof` are alternative spellings, prefer the keywords
-- **`_Static_assert`** → `static_assert` keyword (message argument now optional); **`_Thread_local`** → `thread_local` keyword
-- **`DECIMAL_DIG`** (deprecated) → type-specific `FLT_DECIMAL_DIG`/`DBL_DECIMAL_DIG`/`LDBL_DECIMAL_DIG`
-- **`NULL`** → `nullptr` (`nullptr_t`): type-safe, especially in variadic calls and `_Generic`; NULL remains valid, so severity is Medium only where type safety matters (varargs, sentinel arguments), otherwise Low
-- **`memset` for wiping secrets** → `memset_explicit` (guaranteed not optimized away)
-- **GNU/Clang extensions now standardized**: `__typeof__` → `typeof`/`typeof_unqual`; `__attribute__((fallthrough/unused/warn_unused_result/deprecated/noreturn))` → `[[fallthrough]]`/`[[maybe_unused]]`/`[[nodiscard]]`/`[[deprecated]]`/`[[noreturn]]`; `__builtin_unreachable()` → `unreachable()` from `<stddef.h>` (keep extensions only when older compilers must be supported, and say so)
+- **`_Noreturn`, `<stdnoreturn.h>`, `noreturn` macro** (C11; obsolescent in C23) → `[[noreturn]]` (C23). [WG14 N2764](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2764.pdf)
+- **`_Alignas`, `_Alignof`, `_Bool`, `_Static_assert`, `_Thread_local`** (alternative spellings obsolescent in C23) → `alignas`, `alignof`, `bool`, `static_assert`, `thread_local` as C23 keywords. Some names already existed as header macros in older standards; keyword availability is a separate version fact. `<stdalign.h>` remains a standard header, and an unnecessary include is optional cleanup. [WG14 N2934](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2934.pdf)
+- **`__bool_true_false_are_defined`** (obsolescent in C23). `bool`/`true`/`false` are C23 keywords, but **`<stdbool.h>` itself is not obsolescent**. Removing the now-unnecessary include is optional and must preserve older supported baselines. [WG14 N2935](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2935.pdf)
+- **`DECIMAL_DIG`** (obsolescent in C23) → type-specific `FLT_DECIMAL_DIG`/`DBL_DECIMAL_DIG`/`LDBL_DECIMAL_DIG` (**introduced in C11**, not C23). Select the macro from the actual floating-type contract; do not silently narrow a widest-type guarantee. If callers or supported extended types are unknown, make the replacement conditional and explain the required caller audit. [C11 N1570 §5.2.4.2.2](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf), [N3220 §7.33.5](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 
 ## Modern C23 facilities to prefer
 
+These are modernization choices, not claims that their predecessors are normatively obsolescent. Explain concrete portability or correctness benefits separately from standard status.
+
+- **`NULL`** → `nullptr` (`nullptr_t`, C23): `NULL` remains valid and is not obsolescent. Medium only where type safety matters (varargs/sentinel contexts); otherwise Low. Preserve the receiving API's expected type.
+- **`memset` for wiping secrets** → `memset_explicit` (C23, `<string.h>`): strengthens the guarantee against elision; `memset` itself is not obsolescent. Check library availability. [WG14 N2897](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2897.htm)
+- **GNU/Clang extensions with C23 alternatives**: `__typeof__` → `typeof`/`typeof_unqual`; `__attribute__((fallthrough/unused/warn_unused_result/deprecated/noreturn))` → `[[fallthrough]]`/`[[maybe_unused]]`/`[[nodiscard]]`/`[[deprecated]]`/`[[noreturn]]`; `__builtin_unreachable()` → `unreachable()` from `<stddef.h>`. ISO C does not deprecate compiler extensions; preserve needed compatibility and check replacement semantics.
 - **Checked integer arithmetic**: manual overflow checks (`a > INT_MAX - b`, wrapping casts) → `<stdckdint.h>` `ckd_add`/`ckd_sub`/`ckd_mul`
 - **Bit manipulation**: hand-rolled popcount/clz/ctz loops and `__builtin_popcount` family → `<stdbit.h>` `stdc_count_ones`, `stdc_leading_zeros`, `stdc_trailing_zeros`, `stdc_bit_width`, `stdc_has_single_bit`, endian macros `__STDC_ENDIAN_NATIVE__`
 - **Compile-time constants**: `#define MAX_LEN 128` and enum-constant hacks for typed constants → `constexpr` object definitions
@@ -113,11 +114,11 @@ Version default for this section, citable verbatim in reviews: each construct be
 A review report contains these sections, in this order — the mandatory statements defined elsewhere in this skill live in fixed slots so they cannot be dropped:
 
 1. **Baseline header**: the resolved standard and its source (the Step 0 item 4 statement), plus the compiler-reality note when migration is being recommended.
-2. **Findings**, grouped into severity tiers. Default severity = catalog section membership; an entry's own severity note (e.g. `NULL` → `nullptr`: Medium only in varargs/sentinel contexts, otherwise Low) overrides the section default.
+2. **Findings**, grouped into severity tiers. Derive severity from the entry's explicit status and the concrete impact, not section membership alone; an entry's own severity note (e.g. `NULL` → `nullptr`: Medium only in varargs/sentinel contexts, otherwise Low) overrides the section default.
    - **Critical** — removed constructs relative to the baseline (build breakers or newly undefined behavior)
-   - **High** — obsolescent constructs with official replacements
+   - **High** — constructs explicitly obsolescent in the resolved standard, with official replacements; valid alternatives and implementation extensions do not inherit this status
    - **Medium/Low** — modern facilities to prefer (optional modernization). Tie-break within this tier: Medium when the legacy form carries a correctness, portability, or security cost (hand-rolled bit loops, untyped constant macros, non-reentrant time functions); Low when purely cosmetic (`{0}` vs `{}`, spelling variants)
-     Each finding states: file:line, the construct, its version tag (removed/deprecated/introduced in X — copy it from the catalog), the concrete replacement, and the ripple note when the replacement is not drop-in.
+     Each finding states: file:line, the construct, its verified status/version tag (removed/obsolescent/introduced in X; correct catalog errors from official evidence), the concrete replacement, and the ripple note when the replacement is not drop-in.
 3. **Non-findings**: what was deliberately not reported and why — at minimum the naming/formatting exclusion from the hygiene section when style-adjacent items are present in the reviewed code.
 4. **Baseline self-check statement**: which check was run, per the hygiene section.
 

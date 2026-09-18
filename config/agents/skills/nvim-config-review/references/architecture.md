@@ -1,6 +1,6 @@
 # Architecture lens — layout and separation of concerns
 
-Detailed material for SKILL.md workflow step 3 (Architecture lens). Sources: `:h lua-guide`, `:h 'runtimepath'`, `:h initialization`, `:h lsp-config`.
+Detailed material for SKILL.md workflow step 3 (Architecture lens). Coverage and snapshot date: [Catalog coverage and verification](../SKILL.md#catalog-coverage-and-verification). Sources: `:h lua-guide`, `:h 'runtimepath'`, `:h initialization`, `:h lsp-config`. Gate version-specific mechanisms on the resolved target.
 
 ## Officially documented directory layout
 

@@ -1,6 +1,6 @@
 # Performance lens — startup and runtime cost
 
-Detailed material for SKILL.md workflow step 3 (Performance lens). Snapshot 2026-07, Nvim 0.12.3. Sources: `:h --startuptime`, `:h slow-start`, `:h 'runtimepath'`, `:h lua-guide`, `:h vim.loader`, `news-0.12.txt`.
+Detailed material for SKILL.md workflow step 3 (Performance lens). Coverage and snapshot date: [Catalog coverage and verification](../SKILL.md#catalog-coverage-and-verification). Sources: `:h --startuptime`, `:h slow-start`, `:h 'runtimepath'`, `:h lua-guide`, `:h vim.loader`, version-matched `news*.txt`.
 
 **Honesty rule for this lens**: much community "perf lore" has no official backing. Report a claim as _documented_ only when a `:h` tag says so; otherwise label it _reasoned_ (explain the mechanism: work done at startup vs deferred, per-event vs one-shot) and keep severity Low. Never invent benchmark numbers.
 

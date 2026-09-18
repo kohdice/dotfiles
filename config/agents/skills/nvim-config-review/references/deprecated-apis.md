@@ -1,16 +1,16 @@
 # Deprecations lens — deprecated/removed APIs and superseded plugins
 
-Detailed material for SKILL.md workflow step 3 (Deprecations lens). Snapshot taken 2026-07 against Nvim 0.12.3 (stable; 0.12.0 released 2026-03-29). Sources: `runtime/doc/deprecated.txt`, `news-0.10/0.11/0.12.txt`, source greps of `runtime/lua` per release branch, GitHub repo status via API.
+Detailed material for SKILL.md workflow step 3 (Deprecations lens). Coverage and snapshot date: [Catalog coverage and verification](../SKILL.md#catalog-coverage-and-verification). Sources: version-matched `runtime/doc/deprecated.txt`, `news*.txt`, `runtime/lua`, and each plugin's own repository. Historical entry versions are independent of catalog coverage.
 
 **Severity mapping** (deprecation ≠ removal — check the target version first):
 
-- **High** — removed in the target version (errors), or present in target but already deleted on master ("0.13-dev" below: breaks on the next release). Actual deletion on master is the bar — a removal _schedule_ alone (e.g. `vim.deprecate(..., '0.13')` in the source) does not promote a Medium to High.
+- **High** — removed in the target version (errors), or verified deleted in the development revision for the target's next release. Cite the exact revision and label future breakage separately. A removal schedule or this catalog's historical `master` status alone does not promote a Medium to High.
 - **Medium** — deprecated in or before the target version; warns but works.
 - Do not flag APIs whose deprecation postdates the target version.
 - These tiers do not map 1:1 to the section headers of `runtime/doc/deprecated.txt` (an API listed under "DEPRECATED IN 0.8" may or may not be removed yet). When the tier is in doubt, check whether the symbol still exists in the target runtime's Lua source.
 - A config key that merely _names_ a deprecated function (e.g. a plugin override table like `["vim.lsp.util.stylize_markdown"] = true`) is not a call. Report it as Low/informational when the deprecation makes the option inert on the target version; otherwise a note at most — never Medium/High on the name reference alone.
 
-## Removed (error on 0.11/0.12 targets)
+## Removed (error only at or after the listed removal version)
 
 | Gone                                                                              | Replacement                                               | Removed in |
 | --------------------------------------------------------------------------------- | --------------------------------------------------------- | ---------- |
@@ -22,7 +22,9 @@ Detailed material for SKILL.md workflow step 3 (Deprecations lens). Snapshot tak
 | `Query:iter_matches()` `all` option                                               | —                                                         | 0.12       |
 | `vim.diff()`                                                                      | `vim.text.diff()` (rename; old name deprecated)           | 0.12       |
 
-## Deprecated, deleted on master — breaks on 0.13 (High on a 0.12 target)
+## Deprecated, recorded as deleted on the development branch (reverify removal)
+
+These are removal candidates from the catalog snapshot, not proof of the target's current or next-release behavior. Confirm the relevant source revision before assigning High; otherwise use the verified target-version deprecation status.
 
 | Deprecated                         | Replacement                                              | Since |
 | ---------------------------------- | -------------------------------------------------------- | ----- |
@@ -34,7 +36,7 @@ Detailed material for SKILL.md workflow step 3 (Deprecations lens). Snapshot tak
 | `vim.lsp.util.jump_to_location()`  | `vim.lsp.util.show_document(..., {focus=true})`          | 0.11  |
 | `vim.lsp.util.trim_empty_lines()`  | `vim.split(s, ..., {trimempty=true})`                    | 0.10  |
 
-## Deprecated, still present on master (Medium; warns)
+## Deprecated, recorded as present at the catalog snapshot (verify target status)
 
 | Deprecated                                                                                                                             | Replacement                                                                                                                     | Since |
 | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----- |
@@ -89,7 +91,9 @@ grep -rn -E "buffer\s*=\s*(true|bufnr|args\.buf|0)" <scope>   # keymap opts "buf
 grep -rn -E "require\(.(lspconfig|nvim-treesitter\.configs)" <scope>
 ```
 
-## Plugins archived or superseded by built-ins (verified 2026-07)
+## Plugins archived or superseded by built-ins
+
+Status reflects the catalog snapshot, not a live check. Verify the plugin's own repository before reporting mutable archive, maintenance, or relocation claims, including entries listed here.
 
 | Plugin                                          | Status                                                                                                                     | Built-in / successor                                                                                      | Severity                                                                                                                                       |
 | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |

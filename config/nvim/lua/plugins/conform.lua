@@ -57,15 +57,35 @@ return {
         default_format_opts = {
           lsp_format = "fallback",
         },
-        format_on_save = {
-          timeout_ms = 500,
-        },
+        -- Opt-in: both flags start nil, so nothing runs until :FormatEnable
+        -- sets one. Inverse of the upstream toggle recipe. No lsp_format here
+        -- for the same reason as the keymap above.
+        format_on_save = function(bufnr)
+          if vim.g.enable_autoformat or vim.b[bufnr].enable_autoformat then
+            return { timeout_ms = 500 }
+          end
+          return nil
+        end,
         log_level = vim.log.levels.ERROR,
       })
 
       conform.formatters.taplo = {
         args = { "format", "--option", "indent_string=    ", "-" },
       }
+
+      vim.api.nvim_create_user_command("FormatEnable", function(args)
+        if args.bang then
+          -- FormatEnable! enables format-on-save for this buffer only
+          vim.b.enable_autoformat = true
+        else
+          vim.g.enable_autoformat = true
+        end
+      end, { desc = "Enable autoformat-on-save", bang = true })
+
+      vim.api.nvim_create_user_command("FormatDisable", function()
+        vim.b.enable_autoformat = false
+        vim.g.enable_autoformat = false
+      end, { desc = "Disable autoformat-on-save" })
     end,
   },
 }

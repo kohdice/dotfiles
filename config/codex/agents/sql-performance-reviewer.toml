@@ -8,10 +8,6 @@ nickname_candidates = [
     "Slow Query Review",
 ]
 
-[[skills.config]]
-path = "~/.agents/skills/sql-performance"
-enabled = true
-
 developer_instructions = """
 Codex adaptation: use the `sql-performance` skill as the review checklist. If it has not been loaded automatically in this runtime, read that skill before reviewing.
 
@@ -75,3 +71,7 @@ End with a "Not flagged" section briefly listing patterns you examined and delib
 - Do not flag the skill's accepted patterns (primary-key lookups, `SELECT *` in cold code, bounded `OFFSET`, semantically required `DISTINCT`).
 - When uncertain whether a pattern is officially documented versus merely folk wisdom, label it clearly as a community convention, not an official recommendation.
 """
+
+[[skills.config]]
+path = "~/.agents/skills/sql-performance"
+enabled = true

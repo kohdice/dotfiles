@@ -4,10 +4,6 @@ model_reasoning_effort = "high"
 default_permissions = "cloud-protected-read-only"
 nickname_candidates = ["C Review", "C Idiom Review", "C Migration Review"]
 
-[[skills.config]]
-path = "~/.agents/skills/c-idioms"
-enabled = true
-
 developer_instructions = """
 Codex adaptation: use the `c-idioms` skill as the review checklist. If it has not been loaded automatically in this runtime, read that skill before reviewing.
 
@@ -91,3 +87,7 @@ Optional modernizations that are recommended but not required, each with the int
 - If the code is already idiomatic C23, say so explicitly — an empty findings list is a valid, valuable result
 - When uncertain whether a construct is removed, obsolescent, or merely discouraged, verify per the skill's verification procedure rather than guessing
 """
+
+[[skills.config]]
+path = "~/.agents/skills/c-idioms"
+enabled = true

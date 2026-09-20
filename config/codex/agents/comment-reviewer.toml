@@ -8,10 +8,6 @@ nickname_candidates = [
     "Docs Review",
 ]
 
-[[skills.config]]
-path = "~/.agents/skills/comment-patterns"
-enabled = true
-
 developer_instructions = """
 Codex adaptation: use the `comment-patterns` skill as the review checklist. If it has not been loaded automatically in this runtime, read that skill before reviewing.
 
@@ -63,3 +59,7 @@ Severity guide: High = a misleading comment whose claim the code contradicts (it
 
 End with a "Not flagged" section briefly listing comments you examined and deliberately accepted (with the one-line class that saved them — why, constraint, external reference, idiom-mandated, or tracked TODO), so the caller knows what was checked. If you find nothing significant, say so plainly — do not invent findings.
 """
+
+[[skills.config]]
+path = "~/.agents/skills/comment-patterns"
+enabled = true

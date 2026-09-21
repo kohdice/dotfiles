@@ -39,7 +39,7 @@ If even one file is staged, commit **only the staged contents** as a single comm
 
 1. Run `git diff --cached` to read the actual staged changes
 2. **Do not run `git add` for unstaged changes.** The user may have deliberately excluded them
-3. Compose a message summarizing the staged diff and run `git commit -m "type(scope): message"`
+3. Compose the subject and any explanatory body following the message guidelines, then run `git commit` with that message
 4. Run `git status` to verify the commit succeeded
 
 ### Step 2B: Nothing is staged (split commits)
@@ -57,7 +57,7 @@ Do not lump all changes into one commit. Break them into meaningful units.
 4. For each unit, repeat:
    1. `git add <files>` — stage exactly the files for this unit
    2. `git diff --cached` — verify the staged set matches the intent
-   3. `git commit -m "type(scope): message"`
+   3. Compose the subject and any explanatory body following the message guidelines, then run `git commit` with that message
 5. Run `git status` at the end to confirm the working tree is clean (or that any remaining changes are intentionally left)
 
 If unexpected changes appear during the process, stop and confirm with the user before proceeding.
@@ -90,7 +90,8 @@ type(scope): message
 
 - Read recent commits via `git log -5 --oneline` and match the project's conventions (scope naming, tone)
 - Aim for ~50 characters on the subject line
-- Prefer "why" over "what" when both are non-obvious; otherwise keep it short
+- Explain the problem, motivation, and relevant tradeoffs. If the subject already conveys the reason, no body is needed; otherwise add a short body after a blank line
+- Keep local constraints that prevent an incorrect edit beside the code, even when the commit also explains them
 - For multi-line bodies, pass the message via HEREDOC
 
 ## Hard Rules

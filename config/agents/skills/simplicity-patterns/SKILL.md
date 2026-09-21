@@ -1,6 +1,6 @@
 ---
 name: simplicity-patterns
-description: This skill should be used when writing, modifying, refactoring, or reviewing code in C, Go, Rust, or Zig — implementing features, "シンプルに実装して", deciding whether an interface/trait, generic, builder, or wrapper layer is justified, or auditing a codebase for over-engineering. It defines the YAGNI principle, Kent Beck's "Tidy First?" discipline separating structural from behavioral change, the four justifications an abstraction must meet to earn its keep, a catalog of wrapper-only code, speculative abstractions, and structural clutter (with per-language variants), and the accepted-abstraction criteria, so that generated code introduces no unearned indirection and reviews flag only removable implementation.
+description: "Guides C, Go, Rust, or Zig implementation, refactoring, and review toward simple designs. Applies when deciding whether abstractions are needed or auditing unnecessary complexity."
 ---
 
 # Simplicity Patterns (YAGNI / Tidy First?, C / Go / Rust / Zig)

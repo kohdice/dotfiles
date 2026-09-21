@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: This skill should be used when the user hands over a GitHub PR URL, PR number, or branch and asks to "review this PR", "review and comment on this PR", "approve it", "request changes", "この PR をレビューして", or "gh でレビューしてコメントして". It orchestrates a multi-agent GitHub PR review: it checks the PR out into one throwaway git worktree, fans out read-only reviewer sub-agents by concern (using the named review agents available in the current runtime, with an inline single-pass fallback), synthesizes their findings, and submits a single approve or request-changes verdict with the gh CLI. It does not re-run tests, formatters, linters, or builds that CI already covers, and always discards the worktree afterward.
+description: "Reviews a GitHub PR identified by URL, number, or branch and submits a review when the user requests a PR review, approval, or changes. Local unpublished reviews use local-review."
 ---
 
 # PR Review (worktree-isolated orchestrator)

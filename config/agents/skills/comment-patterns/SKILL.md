@@ -1,13 +1,6 @@
 ---
 name: comment-patterns
-description: >-
-  Use when writing, modifying, refactoring, or reviewing comments in C, Go, Rust,
-  or Zig, deciding whether a comment belongs, or auditing comment noise. Applies
-  the documentation-layer policy Code → How, Tests → What, Commits → Why,
-  Comments → Why not, while preserving API contracts, safety explanations,
-  constraints, and machine-read comments. Detects redundant, misplaced,
-  misleading, and missing explanations; defers comment format and mandated
-  presence to language idiom skills and commented-out code to simplicity-patterns.
+description: "Guides writing and reviewing comments in C, Go, Rust, or Zig, including whether a comment belongs and comment-noise audits. Comment format belongs to the language idiom skills; commented-out code to simplicity-patterns."
 ---
 
 # Comment Patterns (content value and accuracy, C / Go / Rust / Zig)

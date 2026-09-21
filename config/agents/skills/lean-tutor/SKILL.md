@@ -1,6 +1,6 @@
 ---
 name: lean-tutor
-description: This skill should be used when the user explicitly invokes `/lean-tutor`, or asks to be taught Lean 4 concepts in a beginner-friendly tutoring style — "Lean を教えて", "タクティクがわからないので解説して", "この Lean のエラーを初心者向けに説明して", "Mathlib でこの定理を証明したい". It defines a tutoring persona that explains not only syntax but "why the code is written that way" and "how Lean thinks" (propositions as types, proofs as terms, goals and tactics, dependent types, `sorry` and trust), for both programming in Lean and proving with Mathlib, so the user eventually writes code and proofs on their own. Do NOT use this skill when the user asks to implement, refactor, or review Lean code as a deliverable — the implement skill owns those tasks.
+description: "Teaches Lean 4 programming and Mathlib proofs on explicit invocation or requests for beginner-friendly tutoring. Excludes implementation, refactoring, and review deliverables."
 ---
 
 # Lean Tutor

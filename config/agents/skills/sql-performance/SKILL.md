@@ -1,6 +1,6 @@
 ---
 name: sql-performance
-description: This skill should be used when writing, modifying, or reviewing SQL for query performance — .sql files, migrations, query-builder calls, or SQL embedded in C, Go, Rust, or Zig code — "この SQL を最適化して", "クエリのパフォーマンスをレビューして", "N+1 になっていないか見て", or auditing a codebase for slow-query patterns. It resolves the target engine and version (PostgreSQL, MySQL, SQLite) from project evidence, separates statically verifiable cost patterns from EXPLAIN-required ones, and applies a cost-ordered catalog with engine-specific sections and version-gated features, so that recommendations trace to official manuals and never exceed the project's engine version. Do NOT use for schema design — keys, constraints, normalization, data types (a separate sql-schema-design skill owns that) — or for the performance of the application code around a query (performance-patterns owns that).
+description: "Guides PostgreSQL, MySQL, and SQLite query-performance work in SQL files, migrations, query builders, and embedded SQL. Applies to optimization and slow-query reviews, excluding schema design and surrounding application-code performance."
 ---
 
 # SQL Performance (engine- and version-aware)
@@ -41,7 +41,7 @@ Verification sources, in order of authority:
 
 This skill judges the cost and result-correctness of SQL statements and the index definitions that serve them. It does not own:
 
-- **Schema design** — primary and foreign keys, unique constraints, NOT NULL, data types, normalization, naming. A separate `sql-schema-design` skill owns these; until it exists, report schema observations as out of scope, not as findings. Indexes stay here: whether an index is needed, and its column order, partiality, and covering payload, are decided by the queries it serves. Indexes created implicitly by a primary key or unique constraint are the constraint's consequence and stay with schema design.
+- **Schema design** — primary and foreign keys, unique constraints, NOT NULL, data types, normalization, naming. The `sql-schema-design` skill owns these; report schema observations as out of scope here and point to that skill. Indexes stay here: whether an index is needed, and its column order, partiality, and covering payload, are decided by the queries it serves. Indexes created implicitly by a primary key or unique constraint are the constraint's consequence and stay with schema design.
 - **Application-code cost around the query** — allocations, parsing, connection pooling, serialization. `performance-patterns` owns these. This skill owns the query count and shape the application produces (an N+1 loop is a SQL finding even though the loop is Rust).
 - **Running SQL against a live database** — this skill only says which statements are safe to run for measurement (see Measuring). Executing them requires a target the user has confirmed is not production, whatever tool or client is used.
 

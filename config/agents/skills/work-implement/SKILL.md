@@ -1,6 +1,6 @@
 ---
 name: work-implement
-description: 'This skill should be used when the user asks to execute a non-TDD work plan or to carry out work without automatically testable application behavior — "execute the work plan", "run the infrastructure plan", "作業プランを実行して", "インフラプランを実装して", "この設定変更をやって" — or says bare "go" after a work plan was created in the same session. It executes a plan in `.plans/` (created via the work-plan skill when none exists) under a before-check → change → verify discipline: the parent owns the plan file, the milestone global checks, every `Task (apply):` live-state mutation (after explicit user confirmation), and the final report; batches run directly in the parent when small and clear, otherwise in worker sub-agents that report Verify evidence. Do NOT use for plan creation only (work-plan skill), for work with automatically testable application behavior or bare "go" after a TDD plan (implement skill), or for a single trivial step that needs no plan.'
+description: "Executes documentation, configuration, infrastructure, and other work without testable application behavior, including the bare \"go\" reply after a work plan. Planning-only requests use work-plan; testable application changes use implement. Excludes trivial single steps."
 ---
 
 # Work Implement (non-TDD plan executor)

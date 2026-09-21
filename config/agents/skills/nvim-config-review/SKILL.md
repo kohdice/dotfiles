@@ -1,6 +1,6 @@
 ---
 name: nvim-config-review
-description: This skill should be used when the user asks to review a Neovim configuration — "review my nvim config", "check my Neovim setup", "Neovim の設定をレビューして", "nvim 設定が古くないか確認して", "非推奨 API を探して" — or to audit Lua config files under a Neovim config directory. It reviews modern API usage, deprecations, performance, and configuration layout against the resolved target version, using a version-tagged catalog with centralized coverage and update guidance. It is read-only, never edits files, and never launches Neovim except `nvim --version`. Do not use it for general Lua code review or plugin development; it reviews configurations only.
+description: "Reviews Neovim configuration for version compatibility, deprecated APIs, performance, and layout without editing files. Applies to configuration audits, not general Lua code or plugin development."
 ---
 
 # Neovim Config Review

@@ -1,6 +1,6 @@
 ---
 name: mini-pr-review
-description: Manual-only GitHub PR review workflow. Use only when the user explicitly invokes mini-pr-review for a GitHub PR URL or number, such as $mini-pr-review in Codex or /mini-pr-review in Claude Code. Review the PR in a temporary git worktree, do not use sub-agents or other skills, do not run CI-covered tests/formatters/linters/builds, submit one approve or request-changes review with gh, and always remove the worktree afterward.
+description: "Reviews a GitHub PR by URL or number in a temporary worktree and submits one review, only on explicit mini-pr-review invocation, without sub-agents or other skills. Ordinary PR review requests use pr-review."
 ---
 
 # Mini PR Review

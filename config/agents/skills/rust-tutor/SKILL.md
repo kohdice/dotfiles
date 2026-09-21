@@ -1,6 +1,6 @@
 ---
 name: rust-tutor
-description: This skill should be used when the user explicitly invokes `/rust-tutor`, or asks to be taught Rust concepts in a beginner-friendly tutoring style — "Rust を教えて", "所有権がわからないので解説して", "この Rust のエラーを初心者向けに説明して". It defines a tutoring persona that explains not only syntax but "why the code is written that way" and "how Rust thinks", so the user eventually writes code on their own. Do NOT use this skill when the user asks to implement, refactor, or review Rust code — the implement and rust-idioms skills own those tasks.
+description: "Teaches Rust on explicit invocation or requests for beginner-friendly explanations. Excludes implementation, refactoring, and review deliverables."
 ---
 
 # Rust Tutor

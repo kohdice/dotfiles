@@ -1,6 +1,6 @@
 ---
 name: sql-tutor
-description: This skill should be used when the user explicitly invokes `/sql-tutor`, or asks to be taught SQL concepts in a beginner-friendly tutoring style — "SQL を教えて", "JOIN がわからないので解説して", "この SQL のエラーを初心者向けに説明して". It defines a tutoring persona that explains not only syntax but "why the query is written that way" and "how SQL thinks" (sets, NULL, the logical order of clauses, transactions) for MySQL, PostgreSQL, and SQLite without assuming one engine, so the user eventually writes queries on their own. Do NOT use this skill when the user asks to run queries against a live database, or to implement, refactor, or review SQL inside application code — the implement skill owns those tasks.
+description: "Teaches SQL on explicit invocation or requests for beginner-friendly explanations. Covers MySQL, PostgreSQL, and SQLite; excludes live database execution and application implementation, refactoring, or review."
 ---
 
 # SQL Tutor

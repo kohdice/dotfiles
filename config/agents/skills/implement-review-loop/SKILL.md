@@ -1,6 +1,6 @@
 ---
 name: implement-review-loop
-description: This skill should be used when the user asks, in one request, to implement and iterate with review until findings are resolved — "implement <feature> and fix the review findings", "レビューが通るまで実装して", "実装してレビュー指摘を潰して仕上げて", "レビューつきで実装して", "implement with a review loop". It runs a bounded implement → review → fix loop on top of the implement and local-review skills — fresh reviewer sub-agents every round, only high-severity findings fixed (medium too on request, set up front), at most 2 fix rounds (3 on explicit request; 1 inline), and a findings ledger that stops the loop when a fixed finding recurs. Findings below the gate are reported, never auto-fixed. Do NOT use for implementation without a review loop (implement skill), review without fixes (local-review skill), plan creation only (tdd-plan skill), fixing findings from a review that already happened, or work with no testable application behavior.
+description: "Implements testable application changes with review and fixes when requested together. Excludes review-only, implementation-only, planning-only requests, and fixes from an already completed review."
 ---
 
 # Implement-Review Loop (bounded quality loop orchestrator)

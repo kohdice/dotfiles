@@ -1,6 +1,6 @@
 ---
 name: local-review
-description: This skill should be used when the user asks to review local, uncommitted, or unpushed work — "review my changes", "check the diff before I commit", "変更点をレビューして", "コミット前にレビューして" — or to audit a directory or an entire codebase — "audit this package", "コード全体をレビューして". It selects review lenses (correctness, language idiom, architecture, performance, simplicity, comment, SQL statement cost) from what the change actually touches, runs them as read-only reviewer sub-agents — or directly in the parent for a small scope — over the working diff (default), a branch diff, a path, or the whole codebase, and synthesizes one report in the conversation language. It never modifies files, never posts to GitHub, and never runs tests or builds. Do not use it for GitHub PR reviews (the pr-review skill owns those), or when the user asks to fix the findings as part of the same request (the implement-review-loop skill owns that loop).
+description: "Reviews local changes, branches, directories, or codebases and reports findings without edits or publication. GitHub PR reviews use pr-review; requests combining implementation, review, and fixes use implement-review-loop."
 ---
 
 # Local Review (scope-parameterized orchestrator)

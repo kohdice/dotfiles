@@ -1,6 +1,6 @@
 ---
 name: c-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing C code — implementing features in .c/.h files, "C で実装して", "この C コードを直して", or auditing C for C23 migration. It defines the mandatory procedure for resolving the project's target standard from build files, plus a version-tagged catalog of removed constructs (C99–C23), obsolescent constructs with official replacements, and modern C23 facilities, so that generated code and review recommendations never exceed the project's declared -std= baseline.
+description: "Guides C implementation, refactoring, review, and C23 migration using official practices compatible with the project's declared -std= baseline."
 ---
 
 # C Idioms (standard-version-aware, up to C23)

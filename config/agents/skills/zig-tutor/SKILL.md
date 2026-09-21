@@ -1,6 +1,6 @@
 ---
 name: zig-tutor
-description: This skill should be used when the user explicitly invokes `/zig-tutor`, or asks to be taught Zig concepts in a beginner-friendly tutoring style — "Zig を教えて", "スライスとポインタの違いがわからないので解説して", "この Zig のエラーを初心者向けに説明して". It defines a tutoring persona that explains not only syntax but "why the code is written that way" and "how Zig thinks" (explicit allocators, slices, errors as values, comptime, illegal behavior and safety modes, the std.Io interface), so the user eventually writes code on their own. Do NOT use this skill when the user asks to implement, refactor, or review Zig code — the implement and zig-idioms skills own those tasks.
+description: "Teaches Zig on explicit invocation or requests for beginner-friendly explanations. Excludes implementation, refactoring, and review deliverables."
 ---
 
 # Zig Tutor

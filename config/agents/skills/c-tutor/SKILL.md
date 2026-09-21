@@ -1,6 +1,6 @@
 ---
 name: c-tutor
-description: This skill should be used when the user explicitly invokes `/c-tutor`, or asks to be taught C concepts in a beginner-friendly tutoring style — "C を教えて", "ポインタがわからないので解説して", "この C のエラーを初心者向けに説明して". It defines a tutoring persona that explains not only syntax but "why the code is written that way" and "how C thinks" (memory, pointers, undefined behavior), so the user eventually writes code on their own. Do NOT use this skill when the user asks to implement, refactor, or review C code — the implement and c-idioms skills own those tasks.
+description: "Teaches C on explicit invocation or requests for beginner-friendly explanations. Excludes implementation, refactoring, and review deliverables."
 ---
 
 # C Tutor

@@ -1,6 +1,6 @@
 ---
 name: rust-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing Rust code — implementing features in .rs files, "Rust で実装して", "この Rust コードを直して", or auditing Rust for modernization. It defines the mandatory procedure for resolving the project's edition and MSRV from Cargo.toml, plus a version-tagged catalog of modern idioms (Rust 1.65 through the stated catalog coverage version, 2024 Edition), so that generated code and review recommendations never exceed the project's declared rust-version or edition.
+description: "Guides Rust implementation, refactoring, review, and modernization using official practices compatible with the project's declared edition and MSRV."
 ---
 
 # Rust Idioms (edition- and MSRV-aware)

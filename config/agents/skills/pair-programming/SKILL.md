@@ -1,6 +1,6 @@
 ---
 name: pair-programming
-description: This skill should be used only when the user explicitly invokes the pair-programming skill, or asks to pair-program with the agent as navigator — "ペアプロして", "ナビゲーターをやって", "一緒に実装したい（自分が書く）". The agent acts as the navigator; the user is the driver who writes all code. Follows a plan in .plans/. Do NOT use when the user asks the agent to implement code itself — the implement skill owns that. Do NOT auto-invoke; this skill is launched only by explicit user request.
+description: "Navigates pair programming on explicit invocation only, where the user writes all code and follows a plan in .plans/. Requests for the agent to implement code itself use implement."
 ---
 
 # Pair Programming

@@ -1,6 +1,6 @@
 ---
 name: performance-patterns
-description: This skill should be used when writing, modifying, refactoring, or reviewing performance-sensitive code in C, Go, Rust, or Zig — parsers, encoders, request handlers, per-item/per-request/per-frame loops, "パフォーマンスを意識して実装して", or auditing a codebase for runtime cost. It defines the hot-path-first principle, a cost-ordered catalog of performance factors (algorithmic complexity, allocations and copies, redundant work, I/O and syscalls, memory access patterns, concurrency costs, language mechanism costs), an evidence-tier rule separating statically verifiable issues from measurement-required ones, and per-language pattern references, so that generated code avoids known cost patterns from the start and reviews never report speculative micro-optimizations.
+description: "Guides performance-sensitive C, Go, Rust, or Zig implementation and reviews, including parsers, encoders, request handlers, hot loops, and hotspot audits."
 ---
 
 # Performance Patterns (hot-path-aware, C / Go / Rust / Zig)

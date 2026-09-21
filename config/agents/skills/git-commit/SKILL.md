@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use this skill to commit Git changes. If staged files exist, commit only those in a single commit. If nothing is staged, split working-tree changes into meaningful units and commit them sequentially. Triggers on user requests such as "commit", "git commit", "commit my changes", "commit staged files", "コミットして", "変更をコミット", or "split commits". Never pushes — even if the user asks to commit and push, this skill performs the commit only and defers push to explicit user confirmation.
+description: "Commits Git changes on request: only staged files when any exist, otherwise the working tree split into meaningful commits. Never pushes, even when asked to commit and push."
 ---
 
 # Git Commit

@@ -47,9 +47,7 @@
     st = status
     sw = switch
     find = "!f() { git log --pretty=format:\"%h %cd [%cn] %s%d\" --date=relative -S\"$@\" | fzf | awk '{print $1}' | xargs -I {} git diff {}^ {}; }; f"
-    # edit conflicted file on merge
     edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; nvim `f`"
-    # add conflicted file on merge
     add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
 [diff]
     tool = nvimdiff

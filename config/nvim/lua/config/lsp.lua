@@ -9,9 +9,6 @@ vim.diagnostic.config({
   severity_sort = true,
 })
 
--- No vim.lsp.config("*") call here: blink.cmp already merged its completion
--- capabilities into it at startup, and a later call would clobber them.
-
 local highlight_group = vim.api.nvim_create_augroup("my-lsp-highlight", { clear = true })
 
 vim.api.nvim_create_autocmd("LspAttach", {

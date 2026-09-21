@@ -1,4 +1,3 @@
-# Common PATH additions shared between zsh and bash
 [
   # Local binaries
   "$HOME/.local/bin"

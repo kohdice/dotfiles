@@ -10,11 +10,10 @@ in
     viAlias = true;
     vimAlias = true;
 
-    # Dependencies for Neovim plugins
     extraPackages =
       with pkgs;
       lib.optionals isLinux [
-        xclip # Clipboard support (Linux only)
+        xclip
       ];
 
     # Load Home Manager-generated Lua via wrapper args instead of a generated

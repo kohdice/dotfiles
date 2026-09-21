@@ -315,6 +315,7 @@ pkgs.writeShellApplication {
 
     case "$authentication_output" in
       *"successfully authenticated"*)
+        # GitHub exits 1 after successful authentication because it provides no shell access.
         if [ "$authentication_status" -ne 1 ]; then
           die "GitHub returned an unexpected SSH status: $authentication_status"
         fi

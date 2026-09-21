@@ -2,10 +2,7 @@
 
 {
   home.packages = with pkgs; [
-    # LSP
-    yaml-language-server
-
-    # Formatter
     yamlfmt
+    yaml-language-server
   ];
 }

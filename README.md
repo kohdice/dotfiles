@@ -75,16 +75,20 @@ ssh-add ~/.ssh/id_ed25519_git_signing
 
 ## Daily Usage
 
-| Command                 | Description                                   |
-| ----------------------- | --------------------------------------------- |
-| `nix run .#build`       | Build kohdice profile (dry-run)               |
-| `nix run .#build-work`  | Build work profile (dry-run)                  |
-| `nix run .#switch`      | Apply kohdice profile                         |
-| `nix run .#switch-work` | Apply work profile                            |
-| `nix run .#update`      | Update all packages and apply kohdice profile |
-| `nix run .#update-work` | Update all packages and apply work profile    |
-| `nix fmt`               | Format Nix and Lua files                      |
-| `nix flake check`       | Validate flake configuration                  |
+| Command | Description |
+| --- | --- |
+| `nix run .#build` | Build kohdice profile without activating it |
+| `nix run .#build-work` | Build work profile without activating it |
+| `nix run .#switch` | Apply kohdice profile |
+| `nix run .#switch-work` | Apply work profile |
+| `nix run .#update` | Update all inputs and apply kohdice profile |
+| `nix run .#update-work` | Update all inputs and apply work profile |
+| `nix fmt` | Format Nix and Lua files |
+| `nix flake check` | Check formatting and build profiles for the current system |
+
+CI runs `nix fmt -- --ci` and `nix flake check --no-build --all-systems`:
+formatting is checked and configurations for every system are evaluated, without
+building their outputs.
 
 ## Module Structure
 

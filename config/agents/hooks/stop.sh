@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stop hook: format and lint the files edited during the session.
+# Stop hook: format and lint projects containing files edited during the session.
 #
 # Each edited file is resolved to its own project root via the build
 # manifest, so the tools run against the right project even when the
@@ -29,7 +29,6 @@ trap 'rm -f -- "$state_file"' EXIT
 edited_files=$(sort -u "$state_file")
 [ -n "$edited_files" ] || exit 0
 
-# find_project_root <dir> <marker> - walks up until <marker> is found.
 find_project_root() {
   local dir=$1 marker=$2
   while [ -n "$dir" ] && [ "$dir" != "/" ]; do

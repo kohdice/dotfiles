@@ -18,7 +18,7 @@ Nix Flake-based dotfiles for macOS (nix-darwin with the home-manager module) and
 | `users/<name>/` | Profile: `info.nix`, `home.nix`, `darwin.nix`, `default.nix` |
 | `config/` | Application configs linked into the home directory (see Symlinks) |
 | `templates/` | `AGENTS.md` templates for new C and Rust projects; not used by the flake |
-| `docs/ARCHITECTURE.md` | Decision criteria and full tables; read it only when a section below points there |j
+| `docs/ARCHITECTURE.md` | Decision criteria and full tables; read it only when a section below points there |
 
 ## CORE PRINCIPLES
 
@@ -28,15 +28,15 @@ Nix Flake-based dotfiles for macOS (nix-darwin with the home-manager module) and
 ## Commands
 
 ```bash
-nix run .#build            # Build kohdice profile (dry-run)
-nix run .#build-work       # Build work profile (dry-run)
+nix run .#build            # Build kohdice profile without activating it
+nix run .#build-work       # Build work profile without activating it
 nix run .#switch           # Apply kohdice profile
 nix run .#switch-work      # Apply work profile
 nix run .#update           # Update all inputs and apply kohdice profile (run from repo root)
 nix run .#update-work      # Update all inputs and apply work profile (run from repo root)
 nix run .#setup-ssh-keys   # One-time GitHub auth / signing key setup (interactive)
 nix fmt                    # Format Nix and Lua files (nixfmt, stylua)
-nix flake check            # Formatting check plus full builds of every configuration
+nix flake check            # Check formatting and build profiles for the current system
 ```
 
 - `switch`, `update`, and `setup-ssh-keys` are interactive (`sudo darwin-rebuild` on macOS, passphrase prompts), and `config/claude/settings.json` denies `nix run .#switch*` and `nix flake update`. Never run them; ask the user to run the command and report back.

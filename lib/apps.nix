@@ -1,4 +1,3 @@
-# App definitions for `nix run .#<app>`
 { inputs, system }:
 
 let

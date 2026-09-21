@@ -18,7 +18,12 @@ Nix Flake-based dotfiles for macOS (nix-darwin with the home-manager module) and
 | `users/<name>/` | Profile: `info.nix`, `home.nix`, `darwin.nix`, `default.nix` |
 | `config/` | Application configs linked into the home directory (see Symlinks) |
 | `templates/` | `AGENTS.md` templates for new C and Rust projects; not used by the flake |
-| `docs/ARCHITECTURE.md` | Decision criteria and full tables; read it only when a section below points there |
+| `docs/ARCHITECTURE.md` | Decision criteria and full tables; read it only when a section below points there |j
+
+## CORE PRINCIPLES
+
+- Document at the right layer: Code → How, Tests → What, Commits → Why, Comments → Why not
+- Keep documentation up to date with code changes
 
 ## Commands
 

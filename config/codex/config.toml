@@ -199,6 +199,14 @@ path = "~/.agents/skills/mini-pr-review"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/nix-idioms"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/nix-tutor"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/nvim-config-review"
 enabled = true
 

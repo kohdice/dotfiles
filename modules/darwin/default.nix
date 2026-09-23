@@ -11,17 +11,12 @@
   # See README.md for installation options
   nix.enable = false;
 
-  # System state version
   system.stateVersion = 5;
 
-  # Primary user (required for system.defaults)
+  # Required by system.defaults.
   system.primaryUser = user.name;
 
-  # User configuration
   users.users.${user.name} = {
     home = user.home;
   };
-
-  # Enable zsh system-wide
-  programs.zsh.enable = true;
 }

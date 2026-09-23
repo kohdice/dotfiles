@@ -1,6 +1,6 @@
 ---
 name: c-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing C code — implementing features in .c/.h files, "C で実装して", "この C コードを直して", or auditing C for C23 migration. It defines the mandatory procedure for resolving the project's target standard from build files, plus a version-tagged catalog of removed constructs (C99–C23), obsolescent constructs with official replacements, and modern C23 facilities, so that generated code and review recommendations never exceed the project's declared -std= baseline.
+description: "Guides C implementation, refactoring, review, and C23 migration using official practices compatible with the project's declared -std= baseline."
 ---
 
 # C Idioms (standard-version-aware, up to C23)
@@ -22,15 +22,15 @@ Hard rules derived from the baseline:
 
 **Trigger table for option labeling** (authoritative extension of the rule above; counterpart-hood is decided by effect, not surface form — a morphologically different equivalent still counts):
 
-| In-baseline counterpart in delivered code                                                                                                                                                                                             | Gated replacement                             | Version |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ------- |
-| `{0}` initializer, or `memset(&x, 0, sizeof x)` used for zero-initialization                                                                                                                                                          | empty initializer `{}`                        | C23     |
-| a guard detecting overflow of an addition, subtraction, or multiplication that `ckd_*` could subsume (`a > INT_MAX - b`, pre-multiplication caps, wrapping casts) — min/clamp expressions and pure domain range checks do NOT trigger | `<stdckdint.h>` `ckd_add`/`ckd_sub`/`ckd_mul` | C23     |
-| any object-like `#define` or enum constant expanding to an integer/float/string literal and used outside the preprocessor — array bounds and loop bounds DO trigger; function-like macros and conditional-compilation flags do NOT    | `constexpr` object definition                 | C23     |
-| `NULL` in sentinel/varargs contexts only — ordinary null checks do NOT trigger                                                                                                                                                        | `nullptr`                                     | C23     |
-| hand-rolled popcount/clz/ctz loop, or `__builtin_popcount` family                                                                                                                                                                     | `<stdbit.h>` functions                        | C23     |
-| `memset` wiping secrets                                                                                                                                                                                                               | `memset_explicit`                             | C23     |
-| `_Noreturn` / `noreturn` macro / `<stdnoreturn.h>`                                                                                                                                                                                    | `[[noreturn]]` attribute                      | C23     |
+| In-baseline counterpart in delivered code | Gated replacement | Version |
+| --- | --- | --- |
+| `{0}` initializer, or `memset(&x, 0, sizeof x)` used for zero-initialization | empty initializer `{}` | C23 |
+| a guard detecting overflow of an addition, subtraction, or multiplication that `ckd_*` could subsume (`a > INT_MAX - b`, pre-multiplication caps, wrapping casts) — min/clamp expressions and pure domain range checks do NOT trigger | `<stdckdint.h>` `ckd_add`/`ckd_sub`/`ckd_mul` | C23 |
+| any object-like `#define` or enum constant expanding to an integer/float/string literal and used outside the preprocessor — array bounds and loop bounds DO trigger; function-like macros and conditional-compilation flags do NOT | `constexpr` object definition | C23 |
+| `NULL` in sentinel/varargs contexts only — ordinary null checks do NOT trigger | `nullptr` | C23 |
+| hand-rolled popcount/clz/ctz loop, or `__builtin_popcount` family | `<stdbit.h>` functions | C23 |
+| `memset` wiping secrets | `memset_explicit` | C23 |
+| `_Noreturn` / `noreturn` macro / `<stdnoreturn.h>` | `[[noreturn]]` attribute | C23 |
 
 - If the project targets C17 or older, C23-only items are migration options, not violations; removed-construct findings still apply relative to the targeted standard.
 - When recommending a change in review, always cite the C standard version that removed, deprecated, or introduced the construct so it can be checked against the project's `-std=` flag.

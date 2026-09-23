@@ -1,6 +1,6 @@
 ---
 name: zig-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing Zig code — implementing features in .zig files, "Zig で実装して", "この Zig コードを直して", or auditing Zig for migration to a newer version. It defines the mandatory procedure for resolving the project's minimum_zig_version from build.zig.zon, plus a version-tagged catalog of the std.Io interface migration, removed language features and std APIs (0.15.x through the stated catalog coverage version), build system conventions, and the official style guide, so that generated code and review recommendations never exceed the project's declared Zig version.
+description: "Guides Zig implementation, refactoring, review, and modernization using official practices compatible with the project's declared minimum Zig version."
 ---
 
 # Zig Idioms (version-aware, up to the stated catalog coverage version)

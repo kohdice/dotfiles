@@ -1,6 +1,6 @@
 ---
 name: architecture-patterns
-description: This skill should be used when writing or reviewing code whose structure is at stake in C, Go, Rust, or Zig — adding a module/package/crate, deciding where new code lives, crossing layer boundaries, wiring dependencies between units, "このパッケージ構成で良い?", or auditing a codebase's architecture. It defines the Dependency Rule (volatile detail depends on stable policy), separation of responsibilities, the precedence order (the project's declared architecture wins; conventions require a citable official source), a catalog of dependency violations and responsibility problems with per-language layout guidance and its sources (Go module layout, Google Go Style Guide, Rust API Guidelines, Zig build system docs, C header discipline), and the accepted-structure criteria, so that new code lands in the right unit with dependencies pointing the right way and reviews flag only sourced, evidenced violations.
+description: "Guides architecture decisions when adding or reviewing modules, responsibilities, dependencies, or project layout in C, Go, Rust, or Zig."
 ---
 
 # Architecture Patterns (dependency direction & responsibility placement, C / Go / Rust / Zig)

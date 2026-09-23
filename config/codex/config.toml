@@ -3,8 +3,6 @@ approvals_reviewer = "user"
 default_permissions = "development"
 hide_agent_reasoning = true
 model = "gpt-6-astra"
-# model_context_window = 1000000
-# model_auto_compact_token_limit = 950000
 model_reasoning_effort = "xhigh"
 personality = "pragmatic"
 
@@ -189,11 +187,23 @@ path = "~/.agents/skills/implement-review-loop"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/lean-tutor"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/local-review"
 enabled = true
 
 [[skills.config]]
 path = "~/.agents/skills/mini-pr-review"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/nix-idioms"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/nix-tutor"
 enabled = true
 
 [[skills.config]]
@@ -225,6 +235,14 @@ path = "~/.agents/skills/simplicity-patterns"
 enabled = true
 
 [[skills.config]]
+path = "~/.agents/skills/sql-schema-design"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/sql-tutor"
+enabled = true
+
+[[skills.config]]
 path = "~/.agents/skills/tdd"
 enabled = true
 
@@ -242,6 +260,10 @@ enabled = true
 
 [[skills.config]]
 path = "~/.agents/skills/zig-idioms"
+enabled = true
+
+[[skills.config]]
+path = "~/.agents/skills/zig-tutor"
 enabled = true
 
 [mcp_servers.context7]

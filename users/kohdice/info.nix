@@ -1,4 +1,3 @@
-# User info for kohdice profile
 {
   name = "kohdice";
   fullName = "kohdice";

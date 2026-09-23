@@ -8,10 +8,6 @@ nickname_candidates = [
     "Hot Path Review",
 ]
 
-[[skills.config]]
-path = "~/.agents/skills/performance-patterns"
-enabled = true
-
 developer_instructions = """
 Codex adaptation: use the `performance-patterns` skill as the review checklist. If it has not been loaded automatically in this runtime, read that skill before reviewing.
 
@@ -65,3 +61,7 @@ Severity guide: High = O(n²)-or-worse growth, or a per-item [static] cost (allo
 
 End with a "Not flagged" section briefly listing patterns you examined and deliberately accepted (with one-line reasons), so the caller knows what was checked. If you find nothing significant, say so plainly — do not invent findings.
 """
+
+[[skills.config]]
+path = "~/.agents/skills/performance-patterns"
+enabled = true

@@ -10,21 +10,17 @@
 let
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
 
-  # Flake source in /nix/store — safe to readDir under pure evaluation.
-  # NOTE: it only contains git-tracked files, so new entries under the
-  # enumerated directories below must be `git add`ed before they are linked;
-  # untracked entries are silently skipped.
+  # Read the flake's store copy so discovery works during pure evaluation.
+  # It contains only Git-tracked files: new entries in the enumerated
+  # directories need `git add` before rebuilding or they are silently skipped.
   flakeSource = inputs.self.outPath;
 
-  # Helper to create symlink
   mkSymlink = path: {
     source = config.lib.file.mkOutOfStoreSymlink "${user.dotfilesDir}/${path}";
   };
 
-  # Enumerate each matching entry under `sourceRelPath` and map it to a
-  # per-entry symlink under `targetDir`, so locally installed siblings can
-  # coexist in the same target directory. Discovery uses the flake source
-  # in the Nix store; the symlink itself still points at the live checkout.
+  # Individual links let locally installed siblings coexist in the target
+  # directory. Discovery uses the store copy; links use the live checkout.
   mkDirEntrySymlinks =
     {
       targetDir,
@@ -46,8 +42,8 @@ let
     entryTypes = [ "directory" ];
   };
 
-  # Claude Code only discovers ~/.claude/skills, so shared skills are linked
-  # into both Claude Code and open-agent discovery paths.
+  # Claude Code uses ~/.claude/skills for personal skills, so shared skills
+  # also need links there alongside the ~/.agents/skills links.
   sharedSkillClaudeSymlinks = mkDirEntrySymlinks {
     targetDir = ".claude/skills";
     sourceRelPath = "config/agents/skills";
@@ -78,7 +74,6 @@ let
     entryTypes = [ "directory" ];
   };
 
-  # home.file symlinks (target -> source path in config/)
   homeSymlinks = {
     ".claude/CLAUDE.md" = "config/claude/CLAUDE.md";
     ".claude/rules" = "config/claude/rules";
@@ -97,17 +92,14 @@ let
   // codexAgentSymlinks
   // agentsSkillSymlinks;
 
-  # xdg.configFile symlinks (target -> source path in config/)
   xdgSymlinks = {
     "ghostty" = "config/ghostty";
-    "herdr/config.toml" = "config/herdr/config.toml";
     "nvim" = "config/nvim";
     "tmux" = "config/tmux";
     "lazygit" = "config/lazygit";
     "zsh-abbr/user-abbreviations" = "config/zsh-abbr/user-abbreviations";
   };
 
-  # Darwin-only xdg.configFile symlinks
   darwinXdgSymlinks = {
     "karabiner/karabiner.json" = "config/karabiner/karabiner.json";
   };

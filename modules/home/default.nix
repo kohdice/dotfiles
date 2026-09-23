@@ -17,8 +17,9 @@
     homeDirectory = user.home;
     stateVersion = "26.05";
 
-    # PATH additions shared by all shells; defined once here because
-    # home.sessionPath is a list option and multiple definitions concatenate.
+    # Defined once here rather than per shell so bash and zsh cannot drift.
+    shellAliases = import ./shell/aliases.nix;
+    sessionVariables = import ./shell/env.nix;
     sessionPath = import ./shell/paths.nix;
   };
 

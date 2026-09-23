@@ -45,9 +45,6 @@ return {
       }
       require("nvim-treesitter").install(ensure)
 
-      -- Enable highlighting via the built-in API. The buftype/parser/large-file
-      -- guard lives in utils.treesitter so that after/indent/<ft>.lua makes the
-      -- same decision and no buffer ends up with only one half enabled
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("my-treesitter", { clear = true }),
         desc = "Start treesitter highlighting",

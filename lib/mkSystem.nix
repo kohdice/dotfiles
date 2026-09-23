@@ -1,20 +1,14 @@
-# Unified system configuration builder
-# Handles both Darwin (macOS) and Linux (home-manager standalone)
 { inputs }:
 
-# Platform name: "darwin" or "linux"
-platform:
-# Configuration options
 {
   system,
   user,
 }:
 
 let
-  # Platform detection
   isDarwin = inputs.nixpkgs.lib.hasSuffix "darwin" system;
+  platform = if isDarwin then "darwin" else "linux";
 
-  # Import user configuration
   userConfig = import ../users/${user};
 
   homeDir = if isDarwin then "/Users/${userConfig.info.name}" else "/home/${userConfig.info.name}";
@@ -24,24 +18,19 @@ let
     dotfilesDir = "${homeDir}/developments/dotfiles";
   };
 
-  # Passed to all modules (and to home-manager via extraSpecialArgs);
-  # dotfilesDir is reachable as `user.dotfilesDir`.
   specialArgs = {
     inherit inputs;
     user = userInfo;
   };
 
-  # Common nixpkgs configuration
   nixpkgsConfig = {
     allowUnfree = true;
   };
 
-  # Import overlays
   overlays = import ../overlays { inherit inputs; };
 
 in
 if isDarwin then
-  # Darwin (macOS) configuration
   inputs.nix-darwin.lib.darwinSystem {
     inherit specialArgs;
     modules = [
@@ -85,7 +74,6 @@ if isDarwin then
     ];
   }
 else
-  # Linux configuration (home-manager standalone)
   inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {
       localSystem = { inherit system; };

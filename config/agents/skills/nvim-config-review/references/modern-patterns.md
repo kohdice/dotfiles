@@ -33,11 +33,11 @@ Official docs make **no recommendation** between vim.pack and lazy.nvim and do n
 
 ## Core Lua idioms (`:h lua-guide`)
 
-| Concern  | Recommended                                                                                                                                                                                                    | Flag instead                                                                                                                                     |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Keymaps  | `vim.keymap.set()` with `desc`; buffer-local via `buf` (0.12 renamed from `buffer`); `remap` not `noremap`                                                                                                     | Raw `nvim_set_keymap()` / `vim.api.nvim_buf_set_keymap()` in config code (Low); `noremap` key in opts (it is ignored — Medium, silent misconfig) |
-| Options  | `vim.o` for scalar access; `vim.opt` for list/map options and `:append()`/`:remove()`; note `vim.o` also accepts Lua tables for list options now. No official perf difference is documented — do not claim one | `vim.cmd('set ...')` string soup for options that have a Lua path (Low, consistency)                                                             |
-| Autocmds | `nvim_create_autocmd` with a Lua `callback`, `desc`, and a named `augroup` (`clear = true` where re-sourcing matters)                                                                                          | Groupless autocmds in re-sourceable files (duplicate on re-source — Medium); `vim.cmd('autocmd ...')` (Low)                                      |
+| Concern | Recommended | Flag instead |
+| --- | --- | --- |
+| Keymaps | `vim.keymap.set()` with `desc`; buffer-local via `buf` (0.12 renamed from `buffer`); `remap` not `noremap` | Raw `nvim_set_keymap()` / `vim.api.nvim_buf_set_keymap()` in config code (Low); `noremap` key in opts (it is ignored — Medium, silent misconfig) |
+| Options | `vim.o` for scalar access; `vim.opt` for list/map options and `:append()`/`:remove()`; note `vim.o` also accepts Lua tables for list options now. No official perf difference is documented — do not claim one | `vim.cmd('set ...')` string soup for options that have a Lua path (Low, consistency) |
+| Autocmds | `nvim_create_autocmd` with a Lua `callback`, `desc`, and a named `augroup` (`clear = true` where re-sourcing matters) | Groupless autocmds in re-sourceable files (duplicate on re-source — Medium); `vim.cmd('autocmd ...')` (Low) |
 
 "Re-sourceable" means the code can execute more than once per session without a cache in between: `init.lua`, `plugin/`, `after/plugin/`, and `ftplugin/` files (`:so %`, re-editing config). Modules loaded via `require()` are cached, and plugin-manager `config` callbacks re-run only on explicit manager reload — groupless autocmds there are Low, not Medium.
 | Vimscript calls | `vim.cmd.colorscheme('x')` programmatic form; `vim.fn` for functions | — |

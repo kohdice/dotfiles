@@ -1,6 +1,6 @@
 ---
 name: tdd-plan
-description: "This skill should be used when the user asks to plan the TDD implementation of application code — a new feature, a behavior change, or a bug fix with automatically testable behavior. Triggers on phrases like: 'plan to implement <feature>', 'create an implementation plan for <feature>', 'prepare a TDD plan', 'design a development plan for <feature>'. Do NOT use for planning work with no testable application behavior: writing README or documentation, configuration/CI/infrastructure changes, or repository housekeeping — the work-plan skill owns those. Do NOT use when the user says 'go' or asks to implement the plan — the implement skill owns execution (the tdd skill owns explicit `/tdd`)."
+description: "Plans features, behavior changes, and bug fixes with automatically testable application behavior. Documentation, configuration, and infrastructure planning use work-plan; execution uses implement."
 ---
 
 # TDD Plan

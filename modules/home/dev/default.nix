@@ -7,6 +7,7 @@
     ./docker.nix
     ./go.nix
     ./javascript.nix
+    ./lean.nix
     ./lua.nix
     ./markdown.nix
     ./nix.nix

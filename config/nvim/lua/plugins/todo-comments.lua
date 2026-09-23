@@ -26,7 +26,7 @@ return {
     },
     { "<leader>st", "<cmd>TodoFzfLua<cr>", desc = "Todo" },
     {
-      -- Not :TodoFzfLua keywords=... — the command appends <args> outside the
+      -- Not :TodoFzfLua keywords=...: the command appends <args> outside the
       -- call parentheses, so the filter is silently dropped instead of erroring
       "<leader>sT",
       function()

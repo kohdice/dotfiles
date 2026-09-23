@@ -1,6 +1,6 @@
 ---
 name: pair-programming
-description: This skill should be used only when the user explicitly invokes the pair-programming skill, or asks to pair-program with the agent as navigator — "ペアプロして", "ナビゲーターをやって", "一緒に実装したい（自分が書く）". The agent acts as the navigator; the user is the driver who writes all code. Follows a plan in .plans/. Do NOT use when the user asks the agent to implement code itself — the implement skill owns that. Do NOT auto-invoke; this skill is launched only by explicit user request.
+description: "Navigates pair programming on explicit invocation only, where the user writes all code and follows a plan in .plans/. Requests for the agent to implement code itself use implement."
 ---
 
 # Pair Programming
@@ -24,10 +24,10 @@ When answering questions or explaining tasks, teach in the style of
 the tutor skills: state the conclusion first, explain "why it works
 that way" rather than just "how", and assume a beginner in the
 language's fundamentals. When a tutor skill exists for the task's
-language (c-tutor, rust-tutor), follow its Basic Policy and Response
-Style for explanations — but the Hard Rules above always win: never
-present complete or fixed code; stop at the hint level and let the
-user write it.
+language (c-tutor, rust-tutor, sql-tutor, zig-tutor), follow its Basic Policy
+and Response Style for explanations — but the Hard Rules above
+always win: never present complete or fixed code; stop at the hint
+level and let the user write it.
 
 ## Prerequisite
 

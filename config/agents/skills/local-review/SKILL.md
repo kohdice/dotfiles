@@ -1,6 +1,6 @@
 ---
 name: local-review
-description: This skill should be used when the user asks to review local, uncommitted, or unpushed work — "review my changes", "check the diff before I commit", "変更点をレビューして", "コミット前にレビューして" — or to audit a directory or an entire codebase — "audit this package", "コード全体をレビューして". It selects review lenses (correctness, language idiom, architecture, performance, simplicity, comment) from what the change actually touches, runs them as read-only reviewer sub-agents — or directly in the parent for a small scope — over the working diff (default), a branch diff, a path, or the whole codebase, and synthesizes one report in the conversation language. It never modifies files, never posts to GitHub, and never runs tests or builds. Do not use it for GitHub PR reviews (the pr-review skill owns those), or when the user asks to fix the findings as part of the same request (the implement-review-loop skill owns that loop).
+description: "Reviews local changes, branches, directories, or codebases and reports findings without edits or publication. GitHub PR reviews use pr-review; requests combining implementation, review, and fixes use implement-review-loop."
 ---
 
 # Local Review (scope-parameterized orchestrator)
@@ -29,7 +29,7 @@ Review local code by **applying specialized read-only review lenses** — as ind
 
    If the working diff is empty — both commands in the working-diff row above return nothing — and no other scope was named, tell the user and stop.
 
-2. **Detect languages**: Classify the in-scope files by extension (`.c`/`.h` → C, `.go` → Go, `.rs` → Rust, `.zig` → Zig). Files outside these four languages get only the generic `correctness` lens.
+2. **Detect languages**: Classify the in-scope files by extension (`.c`/`.h` → C, `.go` → Go, `.rs` → Rust, `.zig` → Zig). Files outside these four languages get only the generic `correctness` lens, except `.sql` and migration files, which also get the `sql` lens; code in the four languages that embeds SQL gets `sql` in addition to its language lenses.
 
 3. **Select lenses and run them**: Pick lenses per `references/review-lenses.md` (catalog, selection rules, execution modes, dispatch contract, chunking). In delegated mode, dispatch one read-only sub-agent per lens in parallel, each given the scope's file list, the diff command, and the report language (the conversation language); in direct mode, read each selected lens's knowledge skill and apply it to the same file list in one pass. For `all` scope, chunk per the reference file and dispatch per chunk — except `architecture`, which always gets the whole language's file set (dependency direction cannot be judged from a fragment).
 
@@ -46,14 +46,14 @@ Review local code by **applying specialized read-only review lenses** — as ind
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                        | Reality                                                                                                |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| "I'll fix this small issue while I'm here."            | This skill is read-only. Report it; fixing is a separate, user-approved task.                          |
-| "The whole codebase fits in one agent prompt."         | It does not. Chunk it, or precision collapses. Log what each chunk covered.                            |
-| "Run the tests to confirm the bug."                    | Out of scope. Report the finding with code evidence; the user decides how to verify.                   |
-| "The named agents are missing, so skip the review."    | Run the same lenses through generic sub-agents, or directly in the parent, and label the result.       |
-| "Run every lens every time, to be thorough."           | Lenses are selected by what the change touches. A lens with nothing to judge adds noise, not coverage. |
-| "Simplicity findings justify a harsh overall verdict." | There is no verdict here, and simplicity findings are advisory by default.                             |
+| Rationalization | Reality |
+| --- | --- |
+| "I'll fix this small issue while I'm here." | This skill is read-only. Report it; fixing is a separate, user-approved task. |
+| "The whole codebase fits in one agent prompt." | It does not. Chunk it, or precision collapses. Log what each chunk covered. |
+| "Run the tests to confirm the bug." | Out of scope. Report the finding with code evidence; the user decides how to verify. |
+| "The named agents are missing, so skip the review." | Run the same lenses through generic sub-agents, or directly in the parent, and label the result. |
+| "Run every lens every time, to be thorough." | Lenses are selected by what the change touches. A lens with nothing to judge adds noise, not coverage. |
+| "Simplicity findings justify a harsh overall verdict." | There is no verdict here, and simplicity findings are advisory by default. |
 
 ## Additional Resources
 

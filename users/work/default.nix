@@ -1,4 +1,3 @@
-# User configuration for work
 {
   info = import ./info.nix;
   home = ./home.nix;

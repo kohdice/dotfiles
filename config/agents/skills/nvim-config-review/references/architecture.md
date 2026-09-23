@@ -6,15 +6,15 @@ Detailed material for SKILL.md workflow step 3 (Architecture lens). Coverage and
 
 Neovim discovers config through `'runtimepath'`; these subdirectories have defined meanings (`:h 'runtimepath'`, `:h lua-guide`):
 
-| Path                                          | Loaded                               | Purpose                                                                                                                                                                              |
-| --------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `init.lua` (or `init.vim`, never both)        | at startup                           | Entry point. Keep it a thin loader (`require(...)` calls), not a monolith.                                                                                                           |
-| `lua/**/*.lua`                                | on `require()`                       | Lua modules. Only reachable via `require`; nothing here loads automatically.                                                                                                         |
-| `plugin/*.lua`                                | at startup, automatically            | Scripts that must run unconditionally. Runs _after_ `init.lua`.                                                                                                                      |
-| `after/plugin/*.lua`                          | at startup, after all `plugin/` dirs | Overrides to plugin-set values. Rarely needed in a personal config — prefer plugin-manager hooks.                                                                                    |
-| `ftplugin/<filetype>.lua`                     | when a buffer of that filetype opens | Filetype-local options/keymaps. Prefer this over `FileType` autocmds in central files.                                                                                               |
-| `lsp/<name>.lua`                              | on `vim.lsp.enable('<name>')`        | Returns a table merged into `vim.lsp.config['<name>']` (`:h lsp-config`). `after/lsp/<name>.lua` also works and wins merge order over plugin-provided configs (e.g. nvim-lspconfig). |
-| `colors/`, `queries/`, `snippets/`, `syntax/` | on demand                            | Colorschemes, treesitter query overrides, snippets, legacy syntax.                                                                                                                   |
+| Path | Loaded | Purpose |
+| --- | --- | --- |
+| `init.lua` (or `init.vim`, never both) | at startup | Entry point. Keep it a thin loader (`require(...)` calls), not a monolith. |
+| `lua/**/*.lua` | on `require()` | Lua modules. Only reachable via `require`; nothing here loads automatically. |
+| `plugin/*.lua` | at startup, automatically | Scripts that must run unconditionally. Runs _after_ `init.lua`. |
+| `after/plugin/*.lua` | at startup, after all `plugin/` dirs | Overrides to plugin-set values. Rarely needed in a personal config — prefer plugin-manager hooks. |
+| `ftplugin/<filetype>.lua` | when a buffer of that filetype opens | Filetype-local options/keymaps. Prefer this over `FileType` autocmds in central files. |
+| `lsp/<name>.lua` | on `vim.lsp.enable('<name>')` | Returns a table merged into `vim.lsp.config['<name>']` (`:h lsp-config`). `after/lsp/<name>.lua` also works and wins merge order over plugin-provided configs (e.g. nvim-lspconfig). |
+| `colors/`, `queries/`, `snippets/`, `syntax/` | on demand | Colorschemes, treesitter query overrides, snippets, legacy syntax. |
 
 Findings to raise:
 

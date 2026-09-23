@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: 'This skill should be used only when the user explicitly invokes `/tdd` (with or without a plan filename) to execute a TDD plan from `.plans/` inline in the current context, or when the implement skill executes a batch directly in the parent. It defines Kent Beck''s Red-Green-Refactor and Tidy First discipline and the Test Tiers (fast tier at every checkpoint, full suite at milestones), and serves as the discipline reference that the implement skill''s implementers — parent or sub-agent — read before writing code. Do NOT use this skill when the user says bare "go" or asks to implement a feature or plan — the implement skill owns those. Do NOT use when the user is asking to create a new TDD plan — that is handled by the tdd-plan skill.'
+description: "Executes TDD plans on explicit tdd invocation or when implement applies its TDD discipline. The bare \"go\" reply after a TDD plan and ordinary implementation requests use implement; plan creation uses tdd-plan."
 ---
 
 # TDD (Test-Driven Development)

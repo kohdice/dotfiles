@@ -6,14 +6,14 @@ Detailed material for SKILL.md workflow step 3 (Performance lens). Coverage and 
 
 ## Documented by official help
 
-| Check                                                                              | Documented basis                                                                                                                                 | Finding severity                                                                              |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| Wildcards or long lists in `'runtimepath'`                                         | `:h 'runtimepath'`: "For speed, use as few items as possible and avoid wildcards"                                                                | Medium                                                                                        |
-| Interleaving `:packadd`/`vim.pack.add()` with other init code on <0.12 assumptions | news-0.12 PERFORMANCE: 0.12 updates the Lua path cache in place; on 0.11 each `:packadd` invalidated it                                          | Low (informational on 0.12)                                                                   |
-| Mapping rhs `require('plugin').fn` outside a closure                               | `:h lua-guide-mappings-set`: loads the plugin when the mapping is _defined_; wrap in `function() ... end` to defer                               | Medium when the module is heavy and the map is defined at startup                             |
-| Huge shada slowing startup                                                         | `:h slow-start`: test with `-i NONE`, tune `'shada'`                                                                                             | Only when evidence exists (user complaint, giant shada)                                       |
-| Slow Lua loops without interrupt points                                            | `:h lua-guide-interrupt`: call `vim.wait(0, nil, 0)` periodically                                                                                | Low                                                                                           |
-| `vim.loader.enable()`                                                              | `:h vim.loader.enable()` — byte-compilation cache, but explicitly "experimental/unstable"; current docs do **not** instruct configs to enable it | Absence is NOT a finding. If present, fine; note lazy.nvim enables an equivalent cache itself |
+| Check | Documented basis | Finding severity |
+| --- | --- | --- |
+| Wildcards or long lists in `'runtimepath'` | `:h 'runtimepath'`: "For speed, use as few items as possible and avoid wildcards" | Medium |
+| Interleaving `:packadd`/`vim.pack.add()` with other init code on <0.12 assumptions | news-0.12 PERFORMANCE: 0.12 updates the Lua path cache in place; on 0.11 each `:packadd` invalidated it | Low (informational on 0.12) |
+| Mapping rhs `require('plugin').fn` outside a closure | `:h lua-guide-mappings-set`: loads the plugin when the mapping is _defined_; wrap in `function() ... end` to defer | Medium when the module is heavy and the map is defined at startup |
+| Huge shada slowing startup | `:h slow-start`: test with `-i NONE`, tune `'shada'` | Only when evidence exists (user complaint, giant shada) |
+| Slow Lua loops without interrupt points | `:h lua-guide-interrupt`: call `vim.wait(0, nil, 0)` periodically | Low |
+| `vim.loader.enable()` | `:h vim.loader.enable()` — byte-compilation cache, but explicitly "experimental/unstable"; current docs do **not** instruct configs to enable it | Absence is NOT a finding. If present, fine; note lazy.nvim enables an equivalent cache itself |
 
 ## Reasoned (mechanism-based, Low severity, label as such)
 

@@ -13,7 +13,7 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
 vim.opt.cmdheight = 0
-vim.opt.laststatus = 3 -- 3 = one global statusline instead of one per window
+vim.opt.laststatus = 3
 vim.opt.scrolloff = 10
 vim.opt.wrap = false
 vim.opt.splitbelow = true
@@ -28,7 +28,6 @@ vim.opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
 
 vim.opt.inccommand = "split"
 
--- The blank entries hide the default '·' fold filler and '~' end-of-buffer marker
 vim.opt.fillchars = {
   foldopen = "",
   foldclose = "",
@@ -37,7 +36,7 @@ vim.opt.fillchars = {
   diff = "╱",
   eob = " ",
 }
-vim.opt.grepformat = "%f:%l:%c:%m" -- Matches rg --vimgrep output
+vim.opt.grepformat = "%f:%l:%c:%m"
 vim.opt.grepprg = "rg --vimgrep"
 vim.opt.jumpoptions = "view"
 vim.opt.list = true
@@ -46,12 +45,13 @@ vim.opt.listchars = {
   tab = "▸ ",
   trail = "•",
 }
-vim.opt.signcolumn = "yes" -- Always reserved so text does not shift when signs appear
+vim.opt.signcolumn = "yes"
 
 vim.opt.timeoutlen = 300
-vim.opt.updatetime = 200 -- Drives how soon CursorHold fires (LSP document highlight, config/lsp.lua)
+-- Also the CursorHold delay that config/lsp.lua relies on for LSP document highlight
+vim.opt.updatetime = 200
 vim.opt.virtualedit = "block"
-vim.opt.wildmode = "longest:full,full" -- First Tab completes the longest common prefix, later Tabs cycle matches
+vim.opt.wildmode = "longest:full,full"
 vim.opt.smoothscroll = true
 
 vim.o.winborder = "rounded"

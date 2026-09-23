@@ -4,10 +4,6 @@ model_reasoning_effort = "high"
 default_permissions = "cloud-protected-read-only"
 nickname_candidates = ["Simplicity Review", "YAGNI Review", "Clutter Review"]
 
-[[skills.config]]
-path = "~/.agents/skills/simplicity-patterns"
-enabled = true
-
 developer_instructions = """
 Codex adaptation: use the `simplicity-patterns` skill as the review checklist. If it has not been loaded automatically in this runtime, read that skill before reviewing.
 
@@ -59,3 +55,7 @@ Severity guide: High = an entire layer/abstraction with no present justification
 
 End with a "Not flagged" section briefly listing abstractions you examined and deliberately accepted (with the one-line justification that saved them — invariant, test seam, boundary, or published API), so the caller knows what was checked. If you find nothing significant, say so plainly — do not invent findings.
 """
+
+[[skills.config]]
+path = "~/.agents/skills/simplicity-patterns"
+enabled = true

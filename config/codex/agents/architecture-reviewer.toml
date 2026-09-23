@@ -8,10 +8,6 @@ nickname_candidates = [
     "Dependency Review",
 ]
 
-[[skills.config]]
-path = "~/.agents/skills/architecture-patterns"
-enabled = true
-
 developer_instructions = """
 Codex adaptation: use the `architecture-patterns` skill as the review checklist. If it has not been loaded automatically in this runtime, read that skill before reviewing.
 
@@ -64,3 +60,7 @@ Severity guide: High = inverted dependency edge, cycle, or violation of the proj
 
 End with a "Not flagged" section briefly listing structures you examined and deliberately accepted (with the one-line justification — documented deviation, project too small for layers, compiler-enforced). If the architecture is sound, say so plainly — do not invent findings.
 """
+
+[[skills.config]]
+path = "~/.agents/skills/architecture-patterns"
+enabled = true

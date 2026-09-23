@@ -6,12 +6,12 @@ Detailed material for SKILL.md workflow steps 4–6. Defines which knowledge ski
 
 Select per batch, by the decisions the batch will make. Most non-TDD batches (Terraform, Nix, YAML, documentation) select nothing — the verification discipline travels inside the dispatch prompt itself, and no idiom catalog exists for those technologies yet. The same selection applies when the parent executes a batch directly.
 
-| Skill                                                   | Assign when                                                                                                                                                                                |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Skill | Assign when |
+| --- | --- |
 | `c-idioms` / `go-idioms` / `rust-idioms` / `zig-idioms` | The batch edits source files in that language (e.g., a Go helper inside a CI tooling task). Its Step 0 resolves the version baseline; the catalog is consulted for the constructs written. |
-| `simplicity-patterns`                                   | An assigned-language batch introduces or reshapes an abstraction (interface/trait, generic, builder, wrapper, new module, config option) or refactors structure.                           |
-| `comment-patterns`                                      | An assigned-language batch writes or changes doc comments on public API, adds a why-comment, or touches code whose comments make claims the change affects.                                |
-| `architecture-patterns`                                 | An assigned-language batch adds a module/package/crate or moves code across layer boundaries.                                                                                              |
+| `simplicity-patterns` | An assigned-language batch introduces or reshapes an abstraction (interface/trait, generic, builder, wrapper, new module, config option) or refactors structure. |
+| `comment-patterns` | An assigned-language batch writes or changes doc comments on public API, adds a why-comment, or touches code whose comments make claims the change affects. |
+| `architecture-patterns` | An assigned-language batch adds a module/package/crate or moves code across layer boundaries. |
 
 Skill paths resolve as `<skills root>/<name>/SKILL.md` (SKILL.md "Skill locations"); list the absolute paths explicitly in a dispatch prompt — the sub-agent must not guess locations. When no skill qualifies, the "Read first" block is omitted entirely. When genuinely uncertain whether a conditional skill applies, assign it.
 

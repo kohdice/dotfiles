@@ -69,15 +69,15 @@ JSON
 
 ## Inline Comment Fields
 
-| Field                   | Use                                                |
-| ----------------------- | -------------------------------------------------- |
-| `event`                 | `APPROVE`, `REQUEST_CHANGES`, or `COMMENT`         |
-| `body`                  | Overall review summary                             |
-| `comments[].path`       | Repo-relative path from the PR diff                |
-| `comments[].line`       | New-side line number for the comment anchor        |
-| `comments[].side`       | Usually `RIGHT`; use `LEFT` only for removed lines |
-| `comments[].start_line` | Optional start line for a multi-line comment       |
-| `comments[].start_side` | Optional; defaults to `side`                       |
+| Field | Use |
+| --- | --- |
+| `event` | `APPROVE`, `REQUEST_CHANGES`, or `COMMENT` |
+| `body` | Overall review summary |
+| `comments[].path` | Repo-relative path from the PR diff |
+| `comments[].line` | New-side line number for the comment anchor |
+| `comments[].side` | Usually `RIGHT`; use `LEFT` only for removed lines |
+| `comments[].start_line` | Optional start line for a multi-line comment |
+| `comments[].start_side` | Optional; defaults to `side` |
 
 ## Anchoring Rules
 
@@ -87,12 +87,12 @@ JSON
 
 ## Common Failures
 
-| Failure                               | Response                                                                                                |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Failure | Response |
+| --- | --- |
 | `422 Unprocessable Entity` for a line | The line is not anchorable in the PR diff. Use a changed new-side line or move the finding to the body. |
-| `path` not found                      | Use the post-rename path shown by `gh pr view "$PR" --json files`.                                      |
-| Cannot approve your own PR            | Use `COMMENT` with the approval summary or tell the user GitHub rejected self-approval.                 |
-| `Resource not accessible`             | Tell the user the authenticated account lacks permission; do not retry with unrelated credentials.      |
+| `path` not found | Use the post-rename path shown by `gh pr view "$PR" --json files`. |
+| Cannot approve your own PR | Use `COMMENT` with the approval summary or tell the user GitHub rejected self-approval. |
+| `Resource not accessible` | Tell the user the authenticated account lacks permission; do not retry with unrelated credentials. |
 
 ## Verify Submission
 

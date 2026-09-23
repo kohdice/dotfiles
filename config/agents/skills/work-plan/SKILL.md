@@ -1,6 +1,6 @@
 ---
 name: work-plan
-description: "This skill should be used when the user asks to plan work that will NOT be implemented with TDD — any task without automatically testable application behavior: infrastructure (Terraform, Nix, Kubernetes, cloud resources), configuration, CI/CD pipelines, documentation, build scripts, data/schema migrations, repository housekeeping, tooling setup. Do not use for straightforward, low-risk work that can be completed and verified directly, unless the user explicitly requests a plan. Triggers on phrases like: 'plan the Terraform setup', 'create a work plan for <task>', 'plan this migration', 'インフラ構築の計画を立てて', '作業プランを作って', 'CI 設定変更を計画して', 'ドキュメント整備の計画を作って'. It produces a checklist plan in `.plans/` where every item carries a verification step with an expected outcome, ready for execution by the work-implement skill. Do NOT use when the requested change has automatically testable application behavior — the tdd-plan skill owns that. Do NOT use to execute a plan — the work-implement skill owns execution."
+description: "Plans documentation, configuration, infrastructure, and other work without testable application behavior. Applies to planning requests; simple work needs no plan unless requested. Application behavior uses tdd-plan; execution uses work-implement."
 ---
 
 # Work Plan (non-TDD planning)

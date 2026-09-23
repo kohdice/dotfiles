@@ -2,10 +2,9 @@
 
 {
   home.packages = with pkgs; [
-    # LSP
     nil
 
-    # Formatter (official RFC 166 style; matches treefmt's nixfmt in flake.nix)
+    # Keep this formatter aligned with treefmt in flake.nix.
     nixfmt
   ];
 }

@@ -4,7 +4,6 @@
   programs.git = {
     enable = true;
 
-    # Global ignore patterns, written to ~/.config/git/ignore
     ignores = [
       ".DS_Store"
     ];

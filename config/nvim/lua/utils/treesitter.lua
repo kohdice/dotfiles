@@ -14,9 +14,9 @@ local SKIP_BUFTYPES = {
   terminal = true,
 }
 
---- Resolve the treesitter language to use for a buffer, or nil when treesitter
---- must not be used. Single gate so highlighting (lua/plugins/treesitter.lua)
---- and indentation (after/indent/<ft>.lua) never disagree.
+--- Return a parser language for an eligible buffer, or nil.
+--- Highlighting and indentation share exclusions for buffer type, parser
+--- availability, and file size; indentation also requires an indent query.
 ---@param bufnr integer
 ---@return string|nil
 function M.usable_lang(bufnr)
@@ -29,7 +29,7 @@ function M.usable_lang(bufnr)
     return nil
   end
 
-  -- add() returns false for a missing parser, but throws on a parser that
+  -- add() returns nil for a missing parser, but throws on a parser that
   -- exists yet fails to load (ABI mismatch after an nvim upgrade)
   local ok, added = pcall(vim.treesitter.language.add, lang)
   if not ok or not added then

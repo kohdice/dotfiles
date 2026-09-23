@@ -1,6 +1,6 @@
 ---
 name: nvim-config-review
-description: This skill should be used when the user asks to review a Neovim configuration — "review my nvim config", "check my Neovim setup", "Neovim の設定をレビューして", "nvim 設定が古くないか確認して", "非推奨 API を探して" — or to audit Lua config files under a Neovim config directory. It reviews modern API usage, deprecations, performance, and configuration layout against the resolved target version, using a version-tagged catalog with centralized coverage and update guidance. It is read-only, never edits files, and never launches Neovim except `nvim --version`. Do not use it for general Lua code review or plugin development; it reviews configurations only.
+description: "Reviews Neovim configuration for version compatibility, deprecated APIs, performance, and layout without editing files. Applies to configuration audits, not general Lua code or plugin development."
 ---
 
 # Neovim Config Review
@@ -76,13 +76,13 @@ When asked to update the catalog:
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                     | Reality                                                                                            |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| "This plugin is unpopular now, so flag it."         | Popularity is not deprecation. Flag only archived repos, README notices, or built-in replacements. |
-| "Run nvim headless to confirm the config loads."    | Out of scope. It writes state. Confirm by reading code.                                            |
-| "The deprecation table says so, no need to verify." | The table is a snapshot; verify load-bearing findings against live docs.                           |
-| "lazy.nvim exists, so vim.pack must replace it."    | Check the reference: coexistence is legitimate; report the trade-off, not a mandate.               |
-| "I'll fix this one-liner while I'm here."           | Read-only. Report it; fixing is a follow-up task.                                                  |
+| Rationalization | Reality |
+| --- | --- |
+| "This plugin is unpopular now, so flag it." | Popularity is not deprecation. Flag only archived repos, README notices, or built-in replacements. |
+| "Run nvim headless to confirm the config loads." | Out of scope. It writes state. Confirm by reading code. |
+| "The deprecation table says so, no need to verify." | The table is a snapshot; verify load-bearing findings against live docs. |
+| "lazy.nvim exists, so vim.pack must replace it." | Check the reference: coexistence is legitimate; report the trade-off, not a mandate. |
+| "I'll fix this one-liner while I'm here." | Read-only. Report it; fixing is a follow-up task. |
 
 ## Additional Resources
 

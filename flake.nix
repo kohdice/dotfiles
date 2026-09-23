@@ -23,22 +23,18 @@
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
-    # Formatter
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # nix-index database (comma, command-not-found)
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # AI coding agents
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
   };
@@ -51,20 +47,16 @@
       ...
     }@inputs:
     let
-      # Unified system builder
       mkSystem = import ./lib/mkSystem.nix {
         inherit inputs;
       };
 
-      # Supported systems
       darwinSystem = "aarch64-darwin";
       linuxSystems = [ "x86_64-linux" ];
       allSystems = [ darwinSystem ] ++ linuxSystems;
 
-      # Helper to generate per-system attributes
       forAllSystems = nixpkgs.lib.genAttrs allSystems;
 
-      # Treefmt configuration
       treefmtEval = forAllSystems (
         system:
         treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} {
@@ -76,34 +68,30 @@
 
     in
     {
-      # macOS configurations
       darwinConfigurations = {
-        kohdice = mkSystem "darwin" {
+        kohdice = mkSystem {
           system = darwinSystem;
           user = "kohdice";
         };
-        work = mkSystem "darwin" {
+        work = mkSystem {
           system = darwinSystem;
           user = "work";
         };
       };
 
-      # Linux configurations (home-manager standalone)
       homeConfigurations = {
-        kohdice = mkSystem "linux" {
+        kohdice = mkSystem {
           system = "x86_64-linux";
           user = "kohdice";
         };
-        work = mkSystem "linux" {
+        work = mkSystem {
           system = "x86_64-linux";
           user = "work";
         };
       };
 
-      # Formatter (nix fmt)
       formatter = forAllSystems (system: treefmtEval.${system}.config.build.wrapper);
 
-      # Checks (nix flake check): formatting plus full builds of every configuration
       checks = forAllSystems (
         system:
         {
@@ -119,7 +107,6 @@
         }
       );
 
-      # Apps (nix run .#<app>)
       apps = forAllSystems (system: import ./lib/apps.nix { inherit inputs system; });
     };
 }

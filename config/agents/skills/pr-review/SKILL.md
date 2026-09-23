@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: This skill should be used when the user hands over a GitHub PR URL, PR number, or branch and asks to "review this PR", "review and comment on this PR", "approve it", "request changes", "この PR をレビューして", or "gh でレビューしてコメントして". It orchestrates a multi-agent GitHub PR review: it checks the PR out into one throwaway git worktree, fans out read-only reviewer sub-agents by concern (using the named review agents available in the current runtime, with an inline single-pass fallback), synthesizes their findings, and submits a single approve or request-changes verdict with the gh CLI. It does not re-run tests, formatters, linters, or builds that CI already covers, and always discards the worktree afterward.
+description: "Reviews a GitHub PR identified by URL, number, or branch and submits a review when the user requests a PR review, approval, or changes. Local unpublished reviews use local-review."
 ---
 
 # PR Review (worktree-isolated orchestrator)
@@ -69,10 +69,10 @@ Do not use when:
 
 ## Approve vs request-changes
 
-| Verdict           | Condition                                                                                                                                                                                                                                                                             |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| approve           | No blockers across any lens, and the authenticated GitHub user is not the PR author. Attach nits as inline comments but do not let them block approval.                                                                                                                               |
-| request-changes   | One or more blockers (correctness, security, data loss, or API compatibility) from any lens.                                                                                                                                                                                          |
+| Verdict | Condition |
+| --- | --- |
+| approve | No blockers across any lens, and the authenticated GitHub user is not the PR author. Attach nits as inline comments but do not let them block approval. |
+| request-changes | One or more blockers (correctness, security, data loss, or API compatibility) from any lens. |
 | comment (neutral) | No blockers but the authenticated user **is** the PR author (GitHub rejects self-approval) — submit an approval-style summary as COMMENT. Also allowed when a lens genuinely needs a question answered before a verdict is possible. Otherwise default to approve or request-changes. |
 
 ## What not to run (CI's job)
@@ -99,11 +99,11 @@ Only when CI is known to be failing or absent, tell the user and decide case by 
 
 ## Red flags (watch for rationalizations)
 
-| Rationalization                                                     | Reality                                                                                                         |
-| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| "Each reviewer can check out its own worktree."                     | Breaks isolation and cleanup discipline. The parent owns exactly one worktree; sub-agents read it.              |
-| "Let the reviewers post their own comments."                        | Produces stacked reviews on the PR. The parent submits exactly one consolidated verdict.                        |
-| "Run the tests just to be safe."                                    | CI already verified them. Re-running wastes time and breaks this skill's principle — applies to sub-agents too. |
-| "Just `gh pr checkout` on the current branch — no worktree needed." | Pollutes in-progress changes and branches. Always use the dedicated worktree.                                   |
-| "Leave comments and defer the verdict."                             | A review reaches a verdict. Submit approve or request-changes (or the self-approval COMMENT form).              |
-| "An error occurred, so stop here."                                  | Always run worktree cleanup before finishing. A leftover worktree breaks the next review.                       |
+| Rationalization | Reality |
+| --- | --- |
+| "Each reviewer can check out its own worktree." | Breaks isolation and cleanup discipline. The parent owns exactly one worktree; sub-agents read it. |
+| "Let the reviewers post their own comments." | Produces stacked reviews on the PR. The parent submits exactly one consolidated verdict. |
+| "Run the tests just to be safe." | CI already verified them. Re-running wastes time and breaks this skill's principle — applies to sub-agents too. |
+| "Just `gh pr checkout` on the current branch — no worktree needed." | Pollutes in-progress changes and branches. Always use the dedicated worktree. |
+| "Leave comments and defer the verdict." | A review reaches a verdict. Submit approve or request-changes (or the self-approval COMMENT form). |
+| "An error occurred, so stop here." | Always run worktree cleanup before finishing. A leftover worktree breaks the next review. |

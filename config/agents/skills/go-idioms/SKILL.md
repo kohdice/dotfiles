@@ -1,6 +1,6 @@
 ---
 name: go-idioms
-description: This skill should be used when writing, modifying, refactoring, or reviewing Go code — implementing features in .go files, "Go で実装して", "この Go コードを直して", or auditing Go for idiom modernization. It defines the mandatory procedure for resolving the project's go directive from go.mod, plus a version-tagged catalog of modern idioms and std APIs (Go 1.18 through the stated catalog coverage version), deprecated APIs, and std-absorbed dependencies, so that generated code and review recommendations never exceed the project's declared Go version.
+description: "Guides Go implementation, refactoring, review, and modernization using official practices compatible with the module's declared go directive."
 ---
 
 # Go Idioms (go-directive-aware, up to the stated catalog coverage version)

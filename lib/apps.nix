@@ -34,8 +34,8 @@ let
   # freshly updated local flake instead of the store copy. writeShellApplication
   # sets errexit, so a failed update aborts before switching.
   updateScript = profile: ''
-    if [ ! -f flake.nix ]; then
-      echo "error: run this from the dotfiles repository root (flake.nix not found)" >&2
+    if [ ! -f flake.nix ] || [ ! -f lib/mkSystem.nix ]; then
+      echo "error: run this from the dotfiles repository root" >&2
       exit 1
     fi
     nix flake update

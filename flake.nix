@@ -35,7 +35,6 @@
 
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
   };
@@ -70,22 +69,22 @@
     in
     {
       darwinConfigurations = {
-        kohdice = mkSystem "darwin" {
+        kohdice = mkSystem {
           system = darwinSystem;
           user = "kohdice";
         };
-        work = mkSystem "darwin" {
+        work = mkSystem {
           system = darwinSystem;
           user = "work";
         };
       };
 
       homeConfigurations = {
-        kohdice = mkSystem "linux" {
+        kohdice = mkSystem {
           system = "x86_64-linux";
           user = "kohdice";
         };
-        work = mkSystem "linux" {
+        work = mkSystem {
           system = "x86_64-linux";
           user = "work";
         };

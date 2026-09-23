@@ -1,4 +1,3 @@
-# Each overlay accepts flake inputs before its `final: prev:` arguments.
 { inputs }:
 
 [

@@ -1,18 +1,10 @@
 { pkgs, config, ... }:
 
-let
-  aliases = import ../shell/aliases.nix;
-  env = import ../shell/env.nix;
-in
 {
   programs.zsh = {
     enable = true;
     dotDir = config.home.homeDirectory;
-    enableCompletion = true;
-    shellAliases = aliases // {
-      zshreload = "source ~/.zshrc";
-    };
-    sessionVariables = env;
+    shellAliases.zshreload = "source ~/.zshrc";
 
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
@@ -27,13 +19,6 @@ in
         file = "share/zsh/zsh-abbr/zsh-abbr.plugin.zsh";
       }
     ];
-
-    history = {
-      size = 10000;
-      save = 10000;
-      ignoreDups = true;
-      share = true;
-    };
 
     initContent = ''
       setopt no_beep

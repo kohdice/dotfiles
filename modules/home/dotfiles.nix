@@ -94,7 +94,6 @@ let
 
   xdgSymlinks = {
     "ghostty" = "config/ghostty";
-    "herdr/config.toml" = "config/herdr/config.toml";
     "nvim" = "config/nvim";
     "tmux" = "config/tmux";
     "lazygit" = "config/lazygit";

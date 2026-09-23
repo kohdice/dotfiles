@@ -1,19 +1,10 @@
 { ... }:
 
-let
-  aliases = import ../shell/aliases.nix;
-  env = import ../shell/env.nix;
-in
 {
   programs.bash = {
     enable = true;
-    enableCompletion = true;
-    shellAliases = aliases // {
-      bashreload = "source ~/.bashrc";
-    };
-    sessionVariables = env;
+    shellAliases.bashreload = "source ~/.bashrc";
 
-    historySize = 10000;
     historyFileSize = 10000;
     historyControl = [
       "ignoredups"

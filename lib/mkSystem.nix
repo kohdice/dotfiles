@@ -1,7 +1,5 @@
 { inputs }:
 
-# Platform name: "darwin" or "linux"
-platform:
 {
   system,
   user,
@@ -9,6 +7,7 @@ platform:
 
 let
   isDarwin = inputs.nixpkgs.lib.hasSuffix "darwin" system;
+  platform = if isDarwin then "darwin" else "linux";
 
   userConfig = import ../users/${user};
 

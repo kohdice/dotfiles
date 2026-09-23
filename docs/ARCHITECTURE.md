@@ -40,7 +40,6 @@ Criteria for deciding whether an application config is managed as a Nix module
 | tmux          | Symlink | only ~20% declarative, needs file splitting |
 | neovim        | Symlink | Lua language, no home-manager integration   |
 | ghostty       | Symlink | no home-manager integration                 |
-| herdr         | Symlink | no home-manager integration                 |
 | pure          | Nix     | Zsh prompt integration, packaged by nixpkgs |
 | lazygit       | Symlink | no home-manager integration                 |
 | karabiner     | Symlink | JSON config, macOS only                     |
@@ -123,7 +122,6 @@ Agent-related files are split by runtime ownership:
 | Source                               | Target                                            |
 | ------------------------------------ | ------------------------------------------------- |
 | `config/ghostty`                     | `~/.config/ghostty`                               |
-| `config/herdr/config.toml`           | `~/.config/herdr/config.toml`                     |
 | `config/nvim`                        | `~/.config/nvim`                                  |
 | `config/tmux`                        | `~/.config/tmux`                                  |
 | `config/lazygit`                     | `~/.config/lazygit`                               |
@@ -213,16 +211,16 @@ there is never built by `nix flake check`.
 ```nix
 # macOS
 darwinConfigurations = {
-  kohdice = mkSystem "darwin" { system = darwinSystem; user = "kohdice"; };
-  work = mkSystem "darwin" { system = darwinSystem; user = "work"; };
-  newprofile = mkSystem "darwin" { system = darwinSystem; user = "newprofile"; };
+  kohdice = mkSystem { system = darwinSystem; user = "kohdice"; };
+  work = mkSystem { system = darwinSystem; user = "work"; };
+  newprofile = mkSystem { system = darwinSystem; user = "newprofile"; };
 };
 
 # Linux
 homeConfigurations = {
-  kohdice = mkSystem "linux" { system = "x86_64-linux"; user = "kohdice"; };
-  work = mkSystem "linux" { system = "x86_64-linux"; user = "work"; };
-  newprofile = mkSystem "linux" { system = "x86_64-linux"; user = "newprofile"; };
+  kohdice = mkSystem { system = "x86_64-linux"; user = "kohdice"; };
+  work = mkSystem { system = "x86_64-linux"; user = "work"; };
+  newprofile = mkSystem { system = "x86_64-linux"; user = "newprofile"; };
 };
 
 # Checks

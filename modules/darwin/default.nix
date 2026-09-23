@@ -13,12 +13,10 @@
 
   system.stateVersion = 5;
 
-  # Primary user (required for system.defaults)
+  # Required by system.defaults.
   system.primaryUser = user.name;
 
   users.users.${user.name} = {
     home = user.home;
   };
-
-  programs.zsh.enable = true;
 }

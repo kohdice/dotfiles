@@ -4,7 +4,6 @@
   system.defaults = {
     dock = {
       autohide = true;
-      # Icon size in pixels.
       tilesize = 36;
       magnification = false;
       show-recents = false;
@@ -26,10 +25,7 @@
     };
 
     NSGlobalDomain = {
-      # Lower values repeat keys faster.
       KeyRepeat = 2;
-
-      # Lower values shorten the delay before key repeat.
       InitialKeyRepeat = 15;
 
       AppleInterfaceStyle = "Dark";
@@ -38,8 +34,8 @@
       ApplePressAndHoldEnabled = false;
 
       NSAutomaticCapitalizationEnabled = true;
-      NSAutomaticDashSubstitutionEnabled = true; # -- becomes an em dash.
-      NSAutomaticPeriodSubstitutionEnabled = true; # Double-space becomes a period.
+      NSAutomaticDashSubstitutionEnabled = true;
+      NSAutomaticPeriodSubstitutionEnabled = true;
       NSAutomaticQuoteSubstitutionEnabled = true;
       NSAutomaticSpellingCorrectionEnabled = true;
     };
@@ -47,18 +43,15 @@
     trackpad = {
       Clicking = true;
       TrackpadRightClick = true;
-      # 0 disables the three-finger tap gesture.
       TrackpadThreeFingerTapGesture = 0;
     };
 
     WindowManager = {
-      # Restrict click-wallpaper-to-show-desktop to Stage Manager.
       EnableStandardClickToShowDesktop = false;
     };
 
     menuExtraClock = {
       Show24Hour = true;
-      # 0 = when space allows, 1 = always, 2 = never.
       ShowDate = 0;
       ShowDayOfWeek = true;
       ShowSeconds = true;

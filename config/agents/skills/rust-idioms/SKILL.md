@@ -26,7 +26,7 @@ Hard rules derived from the baseline:
 
 ## Catalog coverage and verification
 
-**Catalog coverage version: Rust 1.98.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
+**Catalog coverage version: Rust 1.99.** The catalogs below are verified against official sources up to this version. They are the default checklist; do not re-derive them from documentation when the project baseline falls within coverage. Go to the official sources when — and only when:
 
 - **Staleness guard**: the resolved MSRV, a concrete pinned toolchain-file version, or the installed toolchain (`rustc --version`) is newer than the coverage version above. (In a read-only review or when the toolchain cannot be invoked, judge staleness on the resolved MSRV and the toolchain file alone — do not block on `rustc --version`.) The catalog is out of date for this project. Do both: (a) check the release notes for everything stabilized between the coverage version and the actual version, and follow those newer official recommendations now; (b) tell the user this skill's catalog needs updating to the new version (see Maintenance below).
 - A feature or its stabilizing version is **not listed here** AND is **boundary-relevant** — plausibly stabilized at or after the catalog floor (1.65) or near the resolved MSRV: never trust memory for stabilization versions; verify before gating on it. Long-established std APIs that clearly predate the catalog floor (e.g. `map_or`, `min`, `parse`, `checked_*`) need no verification.
@@ -34,9 +34,9 @@ Hard rules derived from the baseline:
 
 Verification sources, in order of authority:
 
-1. Release notes: https://doc.rust-lang.org/releases.html#version-1980-2026-08-20 (current coverage); https://github.com/rust-lang/rust/blob/master/RELEASES.md (exact stabilization versions)
+1. Release notes: https://doc.rust-lang.org/releases.html#version-1990-2026-10-01 (current coverage); https://github.com/rust-lang/rust/blob/master/RELEASES.md (exact stabilization versions)
 2. Edition Guide: https://doc.rust-lang.org/edition-guide/ (edition-gated semantics)
-3. Announcements: https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/ (context for the current release)
+3. Announcements: https://blog.rust-lang.org/2026/10/01/Rust-1.99.0/ (context for the current release)
 
 **Verification fallback**: if a source is unreachable (offline, sandboxed, restricted), try at most one alternate route, then stop and degrade: prefer a construct whose version is already catalog-listed; if none fits, state the recommendation with an explicit "unverified" label and the assumed stabilizing version. Never let unreachable sources block the deliverable or trigger repeated fetch attempts.
 
@@ -73,6 +73,7 @@ Flag these dependencies (severity: `[recommend]` when the replacement is within 
 - `async-trait` → native `async fn` in traits where dyn-compatibility is not required (1.75)
 - `assert_matches` crate → std `assert_matches!` / `debug_assert_matches!` (1.96)
 - `itoa` → primitive integer `format_into` with [`core::fmt::NumBuffer`](https://doc.rust-lang.org/core/fmt/struct.NumBuffer.html) (1.98), when its only use is decimal formatting into a borrowed `&str`; this is not a general formatting or floating-point replacement
+- `filetime` → [`std::fs::set_times` / `set_times_nofollow`](https://doc.rust-lang.org/std/fs/fn.set_times.html) by path (1.99), or `File::set_times` on an open handle (1.75), when its only use is setting access/modification times; `set_times` follows symlinks, `set_times_nofollow` changes the link itself
 
 ## 2024 Edition semantics
 
@@ -110,6 +111,12 @@ Prefer these over older equivalents, subject to the MSRV/edition rules above:
 - [`String::from_utf16le` / `from_utf16be`](https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf16le) and their `_lossy` variants for UTF-16 byte slices with known endianness (1.98); use lossy decoding only when replacing invalid input is intended
 - Concrete atomic types' `from_mut`, `from_mut_slice`, and `get_mut_slice` for safe conversion through exclusive borrows (1.98), e.g. [`AtomicU32::from_mut`](https://doc.rust-lang.org/std/sync/atomic/struct.AtomicU32.html#method.from_mut); `from_mut` / `from_mut_slice` require matching atomic/primitive alignment on the target. This does not stabilize the generic `Atomic<T>` type
 - `f32` / `f64` [`algebraic_*`](https://doc.rust-lang.org/std/primitive.f32.html#algebraic-operators) methods (1.98) are not routine replacements for arithmetic operators: they permit algebraic transformations with weaker, non-deterministic floating-point results; consider them only when the numerical contract permits those semantics and measurements justify the change
+- [`String::from_utf8_lossy_owned`](https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8_lossy_owned) / `FromUtf8Error::into_utf8_lossy` when an owned `Vec<u8>` must become an owned `String` with replacement characters, instead of `from_utf8_lossy(&v).into_owned()` (1.99); keep `from_utf8_lossy` where a borrowed `Cow<str>` suffices, and do not promise allocation reuse — the docs do not guarantee it
+- [`Vec::into_parts` / `from_parts`](https://doc.rust-lang.org/std/vec/struct.Vec.html#method.into_parts) with `NonNull<T>` (1.99) and [`Box::into_non_null` / `from_non_null`](https://doc.rust-lang.org/std/boxed/struct.Box.html#method.into_non_null) (1.99) instead of `Vec::into_raw_parts` (1.93) / `Box::into_raw` followed by a manual `NonNull::new(..).unwrap()`; the `from_*` constructors carry the same safety contract as their raw-pointer counterparts. Per the updated `Box::leak` docs, do not reconstruct a `Box` from a leaked reference; use `into_non_null` / `into_raw` when the memory will be freed later
+- [`VecDeque::retain_back(len)`](https://doc.rust-lang.org/std/collections/struct.VecDeque.html#method.retain_back) to keep only the last `len` elements (bounded history buffers) instead of a `while deque.len() > n { deque.pop_front(); }` loop (1.99); it takes a count, not a predicate — `retain` / `retain_mut` remain the predicate forms
+- `IntoIterator` for `Box<[T; N]>`, `&Box<[T; N]>`, and `&mut Box<[T; N]>` (1.99): iterate a boxed array directly instead of moving the array out of the box or converting it to `Vec` first
+- [`core::mem::size_of_val_raw` / `align_of_val_raw`](https://doc.rust-lang.org/core/mem/fn.size_of_val_raw.html) and `Layout::for_value_raw` (1.99) in `unsafe` code that holds only a raw pointer, instead of materializing a temporary reference to call `size_of_val` / `Layout::for_value`; they are `unsafe` — the pointee metadata must be valid per the docs
+- Native `extern "C"` variadic function definitions with [`core::ffi::VaList`](https://doc.rust-lang.org/core/ffi/struct.VaList.html) (1.99) instead of a C shim forwarding to a fixed-arity Rust function; argument reads are restricted to `VaArgSafe` types
 - Do NOT use `core::hint::cold_path` or other perf hints unless profiling-driven intent is already evident
 
 ## Compiler compatibility
@@ -121,6 +128,13 @@ From [Rust 1.98](https://doc.rust-lang.org/releases.html#version-1980-2026-08-20
 - Runtime symbol definitions can trigger `invalid_runtime_symbol_definitions` (deny by default) or `suspicious_runtime_symbol_definitions` (warn by default); inspect affected definitions such as `memcmp` and `memset` when present. `c_void_returns` warns about returning `core::ffi::c_void` by value.
 - Some ambiguous imports, including cases previously covered by `ambiguous_glob_imports`, are now errors. Prefer explicit imports where ambiguity occurs. Recheck `repr(transparent)` wrappers that rely on extra fields having trivial layout; the compiler now rejects more such layouts.
 - rustfmt discovers module files declared inside `cfg_select!`; an upgrade can expose previously unformatted files. This formatter change does not alter `cfg_select!`'s stabilization version (1.95).
+
+From [Rust 1.99](https://doc.rust-lang.org/releases.html#version-1990-2026-10-01):
+
+- The legacy integer modules (`std::i32::MAX`, `core::u8::MIN`, …) are fully deprecated and trigger `deprecated`; use the associated constants (`i32::MAX`, 1.43). `no_mangle_generic_items` is now a hard error: generic items cannot carry `#[unsafe(no_mangle)]` / `#[no_mangle]`.
+- `unreachable_cfg_select_predicates` joined the `unused` group (warn by default), so unreachable `cfg_select!` arms now warn. POSIX symbol names were added to `invalid_runtime_symbol_definitions` / `suspicious_runtime_symbol_definitions`; recheck `no_mangle` definitions that shadow libc names. Macros expanding to a bare `;` warn even when defined in another crate; `#[path]` on inline modules is linted as unused.
+- New allow-by-default `raw_borrows_via_references` flags references that immediately decay to raw pointers; when a project enables it, use `&raw const` / `&raw mut` (1.82). `Pin::new_unchecked`'s safety invariants were adjusted slightly — recheck existing `// SAFETY:` justifications.
+- Cargo: incremental compilation is disabled by default when the `CI` environment variable is set; a built-in `debug` profile was added in preparation for the `dev` profile transition; edition-2024 workspace members may override `default-features` of an inherited workspace dependency.
 
 ## Official style and API guidelines
 

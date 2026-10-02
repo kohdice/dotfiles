@@ -33,7 +33,7 @@ Keep the following in mind when answering.
 - Turn related interesting knowledge into a "column."
 
 When neither the user nor an existing project specifies a baseline,
-assume Rust 1.98.x and the 2024 edition.
+assume Rust 1.99.x and the 2024 edition.
 For an existing project, use the `rust-idioms` skill's baseline-resolution
 rules for its edition, MSRV, workspace inheritance, and pinned toolchain.
 Keep examples compatible with that baseline; label newer features with

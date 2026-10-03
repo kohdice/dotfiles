@@ -57,7 +57,13 @@ Decompose the work into the smallest independently verifiable increments.
 
 - One coherent change per item — one resource, one module, one document section, one pipeline job. If an item's Verify step needs the word "and" more than once, split the item.
 - Every item states what changes and how completion is verified (the Verify requirement above).
-- No speculative items: plan only what the request needs.
+- No speculative items: plan only what the request needs. Every item traces to a sentence of the request or to a decision recorded in Context. Candidates the analysis surfaced but the request does not need (a module worth extracting, a document worth restructuring, a tool worth adding) go under `Not planned` in Context so the user can opt in; they never enter the Work Items list silently.
+- Introduce no reusable module, helper function, variable, or option with a single consumer. The direct, concrete form is the default; extract the shared form when the second real consumer appears in this plan.
+
+**Structural items (Tidy First):**
+
+- A reorganization that changes no outcome — moving or renaming files or modules, splitting a file, extracting a shared Terraform module or Nix function, restructuring a document — is its own `Task:` item, never mixed into an item that changes an outcome. Its Verify step shows the outcome is unchanged (e.g., `terraform plan` reports no changes; `nix flake check` passes; the rendered document has the same sections).
+- Place a structural item immediately before the first item that needs it. Never plan one without such a dependent item.
 
 **Apply tier:**
 
@@ -112,7 +118,7 @@ executor with no session context>
 - A `Task:` description states what changes; it may name files, resources, and public-facing names, but does not prescribe incidental implementation detail the executor can decide.
 - Every item has at least one Verify bullet with an expected outcome. Multiple Verify bullets are allowed when one command cannot cover the item.
 - Every `Task (apply):` item has a Rollback bullet.
-- Items are listed in execution order. Do not mix an apply-tier mutation into a `Task:` item.
+- Items are listed in execution order. Do not mix an apply-tier mutation into a `Task:` item, and do not mix a structural reorganization into an item that changes an outcome.
 - The Goal section states the end state, not the process.
 - The plan file is the single source of truth for execution. Write it so that a fresh executor — a different session, a different agent, or a human — can execute it with zero access to this conversation. Length is not a concern; omitted context is.
 - The plan refers to nothing that exists only in the authoring session. Do not write "as discussed", "per the user's answer", "see question 2", "the reviewer suggested", a sub-agent or batch name, or relative time ("today", "the earlier run", "the current branch"). Record each clarification as a self-standing statement — the decision, the alternative it rules out, and the rationale (e.g., "The new tool goes in the cross-platform package list, not a profile, matching the existing CLI tools in `modules/home/packages.nix`") — and anchor references with paths, identifiers, commit hashes, or absolute dates.
@@ -132,3 +138,4 @@ Before presenting the plan, verify:
 9. The final reply includes the exact created plan filename and `.plans/` path.
 10. Portability: an executor with no access to this conversation could execute the plan using only the plan file and the repository.
 11. No sentence depends on the conversation: every decision is stated as a fact with its rationale, and every reference resolves from the plan file and the repository.
+12. Every item traces to the request or a recorded decision; every structural item has a later item that depends on it; nothing in the plan introduces a reusable module, helper, or option with a single consumer. Unrequested candidates are listed under `Not planned` in Context.

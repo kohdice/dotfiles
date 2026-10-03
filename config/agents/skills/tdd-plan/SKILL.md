@@ -60,6 +60,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - Plan only new or changed behavior — do not include tests for behavior already covered by existing passing tests (discovered in Step 2). Such a test can never fail in the Red phase, so it adds no information and violates the rule that every test must fail before the change
 - Test only code this project owns. Do not plan tests that verify the responsibilities of third-party libraries, frameworks, or the standard library (e.g., that an ORM escapes SQL, that a JSON library parses JSON)
 - Prefer unit-level tests that run fast and in isolation. Plan a resource-heavy test (containers, real databases, network, end-to-end) only when the requested behavior cannot be verified any other way, keep such tests to the minimum count, place them last in the plan, and mark them `Test (integration):` so the executing skill can run them sparingly
+- Every `Test:` and `Refactor:` item traces to a sentence of the request or to a decision recorded in Context (YAGNI). The public API surface the plan implies is the minimum the requested behavior needs: no optional parameters, configuration knobs, generics, or extension points that no planned test exercises
 - A test name must clearly describe what is being verified
 - Follow the target project's existing test naming convention, discovered in Step 2 (e.g., Zig inline tests `test "parses empty sequence diagram"`, Rust `#[test] fn parses_empty_sequence_diagram`, Go `TestParsesEmptySequenceDiagram`)
 
@@ -67,6 +68,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 - When refactoring or reorganizing code is needed before or during implementation, include it as a separate plan item marked with `Refactor:` instead of `Test:`
 - Structural items must not change behavior — they prepare the codebase for the next behavioral change
+- A `Refactor:` item exists only to unblock a specific later `Test:` item in this plan, and is the smallest structural change that does so. Do not plan restructuring for behavior nobody requested, generalization for a second consumer that does not exist, or clean-up of code the plan does not otherwise touch — list such candidates under `Not planned` in Context so the user can opt in
 - Placement: put a `Refactor:` item immediately before the first `Test:` item that depends on that structural change. Consecutive `Refactor:` items may be grouped together only when they all gate the same next behavioral test — this group goes right before that test, not at the top of the Test Cases list. Do not interleave structural items with unrelated behavioral tests
 
 **Phase division (large plans):**
@@ -149,3 +151,4 @@ Before presenting the plan to the user, verify:
 13. No sentence depends on the conversation: every decision is stated as a fact with its rationale, and every reference resolves from the plan file and the codebase
 14. Every `Test:` item is behavioral and structure-insensitive: it can fail only because the requested behavior is wrong, and no item asserts constants, collaborator calls, or values copied from the implementation
 15. Every edge case or error item meets one of the three admission conditions (named in the request, produced by an existing caller, or type-admitted and resolved in Step 1); the rest are listed under `Not planned` in Context
+16. Every item traces to the request or a recorded decision; every `Refactor:` item has a later `Test:` item that depends on it; the implied API surface carries nothing no planned test exercises

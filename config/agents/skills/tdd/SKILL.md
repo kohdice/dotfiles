@@ -160,7 +160,8 @@ When fixing a defect, follow this specific order:
 
 ## Code Quality Standards
 
-- Eliminate duplication ruthlessly
+- Eliminate duplication of knowledge within the code just written; do not extract an abstraction for a consumer that does not exist yet — a shared helper, interface, or generic must satisfy one of the simplicity-patterns skill's four justifications
+- Build nothing the current tests do not demand (YAGNI); record a future need as a discovered test or a follow-up for the user, never as code
 - Express intent clearly through naming and structure
 - Make dependencies explicit
 - Keep methods small and focused on a single responsibility

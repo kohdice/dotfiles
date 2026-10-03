@@ -58,7 +58,7 @@ While implementing, you may discover behavior that needs a test but is not in th
 2. Continue the current Red-Green-Refactor cycle without expanding its scope
 3. Mention the appended item in the turn summary
 
-A discovered item must describe observable application behavior required by the feature under development. Do not append speculative tests unrelated to the requested behavior. Never append a test that verifies a third-party library's or the standard library's own responsibility — test only this project's code (Kent Beck's rule: test third-party code only if you have reason to distrust it).
+A discovered item must describe observable application behavior required by the feature under development and must meet the same behavioral and structure-insensitive bar as a planned item (Phase 1 step 2). Do not append speculative tests unrelated to the requested behavior. Never append a test that verifies a third-party library's or the standard library's own responsibility — test only this project's code (Kent Beck's rule: test third-party code only if you have reason to distrust it).
 
 ### When the Plan Is Complete
 
@@ -85,11 +85,12 @@ Identify the project's tier mechanism (build tags, test markers, separate packag
 
 Before writing the new test, run all tests once. If the suite is already failing, stop and report the failures instead of building on a broken baseline.
 
-1. Write one test that defines a small increment of functionality
-2. Use descriptive test names (e.g., `test "parses short option clusters"`)
-3. Run all tests to confirm the new test fails
-4. Verify the failure message is clear and informative. In a compiled language, a compile/build error caused by the not-yet-implemented symbol IS a valid Red failure — do not write production stubs just to turn it into an assertion failure
-5. If the new test passes without any production code change, inspect why before proceeding — that is a signal, not a success. Either the behavior already exists (report this, mark the item `[x]`, and move on) or the test does not exercise what it claims to (fix the test until it fails for the right reason). To decide which, inspect the production code path the test exercises: if it genuinely implements the planned behavior, the behavior already exists; if the assertions do not reach or do not constrain that path, the test is at fault. Never write production code for a test that never failed
+1. Write one test that defines a small increment of functionality. When the plan item names an existing test it replaces, modify that test instead of adding a parallel one — the modified test failing is the Red signal
+2. Before running it, check the test is behavioral and structure-insensitive: it fails only when the requested behavior is wrong, and a behavior-preserving refactor would not break it. Expected values are literals from the requirement, never copied from the code's output (Canon TDD: pasting computed values defeats double checking)
+3. Use descriptive test names (e.g., `test "parses short option clusters"`)
+4. Run all tests to confirm the new test fails
+5. Verify the failure message is clear and informative. In a compiled language, a compile/build error caused by the not-yet-implemented symbol IS a valid Red failure — do not write production stubs just to turn it into an assertion failure
+6. If the new test passes without any production code change, inspect why before proceeding — that is a signal, not a success. Either the behavior already exists (report this, mark the item `[x]`, and move on) or the test does not exercise what it claims to (fix the test until it fails for the right reason). To decide which, inspect the production code path the test exercises: if it genuinely implements the planned behavior, the behavior already exists; if the assertions do not reach or do not constrain that path, the test is at fault. Never write production code for a test that never failed
 
 ### Phase 2: Green (Make It Pass)
 
@@ -134,7 +135,7 @@ To validate: run all tests before AND after, capturing test names on both runs (
 - Implementing code to pass a test
 - Fixing a defect
 
-To validate: a new test must fail before (Red) and pass after (Green). If a newly added test passes immediately, apply Phase 1 step 5's existing-behavior check instead; never manufacture a failure.
+To validate: a new test must fail before (Red) and pass after (Green). If a newly added test passes immediately, apply Phase 1 step 6's existing-behavior check instead; never manufacture a failure.
 
 ## Commit Discipline
 

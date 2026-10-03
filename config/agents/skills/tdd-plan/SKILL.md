@@ -55,6 +55,8 @@ Decompose the feature into the smallest testable increments. Follow these princi
 
 - One behavior per test — each test validates exactly one thing
 - Test observable behavior through the public API — never implementation details (private functions, internal call order, interactions with mocks). Implementation-coupled tests break under legitimate refactoring, violating the Tidy First invariant that structural changes keep test results identical
+- A test earns its place only if it is behavioral and structure-insensitive (Kent Beck's Test Desiderata): it fails when the requested behavior is wrong, and keeps passing under any refactoring that preserves behavior. Do not plan a test that passes regardless of the production code — asserting a constant or a field's existence, asserting that a collaborator was called, or asserting a value that can only be produced by running the implementation. Expected values are literals derived from the requirement, never copied from the code's output
+- An edge case or error condition enters the plan only when (a) the request names it, (b) an existing caller in the codebase actually produces it, or (c) the public API's input type admits it and the behavior would otherwise be undefined — in which case Step 1 resolves it (a question or a codebase convention) and Context records the decision. Candidates that meet none of the three go into a `Not planned` list in Context so the user can opt in; they never enter the Test Cases list silently
 - Plan only new or changed behavior — do not include tests for behavior already covered by existing passing tests (discovered in Step 2). Such a test can never fail in the Red phase, so it adds no information and violates the rule that every test must fail before the change
 - Test only code this project owns. Do not plan tests that verify the responsibilities of third-party libraries, frameworks, or the standard library (e.g., that an ORM escapes SQL, that a JSON library parses JSON)
 - Prefer unit-level tests that run fast and in isolation. Plan a resource-heavy test (containers, real databases, network, end-to-end) only when the requested behavior cannot be verified any other way, keep such tests to the minimum count, place them last in the plan, and mark them `Test (integration):` so the executing skill can run them sparingly
@@ -72,6 +74,12 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - A large plan may be divided into phases with `### Phase N: <milestone>` headings inside the Test Cases section. The boundary criterion is strictly semantic: a phase boundary is valid only at a point that is independently committable — all tests green, one coherent observable behavior increment completed (a vertical slice), and no un-generalized Fake It implementation or pending `Refactor:` dependency left dangling. This mirrors the tdd skill's Commit Discipline: a phase is a single logical unit of work, planned in advance
 - Item count is never the boundary criterion. A large item count (roughly more than 10) is only a trigger to look for natural semantic seams; when no such seam exists, keep the plan as a single phase rather than forcing a split
 - Each phase heading is followed by one line stating what becomes possible when the phase completes (e.g., `After this phase: the parser accepts all valid sequence diagrams`). If that line cannot be written meaningfully, the boundary is wrong — move or remove it
+
+**Behavior changes (spec changes):**
+
+- When the scope is a change to existing behavior, first find the existing tests that pin the old behavior (Step 2). Each such test becomes a `Test:` item that names it and states the new scenario and outcome, e.g., `- [ ] Test: TestParsesDate — replaces the current assertion; "2026-10-03" now yields a UTC date, not a local one`. Modifying that test is the Red step: it must fail against the old code
+- Never leave an old test asserting the old spec while adding a separate test for only the delta. The updated test asserts the whole behavior under the new spec from the caller's view
+- A test whose scenario the new spec removes is deleted inside the same item (deletion is a behavioral change, not a tidying)
 
 **Bug fixes:**
 
@@ -139,3 +147,5 @@ Before presenting the plan to the user, verify:
 11. Portability: an implementer with no access to this conversation could execute the plan using only the plan file and the codebase
 12. If the plan has phases, every phase boundary lands on an independently committable point (all tests green, one coherent behavior increment, no dangling Fake It or `Refactor:` dependency), and each phase has its `After this phase:` line
 13. No sentence depends on the conversation: every decision is stated as a fact with its rationale, and every reference resolves from the plan file and the codebase
+14. Every `Test:` item is behavioral and structure-insensitive: it can fail only because the requested behavior is wrong, and no item asserts constants, collaborator calls, or values copied from the implementation
+15. Every edge case or error item meets one of the three admission conditions (named in the request, produced by an existing caller, or type-admitted and resolved in Step 1); the rest are listed under `Not planned` in Context

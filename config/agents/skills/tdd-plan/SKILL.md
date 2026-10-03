@@ -120,6 +120,7 @@ Decompose the feature into the smallest testable increments. Follow these princi
 - The Goal section states the end-state, not the process
 - The Context section references specific files and types by name to orient the implementer
 - The plan file is the single source of truth for implementation. Write it so that a fresh implementer — a different session, a different AI agent, or a human — can execute it with zero access to this conversation. The Context section must therefore include: the background and motivation of the request, every decision made during Step 1 clarification with the user's answers and their rationale, relevant files/types/functions with paths, the project's test command and conventions, and known constraints. Length is not a concern; omitted context is
+- The plan refers to nothing that exists only in the authoring session. Do not write "as discussed", "per the user's answer", "see question 2", "the reviewer suggested", a sub-agent or batch name, or relative time ("today", "the earlier run", "the current branch"). Record each clarification as a self-standing statement — the decision, the alternative it rules out, and the rationale (e.g., "Empty input returns an empty map, not an error, matching the sibling APIs in `wordcount.go`") — and anchor references with paths, identifiers, commit hashes, or absolute dates
 
 ## Quality Checklist
 
@@ -137,3 +138,4 @@ Before presenting the plan to the user, verify:
 10. No item tests a third-party library's or the standard library's own responsibility, and any `Test (integration):` items are minimal in count and placed last
 11. Portability: an implementer with no access to this conversation could execute the plan using only the plan file and the codebase
 12. If the plan has phases, every phase boundary lands on an independently committable point (all tests green, one coherent behavior increment, no dangling Fake It or `Refactor:` dependency), and each phase has its `After this phase:` line
+13. No sentence depends on the conversation: every decision is stated as a fact with its rationale, and every reference resolves from the plan file and the codebase

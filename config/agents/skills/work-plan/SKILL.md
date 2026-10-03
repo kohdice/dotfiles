@@ -25,6 +25,7 @@ A checklist without completion criteria is a todo list, not a plan. Every item i
 - The expected outcome names what the output must (or must not) contain — not just "it succeeds". For a change-previewing command, state the exact expected diff (e.g., "`terraform plan` shows exactly `+ aws_s3_bucket.state`, nothing else").
 - When no command exists (e.g., documentation), the Verify step names an observable artifact state ("README.md renders the new section; `grep` finds the anchor link").
 - An item whose Verify step cannot be written is not plannable yet — split it, clarify it, or escalate it as an open question.
+- The expected outcome is stated in full inside the plan; never "the same output as before" or "what we saw earlier" — a fresh executor has no earlier run to compare with.
 
 ## Plan Creation Workflow
 
@@ -114,6 +115,7 @@ executor with no session context>
 - Items are listed in execution order. Do not mix an apply-tier mutation into a `Task:` item.
 - The Goal section states the end state, not the process.
 - The plan file is the single source of truth for execution. Write it so that a fresh executor — a different session, a different agent, or a human — can execute it with zero access to this conversation. Length is not a concern; omitted context is.
+- The plan refers to nothing that exists only in the authoring session. Do not write "as discussed", "per the user's answer", "see question 2", "the reviewer suggested", a sub-agent or batch name, or relative time ("today", "the earlier run", "the current branch"). Record each clarification as a self-standing statement — the decision, the alternative it rules out, and the rationale (e.g., "The new tool goes in the cross-platform package list, not a profile, matching the existing CLI tools in `modules/home/packages.nix`") — and anchor references with paths, identifiers, commit hashes, or absolute dates.
 
 ## Quality Checklist
 
@@ -129,3 +131,4 @@ Before presenting the plan, verify:
 8. If the plan has phases, every boundary is independently committable and has its `After this phase:` line.
 9. The final reply includes the exact created plan filename and `.plans/` path.
 10. Portability: an executor with no access to this conversation could execute the plan using only the plan file and the repository.
+11. No sentence depends on the conversation: every decision is stated as a fact with its rationale, and every reference resolves from the plan file and the repository.

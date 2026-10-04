@@ -58,7 +58,7 @@ While implementing, you may discover behavior that needs a test but is not in th
 2. Continue the current Red-Green-Refactor cycle without expanding its scope
 3. Mention the appended item in the turn summary
 
-A discovered item must describe observable application behavior required by the feature under development and must meet the same behavioral and structure-insensitive bar as a planned item (Phase 1 step 2). Do not append speculative tests unrelated to the requested behavior. Never append a test that verifies a third-party library's or the standard library's own responsibility — test only this project's code (Kent Beck's rule: test third-party code only if you have reason to distrust it).
+A discovered item must describe observable application behavior required by the feature under development and must meet the same behavioral and structure-insensitive bar as a planned item (Phase 1 step 2). Do not append speculative tests unrelated to the requested behavior. Never append a test that verifies a third-party library's or the standard library's own responsibility — test only this project's code (Kent Beck's rule: test third-party code only if you have reason to distrust it). A discovered item is bound by the same plan-file rules as a planned item: it refers to nothing that exists only in the current session — no other item by position ("same as the item above"), no user request, review finding, or sub-agent, and no relative time — and resolves from the plan file and the codebase alone, so that anyone reading the plan later understands it without the conversation.
 
 ### When the Plan Is Complete
 

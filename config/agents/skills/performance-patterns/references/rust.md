@@ -1,6 +1,6 @@
 # Rust performance patterns
 
-Verified against Rust 1.98 (2024 Edition); resolve the project baseline (`edition` / `rust-version` in `Cargo.toml` and any pinned toolchain) per the `rust-idioms` skill before recommending version-gated APIs. Apply that skill's shared version and compiler-compatibility constraints. Numbers refer to the factor catalog in SKILL.md. All observations assume release builds (`--release`); debug-build slowness is not a finding.
+Verified against Rust 1.99 (2024 Edition); resolve the project baseline (`edition` / `rust-version` in `Cargo.toml` and any pinned toolchain) per the `rust-idioms` skill before recommending version-gated APIs. Apply that skill's shared version and compiler-compatibility constraints. Numbers refer to the factor catalog in SKILL.md. All observations assume release builds (`--release`); debug-build slowness is not a finding.
 
 ## 1. Algorithmic complexity
 
@@ -15,6 +15,7 @@ Verified against Rust 1.98 (2024 Edition); resolve the project baseline (`editio
 - Chained `collect()` into intermediate `Vec`s where iterator adapters could stay lazy end to end
 - `format!` in hot paths where `write!` into a reused `String`/buffer works
 - Primitive integers formatted to temporary strings for immediate decimal-text consumption → [`format_into`](https://doc.rust-lang.org/std/primitive.u32.html#method.format_into) with `core::fmt::NumBuffer` (1.98), returning a borrowed `&str`; retain `format!` / `write!` for general formatting or when an owned result is needed
+- `String::from_utf8_lossy(&v).into_owned()` on an owned `Vec<u8>` → [`String::from_utf8_lossy_owned(v)`](https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8_lossy_owned) (1.99); in practice it skips the copy for valid UTF-8, but the docs do not guarantee reuse of the original allocation, so report it as a cleanup rather than a measured saving
 - `Box`/`Rc`/`Arc` allocation per iteration when the value could live on the stack or be reused
 - Passing large types by value (implicit memcpy) where `&`/`&mut` suffices; `[u8; N]` copies in loops
 
@@ -48,3 +49,4 @@ Verified against Rust 1.98 (2024 Edition); resolve the project baseline (`editio
 - Index-based loops that defeat bounds-check elision → iterators or slice patterns; verify with a profile before contorting code
 - Missed `#[inline]` on tiny cross-crate hot functions (only when profiling shows the call overhead)
 - `f32` / `f64` [`algebraic_*`](https://doc.rust-lang.org/std/primitive.f32.html#algebraic-operators) (1.98) permit transformations that change rounding, signed-zero, NaN, and infinity behavior; results can vary between invocations. Do not recommend them as a routine optimization: require a compatible numerical contract and measured benefit
+- `RangeInclusive` (`a..=b`) iteration is optimized better in some circumstances since 1.99; on that baseline, do not flag inclusive-range loops as slower than the half-open form without a profile

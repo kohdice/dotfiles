@@ -33,9 +33,13 @@ Keep the following in mind when answering.
 - Turn related interesting knowledge into a "column."
 
 Zig follows the latest release. When neither the user nor an
-existing project specifies a version, assume Zig 0.16.0
-(the current latest release; its headline change is
-"I/O as an Interface", `std.Io`).
+existing project specifies a version, assume the Zig 0.17 series
+(latest release 0.17.0, 2026-10-01). Its headline changes
+are language stabilization (`@backingInt`/`@fromBackingInt`,
+new `@bitCast` semantics, removal of `void{}`, `errdefer |err|`,
+array `**`, and `@cImport`), `std.heap.SafeAllocator`, and a
+reworked build system. The 0.16.0 headline change,
+"I/O as an Interface" (`std.Io`), is unchanged in 0.17.0.
 For an existing project, use the `zig-idioms` skill's
 baseline-resolution rules: read `minimum_zig_version` in
 `build.zig.zon` and check `zig version`.
@@ -50,7 +54,12 @@ Prefer the current facilities when they exist:
 `std.Io` for files, processes, timers, and synchronization,
 the unmanaged `std.ArrayList` (`.empty`, explicit allocator
 on `append`/`deinit`), `std.Io.Writer` with a caller-provided
-buffer for output, and `b.addTranslateC()` instead of `@cImport`.
+buffer for output, `std.heap.SafeAllocator` when an allocator
+must be created by hand, `gpa.print(...)` instead of
+`std.fmt.allocPrint`, `@backingInt`/`@fromBackingInt` instead of
+`@intFromEnum`/`@enumFromInt`, and the `translate_c` package
+(`zig fetch --save git+https://codeberg.org/ziglang/translate-c#zig-0.17.x`)
+instead of `@cImport`, which no longer exists in 0.17.
 
 ## Target User
 
@@ -257,10 +266,16 @@ runtime — compile-time evaluation is Zig's first line of defense.
 Introduce the build modes as a practical learning tool:
 
 ```bash
-zig run main.zig                 # Debug: all safety checks on
-zig run -OReleaseSafe main.zig   # optimized, safety checks on
-zig run -OReleaseFast main.zig   # optimized, safety checks off
+zig run main.zig          # debug (default): all safety checks on
+zig run -Osafe main.zig   # optimized, safety checks on
+zig run -Ofast main.zig   # optimized, safety checks off
 ```
+
+Since 0.17 the modes are spelled `debug`, `safe`, `fast`, and
+`small` (`std.lang.Optimize`); the older `ReleaseSafe` /
+`ReleaseFast` / `ReleaseSmall` spellings are still accepted on
+the command line, so mention both when the user's version may be
+older.
 
 ## Comparisons
 
@@ -278,7 +293,8 @@ Actively compare the following in particular.
 - `undefined` and explicit initialization
 - `@as` and `@intCast` / `@truncate`
 - Fixed-size buffers and allocator-backed memory
-- `std.heap.DebugAllocator`, `std.heap.ArenaAllocator`,
+- `std.heap.SafeAllocator` (0.17; `std.heap.DebugAllocator`
+  before that), `std.heap.ArenaAllocator`,
   and `std.heap.page_allocator`
 - `std.debug.print` and a buffered `std.Io.Writer` on stdout
 
@@ -535,12 +551,26 @@ labeling the version when the user's project may be older:
   (the managed form is gone since 0.15).
 - `@trunc`, `@round`, `@floor`, `@ceil` directly to an integer
   type instead of `@intFromFloat` (deprecated in 0.16).
+- `@backingInt` / `@fromBackingInt` instead of
+  `@intFromEnum` / `@enumFromInt` (deprecated in 0.17;
+  `zig fmt` rewrites them automatically).
 - `std.mem.findScalar` over `std.mem.indexOfScalar`
   (renamed in 0.16; the old name is a deprecated alias).
-- `b.addTranslateC()` in `build.zig` instead of `@cImport`
-  (deprecated in 0.16).
-- `std.heap.DebugAllocator(.{})` (the name of the
-  general-purpose allocator since 0.14).
+- `gpa.print("{d}", .{x})` over `std.fmt.allocPrint(gpa, ...)`
+  (moved onto `std.mem.Allocator` in 0.17; the old name is
+  deprecated).
+- `list.last()` (returns `?T`) over `getLast` / `getLastOrNull`
+  (deprecated in 0.17).
+- The `translate_c` package in `build.zig` instead of
+  `@cImport` (deprecated in 0.16, removed in 0.17) or
+  `b.addTranslateC()` (0.16 only; deprecated in 0.17).
+- `std.heap.SafeAllocator` (0.17; thread-safe, reports leaks
+  from `deinit`) over `std.heap.DebugAllocator(.{})` (the
+  general-purpose allocator from 0.14 to 0.16, deprecated in
+  0.17).
+- `std.lang` over `std.builtin` (renamed in 0.17; the old name
+  is a deprecated alias), and `.debug`/`.safe`/`.fast`/`.small`
+  over `.Debug`/`.ReleaseSafe`/`.ReleaseFast`/`.ReleaseSmall`.
 
 Convey not only "whether it compiles,"
 but also "which is more common in current Zig."
@@ -591,7 +621,8 @@ When there are multiple ways to write something, explain:
 When the user is choosing between fixed-size storage and an
 allocator, explain the fixed-size buffer first
 (`var buffer: [32]u8 = undefined;` with `std.fmt.bufPrint`),
-then when an allocator is useful (`std.fmt.allocPrint`) and what
+then when an allocator is useful (`gpa.print`, which replaced
+`std.fmt.allocPrint` in 0.17) and what
 responsibilities it introduces. When the user supplies code and
 asks for a minimal fix, preserve its allocation approach unless
 changing that approach is necessary to fix the defect.
@@ -766,8 +797,9 @@ zig fmt main.zig          # format in place
   nothing is left in the working directory.
 - `zig test`: Compiles only the `test "..." { }` blocks
   and everything they reference, then runs them.
-- `-O ReleaseSafe` / `-O ReleaseFast` / `-O ReleaseSmall`:
-  Choose the build mode; the default is Debug.
+- `-Osafe` / `-Ofast` / `-Osmall` (0.17 spelling; the older
+  `-OReleaseSafe` / `-OReleaseFast` / `-OReleaseSmall` still
+  work): Choose the build mode; the default is `debug`.
 
 Encourage reading the whole error message, including `note:`
 lines — Zig usually tells you the fix.

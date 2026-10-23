@@ -1,10 +1,10 @@
 # Zig performance patterns
 
-Verified against Zig 0.16.0; resolve the project baseline (`minimum_zig_version`) per the `zig-idioms` skill before recommending version-gated APIs. Numbers refer to the factor catalog in SKILL.md. Assume `ReleaseFast`/`ReleaseSafe` for cost discussion; Debug-build slowness is not a finding.
+Verified against Zig 0.17.0; resolve the project baseline (`minimum_zig_version`) per the `zig-idioms` skill before recommending version-gated APIs. Numbers refer to the factor catalog in SKILL.md. Assume `ReleaseFast`/`ReleaseSafe` for cost discussion; Debug-build slowness is not a finding.
 
 ## 1. Algorithmic complexity
 
-- `std.mem.indexOf` / linear scan inside a loop over another collection → build a `std.AutoHashMap`/`StringHashMap` once
+- `std.mem.find` (0.16; `indexOf` is its deprecated alias) / linear scan inside a loop over another collection → build a `std.AutoHashMap`/`StringHashMap` once
 - `ArrayList.orderedRemove(0)` or front insertion per item (O(n) each) → `std.Deque` (0.16; `std.fifo.LinearFifo` on older versions) or index-based consumption
 - Sorting inside a loop → sort once after collection
 
@@ -13,7 +13,7 @@ Verified against Zig 0.16.0; resolve the project baseline (`minimum_zig_version`
 - `allocator.alloc` / `ArrayList.append` inside loops without `ensureTotalCapacity` when the count is known or estimable (since 0.15 `ArrayList` is unmanaged: both take the allocator explicitly)
 - Missing `std.heap.ArenaAllocator` / `FixedBufferAllocator` for scoped, free-all-at-once workloads (per-request, per-frame)
 - Struct copies from `for (items) |item|` by value when `|*item|` avoids copying large elements
-- `std.fmt.allocPrint` in hot paths where `bufPrint` into a stack buffer works
+- `gpa.print` (0.17; `std.fmt.allocPrint` before, now a deprecated alias) in hot paths where `std.fmt.bufPrint` into a stack buffer works
 - Returning freshly allocated slices the caller immediately copies → write into a caller-provided buffer
 
 ## 3. Redundant work

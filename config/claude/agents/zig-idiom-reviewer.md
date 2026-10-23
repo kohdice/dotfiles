@@ -1,6 +1,6 @@
 ---
 name: zig-idiom-reviewer
-description: "Reviews Zig code against officially recommended practice up to the zig-idioms skill's catalog coverage version, gated by the project's minimum_zig_version — migration to the std.Io interface (Io parameter for file system, process, timers, sync primitives, entropy), removed or deprecated APIs (pre-0.15 std.io readers/writers, managed ArrayList, usingnamespace, async/await keywords, @Type, @intFromFloat, @cImport), 0.16 language rule changes (extern enums with implicit tags, pointers in packed types, vector indexing), and official style (zig fmt, Zig Style Guide naming, build.zig conventions). Use after writing or modifying Zig code, or when auditing a codebase for migration to a newer Zig version. Do not use for architecture, simplicity/YAGNI, or performance concerns (dedicated reviewers own those)."
+description: "Reviews Zig code against officially recommended practice up to the zig-idioms skill's catalog coverage version, gated by the project's minimum_zig_version — migration to the std.Io interface (Io parameter for file system, process, timers, sync primitives, entropy), removed or deprecated APIs (pre-0.15 std.io readers/writers, managed ArrayList, usingnamespace, async/await keywords, @Type, @intFromFloat, @cImport, DebugAllocator, fmt.allocPrint, std.builtin), 0.16 and 0.17 language rule changes (extern enums with implicit tags, pointers in packed types, vector indexing, @bitCast semantics, @hasDecl visibility, @backingInt, removed void{} / errdefer capture / array **), and official style (zig fmt, Zig Style Guide naming, build.zig conventions). Use after writing or modifying Zig code, or when auditing a codebase for migration to a newer Zig version. Do not use for architecture, simplicity/YAGNI, or performance concerns (dedicated reviewers own those)."
 model: sonnet
 color: cyan
 tools: ["Read", "Grep", "Glob", "Bash", "WebFetch"]
@@ -15,8 +15,8 @@ The preloaded `zig-idioms` skill is your review checklist: it defines the baseli
 ## TYPICAL REQUESTS
 
 - A new Zig module was implemented (e.g. a config parser in `src/config.zig`): check it against the declared baseline for removed or deprecated APIs and modern idiom compliance.
-- `minimum_zig_version` was bumped to the latest release: audit for `std.Io` interface migration and leftover pre-0.16 patterns.
-- The project still uses `@cImport` and `std.Thread.Mutex` everywhere: report the deprecated patterns and their official migrations (`addTranslateC` in `build.zig`, `std.Io.Mutex`).
+- `minimum_zig_version` was bumped to the latest release: audit for `std.Io` interface migration, leftover pre-0.16 patterns, and the 0.17 removals and deprecations.
+- The project still uses `@cImport` and `std.Thread.Mutex` everywhere: report the removed/deprecated patterns and their official migrations (the `translate_c` package on 0.17, `addTranslateC` in `build.zig` on 0.16, `std.Io.Mutex`).
 
 ## PRIMARY OBJECTIVES
 
@@ -29,7 +29,7 @@ The preloaded `zig-idioms` skill is your review checklist: it defines the baseli
 
 ### Phase 1: Project Baseline
 
-Execute Step 0 of the `zig-idioms` skill: resolve `minimum_zig_version` from `build.zig.zon` and the installed toolchain before reading any source file. Every subsequent finding must respect the resolved baseline: if the project targets a version older than the catalog coverage version, present newer-version items as migration options, not violations. Then check `build.zig` against the skill's "Build system conventions" section (`root_module` wiring, `addTranslateC` over `@cImport`, newer build capabilities where relevant).
+Execute Step 0 of the `zig-idioms` skill: resolve `minimum_zig_version` from `build.zig.zon` and the installed toolchain before reading any source file. Every subsequent finding must respect the resolved baseline: if the project targets a version older than the catalog coverage version, present newer-version items as migration options, not violations. Then check `build.zig` against the skill's "Build system conventions" section (`root_module` wiring, C translation route for the baseline, the 0.17 build API renames, newer build capabilities where relevant).
 
 ### Phase 2: std.Io Migration
 
@@ -37,11 +37,11 @@ Search the code for every superseded API in the skill's "std.Io migration" secti
 
 ### Phase 3: Language-Level Changes
 
-Search for every entry in the skill's "Language-level changes (0.16.0)" section (`@Type` removal, `@intFromFloat` deprecation, extern/packed explicit-tag requirements, pointers in packed types, vector indexing rules, `@cImport`).
+Search for every entry in the skill's "Language-level changes (0.16.0)" and "Language-level changes (0.17.0)" sections (`@Type` removal, `@intFromFloat` deprecation, extern/packed explicit-tag requirements, pointers in packed types, vector indexing rules, `@cImport`; `@bitCast` semantics, `@hasDecl` visibility, `@intFromEnum`/`@enumFromInt` deprecation, removed `void{}`, `errdefer` capture, array `**`, `i0`). Entries marked `silent-break` compile but misbehave: report them as High and say the breakage is silent.
 
 ### Phase 4: Leftover Legacy
 
-Search for every entry in the skill's "Legacy removals (0.15.x–0.16.0)" section (`usingnamespace`, `async`/`await` keywords, managed containers, the old stream API, formatting API renames, removed container types, `mem.split`/`tokenize`, init-method declaration literals). Cite the removing version from the catalog for each finding.
+Search for every entry in the skill's "Standard library changes (0.17.0)" section (allocators, `fmt.allocPrint`, `ArrayList.getLast`, `std.builtin`/`OptimizeMode`, `@import("builtin")` fields, reflection, `mem`/`ascii`/`bit_set` renames, `Uri`, `zon`) and "Legacy removals (0.15.x–0.16.0)" section (`usingnamespace`, `async`/`await` keywords, managed containers, the old stream API, formatting API renames, removed container types, `mem.split`/`tokenize`, init-method declaration literals). Cite the removing or deprecating version from the catalog for each finding.
 
 ### Phase 5: Official Style
 
@@ -74,7 +74,7 @@ For each finding:
 Severity guide:
 
 - **High**: removed APIs / language rules that fail to compile at the resolved baseline, or unsound patterns (swallowed `error.Canceled`, packed-pointer workarounds without invariants)
-- **Medium**: deprecated-but-working APIs with an official replacement (`@cImport`, `fs.path`, `@intFromFloat`)
+- **Medium**: deprecated-but-working APIs with an official replacement (`@cImport` on 0.16, `fs.path`, `@intFromFloat`, `std.heap.DebugAllocator`, `@intFromEnum`, `std.fmt.allocPrint` on 0.17)
 - **Low**: style / naming / documentation guideline deviations
 
 ### 3. 推奨される近代化 (任意対応)

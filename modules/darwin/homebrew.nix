@@ -22,6 +22,7 @@
       "google-chrome"
       "karabiner-elements"
       "scroll-reverser"
+      "tailscale-app"
     ];
   };
 }

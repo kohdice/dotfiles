@@ -74,13 +74,13 @@ nixpkgs or Homebrew Cask.
 
 ### Current Layout
 
-| Location                      | Current applications                                                                               |
-| ----------------------------- | -------------------------------------------------------------------------------------------------- |
-| `modules/darwin/homebrew.nix` | formula: container / casks: coteditor, ghostty, google-chrome, karabiner-elements, scroll-reverser |
-| `modules/darwin/packages.nix` | numi, raycast, vlc-bin                                                                             |
-| `modules/home/packages.nix`   | slack, zoom-us                                                                                     |
-| `modules/linux/packages.nix`  | ghostty, google-chrome (installed via Cask on macOS)                                               |
-| `users/<name>/darwin.nix`     | kohdice: discord / work: elasticvue, tableplus                                                     |
+| Location                      | Current applications                                                                                              |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `modules/darwin/homebrew.nix` | formula: container / casks: coteditor, ghostty, google-chrome, karabiner-elements, scroll-reverser, tailscale-app |
+| `modules/darwin/packages.nix` | numi, raycast, vlc-bin                                                                                            |
+| `modules/home/packages.nix`   | slack, zoom-us                                                                                                    |
+| `modules/linux/packages.nix`  | ghostty, google-chrome (installed via Cask on macOS)                                                              |
+| `users/<name>/darwin.nix`     | kohdice: discord / work: elasticvue, tableplus                                                                    |
 
 ## Symlinks
 

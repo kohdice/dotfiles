@@ -1,3 +1,5 @@
+local Snacks = require("snacks")
+
 vim.diagnostic.config({
   virtual_text = {
     source = "if_many",
@@ -8,8 +10,6 @@ vim.diagnostic.config({
   },
   severity_sort = true,
 })
-
-local highlight_group = vim.api.nvim_create_augroup("my-lsp-highlight", { clear = true })
 
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("my-lsp-attach", { clear = true }),
@@ -25,13 +25,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 
     -- Built-in defaults (:h lsp-defaults) cover grn/gra/K; override the
-    -- list-style results with fzf-lua pickers
+    -- list-style results with snacks pickers
     nmap("gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
     nmap("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
-    nmap("grr", "<cmd>FzfLua lsp_references<cr>", "[R]eferences")
-    nmap("gri", "<cmd>FzfLua lsp_implementations<cr>", "[I]mplementations")
-    nmap("grt", "<cmd>FzfLua lsp_typedefs<cr>", "[T]ype Definitions")
-    nmap("gO", "<cmd>FzfLua lsp_document_symbols<cr>", "Document Symbols")
+    nmap("grr", Snacks.picker.lsp_references, "[R]eferences")
+    nmap("gri", Snacks.picker.lsp_implementations, "[I]mplementations")
+    nmap("grt", Snacks.picker.lsp_type_definitions, "[T]ype Definitions")
+    nmap("gO", Snacks.picker.lsp_symbols, "Document Symbols")
 
     nmap("gK", vim.lsp.buf.signature_help, "Signature Documentation")
 
@@ -45,48 +45,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
     end
 
+    -- Buffer-local, so the built-in ]] / [[ section motions stay intact where
+    -- no client answers documentHighlight
     if client:supports_method("textDocument/documentHighlight", bufnr) then
-      -- The callback runs once per attaching client; clear per buffer so a
-      -- second capable client does not stack duplicate autocmds
-      vim.api.nvim_clear_autocmds({ group = highlight_group, buffer = bufnr })
-
-      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-        group = highlight_group,
-        buffer = bufnr,
-        callback = vim.lsp.buf.document_highlight,
-        desc = "LSP: highlight references under cursor",
-      })
-
-      vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-        group = highlight_group,
-        buffer = bufnr,
-        callback = vim.lsp.buf.clear_references,
-        desc = "LSP: clear reference highlights",
-      })
+      nmap("]]", function()
+        Snacks.words.jump(vim.v.count1)
+      end, "Next reference")
+      nmap("[[", function()
+        Snacks.words.jump(-vim.v.count1)
+      end, "Prev reference")
     end
   end,
-})
-
--- Module level, not inside LspAttach: clear = true on every attach would
--- discard the cleanup registered for already-attached buffers
-vim.api.nvim_create_autocmd("LspDetach", {
-  group = vim.api.nvim_create_augroup("my-lsp-detach", { clear = true }),
-  callback = function(args)
-    -- Detach also happens on background buffers (:bd, server crash), and
-    -- clear_references() always targets the current buffer
-    vim.api.nvim_buf_call(args.buf, vim.lsp.buf.clear_references)
-
-    -- The detaching client is still in get_clients() here, so skip it: another
-    -- capable client may still need the highlight autocmds
-    for _, client in ipairs(vim.lsp.get_clients({ bufnr = args.buf })) do
-      if client.id ~= args.data.client_id and client:supports_method("textDocument/documentHighlight", args.buf) then
-        return
-      end
-    end
-
-    vim.api.nvim_clear_autocmds({ group = highlight_group, buffer = args.buf })
-  end,
-  desc = "LSP: clean up document-highlight autocmds",
 })
 
 local servers = {
@@ -107,4 +76,10 @@ local servers = {
   "yamlls",
   "zls",
 }
+
+-- Explicit rather than relying on blink's plugin/ file: that file runs after
+-- init.lua, and this keeps the server capabilities independent of load order
+vim.lsp.config("*", {
+  capabilities = require("blink.cmp").get_lsp_capabilities(),
+})
 vim.lsp.enable(servers)

@@ -1,5 +1,1 @@
-return {
-  "folke/lazydev.nvim",
-  ft = "lua",
-  opts = {},
-}
+require("lazydev").setup({})

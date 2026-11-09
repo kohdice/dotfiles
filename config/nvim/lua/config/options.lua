@@ -48,7 +48,6 @@ vim.opt.listchars = {
 vim.opt.signcolumn = "yes"
 
 vim.opt.timeoutlen = 300
--- Also the CursorHold delay that config/lsp.lua relies on for LSP document highlight
 vim.opt.updatetime = 200
 vim.opt.virtualedit = "block"
 vim.opt.wildmode = "longest:full,full"

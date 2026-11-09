@@ -1,7 +1,3 @@
-return {
-  "MagicDuck/grug-far.nvim",
-  keys = {
-    { "<leader>sr", "<cmd>GrugFar<cr>", desc = "Search and Replace" },
-    { "<leader>sr", ":<C-u>'<,'>GrugFar<cr>", mode = "v", desc = "Search and Replace (selection)" },
-  },
-}
+-- No setup(): grug-far's plugin file defines :GrugFar with defaults
+vim.keymap.set("n", "<leader>sr", "<cmd>GrugFar<cr>", { desc = "Search and Replace" })
+vim.keymap.set("v", "<leader>sr", ":<C-u>'<,'>GrugFar<cr>", { desc = "Search and Replace (selection)" })

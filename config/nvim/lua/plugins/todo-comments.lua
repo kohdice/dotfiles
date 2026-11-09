@@ -1,38 +1,21 @@
-return {
-  "folke/todo-comments.nvim",
-  dependencies = { "nvim-lua/plenary.nvim" },
-  event = { "BufReadPre", "BufNewFile" },
-  opts = {},
-  keys = {
-    {
-      "]t",
-      function()
-        require("todo-comments").jump_next()
-      end,
-      desc = "Next todo comment",
-    },
-    {
-      "[t",
-      function()
-        require("todo-comments").jump_prev()
-      end,
-      desc = "Previous todo comment",
-    },
-    { "<leader>xt", "<cmd>Trouble todo toggle<cr>", desc = "Todo (Trouble)" },
-    {
-      "<leader>xT",
-      "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>",
-      desc = "Todo/Fix/Fixme (Trouble)",
-    },
-    { "<leader>st", "<cmd>TodoFzfLua<cr>", desc = "Todo" },
-    {
-      -- Not :TodoFzfLua keywords=...: the command appends <args> outside the
-      -- call parentheses, so the filter is silently dropped instead of erroring
-      "<leader>sT",
-      function()
-        require("todo-comments.fzf").todo({ keywords = { "TODO", "FIX", "FIXME" } })
-      end,
-      desc = "Todo/Fix/Fixme",
-    },
-  },
-}
+local todo = require("todo-comments")
+local Snacks = require("snacks")
+
+todo.setup({})
+
+local map = function(lhs, rhs, desc)
+  vim.keymap.set("n", lhs, rhs, { desc = desc })
+end
+
+map("]t", todo.jump_next, "Next todo comment")
+map("[t", todo.jump_prev, "Previous todo comment")
+map("<leader>xt", "<cmd>Trouble todo toggle<cr>", "Todo (Trouble)")
+map("<leader>xT", "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>", "Todo/Fix/Fixme (Trouble)")
+-- Closures, not Snacks.picker.todo_comments itself: todo-comments registers
+-- that source on VimEnter, after this file has run
+map("<leader>st", function()
+  Snacks.picker.todo_comments()
+end, "Todo")
+map("<leader>sT", function()
+  Snacks.picker.todo_comments({ keywords = { "TODO", "FIX", "FIXME" } })
+end, "Todo/Fix/Fixme")

@@ -1,7 +1,3 @@
-return {
-  "echasnovski/mini.pairs",
-  event = "VeryLazy",
-  opts = {
-    modes = { insert = true, command = true, terminal = false },
-  },
-}
+require("mini.pairs").setup({
+  modes = { insert = true, command = true, terminal = false },
+})

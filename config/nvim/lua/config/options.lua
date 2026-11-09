@@ -22,9 +22,14 @@ vim.opt.splitkeep = "screen"
 vim.opt.mouse = "a"
 vim.opt.cursorline = true
 
--- Over SSH, leave clipboard unset: "unnamedplus" would route every yank/put
--- through the OSC 52 terminal roundtrip instead of using it on demand via "+
-vim.opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
+-- Not "unnamedplus" over SSH: Nvim auto-selects the OSC 52 clipboard
+-- provider only while 'clipboard' is empty (runtime/autoload/provider/
+-- clipboard.vim), and a remote host usually has no other clipboard tool, so
+-- the option would leave "+ with no provider at all. Left unset, "+y and "+p
+-- reach the local clipboard through OSC 52 on demand.
+if not vim.env.SSH_TTY then
+  vim.opt.clipboard = "unnamedplus"
+end
 
 vim.opt.inccommand = "split"
 
@@ -47,7 +52,6 @@ vim.opt.listchars = {
 }
 vim.opt.signcolumn = "yes"
 
-vim.opt.timeoutlen = 300
 vim.opt.updatetime = 200
 vim.opt.virtualedit = "block"
 vim.opt.wildmode = "longest:full,full"

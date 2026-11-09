@@ -20,8 +20,7 @@ local function buffer_path(modifier)
 end
 
 local function get_line_info()
-  -- "\22" is visual-block mode (CTRL-V)
-  if vim.fn.mode():match("[vV\22]") then
+  if vim.fn.mode():match("[vV" .. vim.keycode("<C-v>") .. "]") then
     -- '< / '> marks are only updated after leaving visual mode,
     -- so use the cursor and the other end of the active selection
     local start_line = vim.fn.line(".")

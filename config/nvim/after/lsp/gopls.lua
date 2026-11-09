@@ -4,9 +4,7 @@ return {
       -- No gofumpt: saving goes through conform (goimports, gofmt), so it would
       -- only restyle gopls-originated edits and mix two styles in one file
       codelenses = {
-        gc_details = false,
         test = true,
-        run_govulncheck = true,
       },
       hints = {
         assignVariableTypes = true,
@@ -18,7 +16,6 @@ return {
         rangeVariableTypes = true,
       },
       analyses = {
-        unusedparams = true,
         shadow = true,
       },
       usePlaceholders = true,

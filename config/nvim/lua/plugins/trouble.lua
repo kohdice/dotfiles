@@ -21,7 +21,7 @@ map("<leader>xQ", "<cmd>Trouble qflist toggle<cr>", "Quickfix List (Trouble)")
 
 map("[q", function()
   if trouble.is_open() then
-    trouble.prev({ skip_groups = true, jump = true })
+    trouble.prev({ jump = true })
   else
     local ok, err = pcall(vim.cmd.cprev)
     if not ok then
@@ -32,7 +32,7 @@ end, "Previous Trouble/Quickfix Item")
 
 map("]q", function()
   if trouble.is_open() then
-    trouble.next({ skip_groups = true, jump = true })
+    trouble.next({ jump = true })
   else
     local ok, err = pcall(vim.cmd.cnext)
     if not ok then

@@ -2,7 +2,6 @@ local oil = require("oil")
 
 oil.setup({
   view_options = { show_hidden = true },
-  -- Pick up external changes (git checkout, builds) without a manual refresh
   watch_for_changes = true,
   keymaps = {
     ["h"] = { "actions.parent", mode = "n" },

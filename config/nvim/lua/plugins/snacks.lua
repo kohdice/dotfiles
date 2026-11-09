@@ -5,7 +5,6 @@ Snacks.setup({
     enabled = true,
     -- Static guides: the scope animation only adds redraws
     animate = { enabled = false },
-    scope = { underline = false },
   },
   picker = {
     enabled = true,
@@ -38,7 +37,8 @@ Snacks.setup({
       },
     },
     layout = {
-      -- Same narrow-window fallback as the built-in preset function
+      -- A function, not preset = "fzf": a plain string drops snacks' own
+      -- fallback to the "vertical" layout on narrow windows
       preset = function()
         return vim.o.columns >= 120 and "fzf" or "vertical"
       end,

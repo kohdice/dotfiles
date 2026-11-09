@@ -23,7 +23,7 @@ conform.setup({
         return { "isort", "black" }
       end
     end,
-    rust = { "rustfmt", lsp_format = "fallback" },
+    rust = { "rustfmt" },
     scss = { "prettierd", "prettier", stop_after_first = true },
     terraform = { "terraform_fmt" },
     tf = { "terraform_fmt" },

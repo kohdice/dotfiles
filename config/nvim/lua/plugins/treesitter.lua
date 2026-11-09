@@ -1,4 +1,4 @@
--- The main branch rewrite dropped the ensure_installed option;
+-- nvim-treesitter's main branch dropped the ensure_installed option;
 -- install() is the supported way to declare parsers
 local ensure = {
   "bash",
@@ -88,5 +88,4 @@ map("[F", move.goto_previous_end, "@function.outer", "Prev function end")
 map("[C", move.goto_previous_end, "@class.outer", "Prev class end")
 map("[A", move.goto_previous_end, "@parameter.inner", "Prev parameter end")
 
-require("treesitter-context").setup({})
 require("nvim-ts-autotag").setup({})
